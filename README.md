@@ -19,7 +19,7 @@ CatPred predicts in vitro enzyme kinetic parameters (kcat, Km and Ki) using EC, 
 ## Installing pre-requisites <a name="installation"></a>
 
 ```bash
-pip install pandas numpy tqdm rdkit-pypi scikit-learn skops ete3
+pip install pandas numpy tqdm rdkit-pypi scikit-learn==1.3.2 skops==0.9.0 ete3
 ```
 Clone this repo, download the data folder and extract into root directory 
 ```bash

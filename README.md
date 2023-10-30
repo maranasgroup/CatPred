@@ -26,13 +26,13 @@ Clone this repo, download the data folder and extract into root directory
 git clone https://github.com/maranasgroup/catpred.git  # this repo main branch
 cd catpred
 wget https://catpred.s3.amazonaws.com/data.tar.gz
-tar -cvzf data.tar.gz
+tar -xvzf data.tar.gz
 ```
 
 Download pre-trained models and extract into root directory
 ```bash
 wget https://catpred.s3.amazonaws.com/models.tar.gz
-tar -cvzf models.tar.gz
+tar -xvzf models.tar.gz
 ```
 ## Usage <a name="usage"></a>
 

@@ -19,13 +19,18 @@ CatPred predicts in vitro enzyme kinetic parameters (kcat, Km and Ki) using EC, 
 ## Installing pre-requisites <a name="installation"></a>
 
 ```bash
-git clone https://github.com/maranasgroup/catpred.git  # this repo main branch
 pip install pandas numpy tqdm
 pip install rdkit-pypi
 pip install sklearn skops
 pip install ete3
 ```
-
+Clone this repo, ddownload the data folder and extract into root directory 
+```bash
+git clone https://github.com/maranasgroup/catpred.git  # this repo main branch
+cd catpred
+wget https://catpred.s3.amazonaws.com/data.tar.gz
+tar -cvzf data.tar.gz
+```
 ## Usage <a name="usage"></a>
 
 ### Input preparation <a name="preparation"></a>

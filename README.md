@@ -49,12 +49,17 @@ usage: python run-catpred.py [-i] -input INPUT_CSV [-p] -parameter [PARAMETER]
 
 The command will first featurize the input file using pre-defined EC and Taxonomy vocabulary. Then, it will add the rdkit fingerprints for SMILES and output the featurized inputs as a pandas dataframe input_feats.pkl. The predictions will be printed and as well as written to output.csv. 
 
+## License <a name="license"></a>
+
+This source code is licensed under the MIT license found in the `LICENSE` file
+in the root directory of this source tree.
+
 ## Citations <a name="citations"></a>
 
 If you find the models useful in your research, we ask that you cite the relevant paper:
 
 ```bibtex
-@article{In-preparationo,
+@article{In-preparation,
   author={Boorla, Veda Sheersh and Maranas, Costas D},
   title={CatPred: Machine Learning models for in vitro enzyme kinetic parameter prediction},
   year={2023},
@@ -63,13 +68,3 @@ If you find the models useful in your research, we ask that you cite the relevan
   journal={}
 }
 ```
-
-
-## License <a name="license"></a>
-
-This source code is licensed under the MIT license found in the `LICENSE` file
-in the root directory of this source tree.
-
-ESM Metagenomic Atlas (also referred to as “ESM Metagenomic Structure Atlas” or “ESM Atlas”) data is available under a CC BY 4.0 license for academic and commercial use. Copyright (c) Meta Platforms, Inc. All Rights Reserved. Use of the ESM Metagenomic Atlas data is subject to the Meta Open Source [Terms of Use](https://opensource.fb.com/legal/terms/) and [Privacy Policy](https://opensource.fb.com/legal/privacy/).
-
-<details><summary><b>Citation</b></summary>

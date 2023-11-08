@@ -24,9 +24,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", "--data_dir", help="data directory", type=str, required=True)
     parser.add_argument("--out_dir", "--out_dir", help="output directory", type=str, required=True)
-    parser.add_argument("--par", "--parameter", help="parameter to predict", 
+    parser.add_argument("--par", "--par", help="parameter to predict", 
                         type=str, required=True)
-    parser.add_argument("--json", "--json_brenda", help="json brenda path", 
+    parser.add_argument("--json", "--json", help="json brenda path", 
                         type=str, required=True)
 
     args, unparsed = parser.parse_known_args()
@@ -36,12 +36,10 @@ def parse_args():
 
 args = parse_args()
 
-print(args)
-
-param = args.parameter.upper()
-json_name = args.json_brenda
+param = args.par.upper()
+json_name = args.json
 out_path = args.out_dir
-data_dir = args.out_dir
+data_dir = args.data_dir
 
 DATA_DIR = data_dir
 PARAMETER = param

@@ -255,8 +255,9 @@ for com in df_kinetic.COMMENT:
         pat = r'pH [0-9]\.[0-9]'
         ph = float(re.findall(pattern=pat, string=com)[0].split('pH')[-1].strip())
     except:
-        temp = None
-        ph = None
+        # TODO - get temp and ph for organism/ec from PH_OPTIMA/TEMP_OPTIMA fields in BRENDA
+        temp = 25
+        ph = 7
     phrow.append(ph)
     temprow.append(temp)
     
@@ -272,7 +273,7 @@ df_final[f'LOG10_{PARAMETER}'] = logkmrow
 
 df_final.reset_index(inplace=True, drop=True)
 
-groups = df_final.groupby(['Organism', 'SMILES','EC'])
+groups = df_final.groupby(['Organism', 'SMILES','EC','PH','TEMPERATURE'])
 
 stdcol = []
 meancol = []
@@ -322,9 +323,16 @@ tax_embed_cols = [
 "GENUS",
 "SPECIES"]
 
-towrite = df_feats[['EC','Organism','SUBSTRATE','SMILES',f'target_{PARAMETER}']+ec_embed_cols+tax_embed_cols]
+towrite = df_feats[['EC','Organism','SUBSTRATE','SMILES','PH','TEMPERATURE',f'target_{PARAMETER}']+ec_embed_cols+tax_embed_cols]
 towrite.to_csv(f'{OUTPUTNAME}')
 
+for colname in ec_embed_cols+tax_embed_cols:
+    vocab_dic = make_vocabulary(towrite, colname)
+
+f = open(f"{out_dir}/{PARAMETER}_vocab.json",'w')
+f.write(json.dumps(vocab_dic, indent=True))
+f.close()
+    
 ec_tax_pairs = []
 for ind, row in tqdm(dfmean.iterrows()):
     unis = row.UNIPROT

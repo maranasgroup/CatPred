@@ -255,7 +255,6 @@ for com in df_kinetic.COMMENT:
         pat = r'pH [0-9]\.[0-9]'
         ph = float(re.findall(pattern=pat, string=com)[0].split('pH')[-1].strip())
     except:
-        # TODO - get temp and ph for organism/ec from PH_OPTIMA/TEMP_OPTIMA fields in BRENDA
         temp = 25
         ph = 7
     phrow.append(ph)
@@ -323,13 +322,26 @@ tax_embed_cols = [
 "GENUS",
 "SPECIES"]
 
-towrite = df_feats[['EC','Organism','SUBSTRATE','SMILES','PH','TEMPERATURE',f'target_{PARAMETER}']+ec_embed_cols+tax_embed_cols]
+towrite = df_feats[['Organism','SUBSTRATE','SMILES','PH','TEMPERATURE',f'target_{PARAMETER}']+ec_embed_cols+tax_embed_cols]
 towrite.to_csv(f'{OUTPUTNAME}')
 
-for colname in ec_embed_cols+tax_embed_cols:
-    vocab_dic = make_vocabulary(towrite, colname)
+def make_vocabulary(df, colname):
+    cats = df[colname].unique().astype("str")
 
-f = open(f"{out_dir}/{PARAMETER}_vocab.json",'w')
+    cats = sorted(cats)
+    vocab_dic = {c: i for i, c in enumerate(cats)}
+    
+    #extra for unk
+    vocab_dic['UNK'] = -1
+    
+    return vocab_dic
+
+vocab_dic = {}
+for colname in ec_embed_cols+tax_embed_cols:
+    vocab = make_vocabulary(towrite, colname)
+    vocab_dic[colname] = vocab
+
+f = open(f"{out_path}/{PARAMETER}_vocab.json",'w')
 f.write(json.dumps(vocab_dic, indent=True))
 f.close()
     

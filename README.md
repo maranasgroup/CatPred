@@ -19,7 +19,7 @@ CatPred predicts in vitro enzyme kinetic parameters (kcat, Km and Ki) using EC, 
 ## Installing pre-requisites <a name="installation"></a>
 
 ```bash
-pip install pandas numpy tqdm rdkit-pypi scikit-learn==1.3.2 skops==0.9.0 ete3
+pip install pandas numpy tqdm rdkit-pypi scikit-learn catboost ete3
 ```
 Clone this repo, download the data folder and extract into root directory 
 ```bash
@@ -41,13 +41,15 @@ tar -xvzf models.tar.gz
 Prepare an input.csv file as shown in examples/demo.csv 
 Best way is to edit the demo.csv file
 
-1. The first column should contain the EC number as per [Enzyme Classification](https://iubmb.qmul.ac.uk/enzyme/). 
+1. The first column should contain the PH for the enzyme. If you don't know what may be the best PH, you can look up in BRENDA for a possible value.
+2. The second column should contain the Temperature in C for the enzyme. If you don't know what may be the best Temperature, you can look up in BRENDA for a possible value.
+3. The third column should contain the EC number as per [Enzyme Classification](https://iubmb.qmul.ac.uk/enzyme/). 
 In case of unknown EC number at a particular level, use '-' as a place holder. For example, if the last two levels are unknown then, use 1.1.1.-
 
-2. The second column should contain the Organism name as per [NCBI Taxonomy](https://www.ncbi.nlm.nih.gov/taxonomy). 
+4. The fourth column should contain the Organism name as per [NCBI Taxonomy](https://www.ncbi.nlm.nih.gov/taxonomy). 
 Common names or short forms will not be processed. In case of a rare Organism or a new strain, use the [NCBI Taxonomy](https://www.ncbi.nlm.nih.gov/taxonomy) website to find the Organism that you think is the closest match.
 
-3. The third column should contain a SMILES string. It should be read-able by rdkit [RDKit](https://www.rdkit.org/). You can use [PubChem](https://pubchem.ncbi.nlm.nih.gov/) or [BRENDA-Ligand](https://www.brenda-enzymes.org/structure_search.php) or [CHE-EBI](https://www.ebi.ac.uk/chebi/) to search for SMILES. Alternatively, you can use [PubChem-Draw](https://pubchem.ncbi.nlm.nih.gov//edit3/index.html) to generate SMILES string for any molecule you draw.
+5. The fifth column should contain a SMILES string. It should be read-able by rdkit [RDKit](https://www.rdkit.org/). You can use [PubChem](https://pubchem.ncbi.nlm.nih.gov/) or [BRENDA-Ligand](https://www.brenda-enzymes.org/structure_search.php) or [CHE-EBI](https://www.ebi.ac.uk/chebi/) to search for SMILES. Alternatively, you can use [PubChem-Draw](https://pubchem.ncbi.nlm.nih.gov//edit3/index.html) to generate SMILES string for any molecule you draw.
 
 ### Making predictions <a name="prediction"></a>
 

@@ -1,7 +1,7 @@
 # CatPred: Machine Learning models for in vitro enzyme kinetic parameter prediction
 
 ***Work in progress:*** Current repository only contains codes and models for prediction. Full training/evaluation codes along with datasets will be released here upon publication.
-
+***Production models could be different from what is shared here. Stay tuned for updates***
 CatPred predicts in vitro enzyme kinetic parameters (kcat, Km and Ki) using EC, Organism and Substrate features. 
 
 <details open><summary><b>Table of contents</b></summary>

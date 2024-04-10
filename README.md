@@ -3,11 +3,6 @@
 [![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.biorxiv.org/content/10.1101/2024.03.10.584340v2)
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)
 
-***Work in progress:*** Full training/evaluation codes along with datasets will be released here upon publication.
-***Stay tuned for updates***
-
-Currently, the trained models are made available on Google Colab: [CatPred-Colab](https://tiny.cc/catpred)
-
 ## License <a name="license"></a>
 
 This source code is licensed under the MIT license found in the `LICENSE` file

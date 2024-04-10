@@ -1,6 +1,6 @@
 # CatPred: Machine Learning models for in vitro enzyme kinetic parameter prediction
 
-[![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.biorxiv.org/content/10.1101/2024.03.10.584340v2)
+[![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](<a href="https://www.biorxiv.org/content/10.1101/2024.03.10.584340v2" target="_blank">biorxiv</a>)
 
 ***Work in progress:*** Full training/evaluation codes along with datasets will be released here upon publication.
 ***Stay tuned for updates***

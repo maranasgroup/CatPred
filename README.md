@@ -52,9 +52,8 @@ wget https://https://catpred.s3.amazonaws.com/publication_training_datasets.tar.
 tar -xzf publication_training_datasets.tar.gz
 ```
 
-## Training
+### Training
 
-To train a model, run:
 TODO: Will be made available upon publication
 ```
 ```

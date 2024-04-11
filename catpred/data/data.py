@@ -8,10 +8,10 @@ from torch.utils.data import DataLoader, Dataset, Sampler
 from rdkit import Chem
 
 from .scaler import StandardScaler, AtomBondScaler
-from chemprop.features import get_features_generator
-from chemprop.features import BatchMolGraph, MolGraph
-from chemprop.features import is_explicit_h, is_reaction, is_adding_hs, is_mol, is_keeping_atom_map
-from chemprop.rdkit import make_mol
+from catpred.features import get_features_generator
+from catpred.features import BatchMolGraph, MolGraph
+from catpred.features import is_explicit_h, is_reaction, is_adding_hs, is_mol, is_keeping_atom_map
+from catpred.rdkit import make_mol
 
 # Cache of graph featurizations
 CACHE_GRAPH = True
@@ -23,18 +23,18 @@ SMILES_TO_MOL: Dict[str, Union[Chem.Mol, Tuple[Chem.Mol, Chem.Mol]]] = {}
 
 
 def cache_graph() -> bool:
-    r"""Returns whether :class:`~chemprop.features.MolGraph`\ s will be cached."""
+    r"""Returns whether :class:`~catpred.features.MolGraph`\ s will be cached."""
     return CACHE_GRAPH
 
 
 def set_cache_graph(cache_graph: bool) -> None:
-    r"""Sets whether :class:`~chemprop.features.MolGraph`\ s will be cached."""
+    r"""Sets whether :class:`~catpred.features.MolGraph`\ s will be cached."""
     global CACHE_GRAPH
     CACHE_GRAPH = cache_graph
 
 
 def empty_cache():
-    r"""Empties the cache of :class:`~chemprop.features.MolGraph` and RDKit molecules."""
+    r"""Empties the cache of :class:`~catpred.features.MolGraph` and RDKit molecules."""
     SMILES_TO_GRAPH.clear()
     SMILES_TO_MOL.clear()
 
@@ -426,15 +426,15 @@ class MoleculeDataset(Dataset):
 
     def batch_graph(self) -> List[BatchMolGraph]:
         r"""
-        Constructs a :class:`~chemprop.features.BatchMolGraph` with the graph featurization of all the molecules.
+        Constructs a :class:`~catpred.features.BatchMolGraph` with the graph featurization of all the molecules.
 
         .. note::
-           The :class:`~chemprop.features.BatchMolGraph` is cached in after the first time it is computed
+           The :class:`~catpred.features.BatchMolGraph` is cached in after the first time it is computed
            and is simply accessed upon subsequent calls to :meth:`batch_graph`. This means that if the underlying
-           set of :class:`MoleculeDatapoint`\ s changes, then the returned :class:`~chemprop.features.BatchMolGraph`
+           set of :class:`MoleculeDatapoint`\ s changes, then the returned :class:`~catpred.features.BatchMolGraph`
            will be incorrect for the underlying data.
 
-        :return: A list of :class:`~chemprop.features.BatchMolGraph` containing the graph featurization of all the
+        :return: A list of :class:`~catpred.features.BatchMolGraph` containing the graph featurization of all the
                  molecules in each :class:`MoleculeDatapoint`.
         """
         if self._batch_graph is None:
@@ -677,24 +677,24 @@ class MoleculeDataset(Dataset):
     def normalize_features(self, scaler: StandardScaler = None, replace_nan_token: int = 0,
                            scale_atom_descriptors: bool = False, scale_bond_descriptors: bool = False) -> StandardScaler:
         """
-        Normalizes the features of the dataset using a :class:`~chemprop.data.StandardScaler`.
+        Normalizes the features of the dataset using a :class:`~catpred.data.StandardScaler`.
 
-        The :class:`~chemprop.data.StandardScaler` subtracts the mean and divides by the standard deviation
+        The :class:`~catpred.data.StandardScaler` subtracts the mean and divides by the standard deviation
         for each feature independently.
 
-        If a :class:`~chemprop.data.StandardScaler` is provided, it is used to perform the normalization.
-        Otherwise, a :class:`~chemprop.data.StandardScaler` is first fit to the features in this dataset
+        If a :class:`~catpred.data.StandardScaler` is provided, it is used to perform the normalization.
+        Otherwise, a :class:`~catpred.data.StandardScaler` is first fit to the features in this dataset
         and is then used to perform the normalization.
 
-        :param scaler: A fitted :class:`~chemprop.data.StandardScaler`. If it is provided it is used,
-                       otherwise a new :class:`~chemprop.data.StandardScaler` is first fitted to this
+        :param scaler: A fitted :class:`~catpred.data.StandardScaler`. If it is provided it is used,
+                       otherwise a new :class:`~catpred.data.StandardScaler` is first fitted to this
                        data and is then used.
         :param replace_nan_token: A token to use to replace NaN entries in the features.
         :param scale_atom_descriptors: If the features that need to be scaled are atom features rather than molecule.
         :param scale_bond_descriptors: If the features that need to be scaled are bond features rather than molecule.
-        :return: A fitted :class:`~chemprop.data.StandardScaler`. If a :class:`~chemprop.data.StandardScaler`
-                 is provided as a parameter, this is the same :class:`~chemprop.data.StandardScaler`. Otherwise,
-                 this is a new :class:`~chemprop.data.StandardScaler` that has been fit on this dataset.
+        :return: A fitted :class:`~catpred.data.StandardScaler`. If a :class:`~catpred.data.StandardScaler`
+                 is provided as a parameter, this is the same :class:`~catpred.data.StandardScaler`. Otherwise,
+                 this is a new :class:`~catpred.data.StandardScaler` that has been fit on this dataset.
         """
         if len(self._data) == 0 or \
                 (self._data[0].features is None and not scale_bond_descriptors and not scale_atom_descriptors):
@@ -734,11 +734,11 @@ class MoleculeDataset(Dataset):
 
     def normalize_targets(self) -> StandardScaler:
         """
-        Normalizes the targets of the dataset using a :class:`~chemprop.data.StandardScaler`.
-        The :class:`~chemprop.data.StandardScaler` subtracts the mean and divides by the standard deviation
+        Normalizes the targets of the dataset using a :class:`~catpred.data.StandardScaler`.
+        The :class:`~catpred.data.StandardScaler` subtracts the mean and divides by the standard deviation
         for each task independently.
         This should only be used for regression datasets.
-        :return: A :class:`~chemprop.data.StandardScaler` fitted to the targets.
+        :return: A :class:`~catpred.data.StandardScaler` fitted to the targets.
         """
         targets = [d.raw_targets for d in self._data]
         scaler = StandardScaler().fit(targets)
@@ -749,14 +749,14 @@ class MoleculeDataset(Dataset):
 
     def normalize_atom_bond_targets(self) -> AtomBondScaler:
         """
-        Normalizes the targets of the dataset using a :class:`~chemprop.data.AtomBondScaler`.
+        Normalizes the targets of the dataset using a :class:`~catpred.data.AtomBondScaler`.
 
-        The :class:`~chemprop.data.AtomBondScaler` subtracts the mean and divides by the standard deviation
+        The :class:`~catpred.data.AtomBondScaler` subtracts the mean and divides by the standard deviation
         for each task independently.
 
         This should only be used for regression datasets.
 
-        :return: A :class:`~chemprop.data.AtomBondScaler` fitted to the targets.
+        :return: A :class:`~catpred.data.AtomBondScaler` fitted to the targets.
         """
         atom_targets = self._data[0].atom_targets
         bond_targets = self._data[0].bond_targets
@@ -880,7 +880,7 @@ def construct_molecule_batch(data: List[MoleculeDatapoint]) -> MoleculeDataset:
     r"""
     Constructs a :class:`MoleculeDataset` from a list of :class:`MoleculeDatapoint`\ s.
 
-    Additionally, precomputes the :class:`~chemprop.features.BatchMolGraph` for the constructed
+    Additionally, precomputes the :class:`~catpred.features.BatchMolGraph` for the constructed
     :class:`MoleculeDataset`.
 
     :param data: A list of :class:`MoleculeDatapoint`\ s.

@@ -1,7 +1,7 @@
 from typing import List
 import numpy as np
 
-from chemprop.data import MoleculeDataset
+from catpred.data import MoleculeDataset
 
 
 def reshape_values(
@@ -17,7 +17,7 @@ def reshape_values(
 
     :param values: List of atomic/bond properties with shape
                    (num_tasks, number of atomic/bond properties for each task, 1).
-    :param test_data: A :class:`~chemprop.data.MoleculeDataset` containing valid datapoints.
+    :param test_data: A :class:`~catpred.data.MoleculeDataset` containing valid datapoints.
     :param natom_targets: The number of atomic targets.
     :param nbond_targets: The number of bond targets.
     :param num_tasks: Number of tasks.
@@ -54,7 +54,7 @@ def reshape_individual_preds(
 
     :param individual_preds: List of atomic/bond properties with shape
                              (num_tasks, number of atomic/bond properties for each task, 1, num_models).
-    :param test_data: A :class:`~chemprop.data.MoleculeDataset` containing valid datapoints.
+    :param test_data: A :class:`~catpred.data.MoleculeDataset` containing valid datapoints.
     :param natom_targets: The number of atomic targets.
     :param nbond_targets: The number of bond targets.
     :param num_tasks: Number of tasks.

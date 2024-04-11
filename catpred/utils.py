@@ -18,11 +18,11 @@ from torch.optim.lr_scheduler import _LRScheduler
 from tqdm import tqdm
 from scipy.stats.mstats import gmean
 
-from chemprop.args import PredictArgs, TrainArgs, FingerprintArgs
-from chemprop.data import StandardScaler, AtomBondScaler, MoleculeDataset, preprocess_smiles_columns, get_task_names
-from chemprop.models import MoleculeModel
-from chemprop.nn_utils import NoamLR
-from chemprop.models.ffn import MultiReadout
+from catpred.args import PredictArgs, TrainArgs, FingerprintArgs
+from catpred.data import StandardScaler, AtomBondScaler, MoleculeDataset, preprocess_smiles_columns, get_task_names
+from catpred.models import MoleculeModel
+from catpred.nn_utils import NoamLR
+from catpred.models.ffn import MultiReadout
 
 
 def makedirs(path: str, isfile: bool = False) -> None:
@@ -54,13 +54,13 @@ def save_checkpoint(
     """
     Saves a model checkpoint.
 
-    :param model: A :class:`~chemprop.models.model.MoleculeModel`.
-    :param scaler: A :class:`~chemprop.data.scaler.StandardScaler` fitted on the data.
-    :param features_scaler: A :class:`~chemprop.data.scaler.StandardScaler` fitted on the features.
-    :param atom_descriptor_scaler: A :class:`~chemprop.data.scaler.StandardScaler` fitted on the atom descriptors.
-    :param bond_descriptor_scaler: A :class:`~chemprop.data.scaler.StandardScaler` fitted on the bond descriptors.
-    :param atom_bond_scaler: A :class:`~chemprop.data.scaler.AtomBondScaler` fitted on the atomic/bond targets.
-    :param args: The :class:`~chemprop.args.TrainArgs` object containing the arguments the model was trained with.
+    :param model: A :class:`~catpred.models.model.MoleculeModel`.
+    :param scaler: A :class:`~catpred.data.scaler.StandardScaler` fitted on the data.
+    :param features_scaler: A :class:`~catpred.data.scaler.StandardScaler` fitted on the features.
+    :param atom_descriptor_scaler: A :class:`~catpred.data.scaler.StandardScaler` fitted on the atom descriptors.
+    :param bond_descriptor_scaler: A :class:`~catpred.data.scaler.StandardScaler` fitted on the bond descriptors.
+    :param atom_bond_scaler: A :class:`~catpred.data.scaler.AtomBondScaler` fitted on the atomic/bond targets.
+    :param args: The :class:`~catpred.args.TrainArgs` object containing the arguments the model was trained with.
     :param path: Path where checkpoint will be saved.
     """
     # Convert args to namespace for backwards compatibility
@@ -101,7 +101,7 @@ def load_checkpoint(
     :param path: Path where checkpoint is saved.
     :param device: Device where the model will be moved.
     :param logger: A logger for recording output.
-    :return: The loaded :class:`~chemprop.models.model.MoleculeModel`.
+    :return: The loaded :class:`~catpred.models.model.MoleculeModel`.
     """
     if logger is not None:
         debug, info = logger.debug, logger.info
@@ -437,8 +437,8 @@ def load_scalers(
     Loads the scalers a model was trained with.
 
     :param path: Path where model checkpoint is saved.
-    :return: A tuple with the data :class:`~chemprop.data.scaler.StandardScaler`
-             and features :class:`~chemprop.data.scaler.StandardScaler`.
+    :return: A tuple with the data :class:`~catpred.data.scaler.StandardScaler`
+             and features :class:`~catpred.data.scaler.StandardScaler`.
     """
     state = torch.load(path, map_location=lambda storage, loc: storage)
 
@@ -491,7 +491,7 @@ def load_args(path: str) -> TrainArgs:
     Loads the arguments a model was trained with.
 
     :param path: Path where model checkpoint is saved.
-    :return: The :class:`~chemprop.args.TrainArgs` object that the model was trained with.
+    :return: The :class:`~catpred.args.TrainArgs` object that the model was trained with.
     """
     args = TrainArgs()
     args.from_dict(
@@ -517,7 +517,7 @@ def build_optimizer(model: nn.Module, args: TrainArgs) -> Optimizer:
     Builds a PyTorch Optimizer.
 
     :param model: The model to optimize.
-    :param args: A :class:`~chemprop.args.TrainArgs` object containing optimizer arguments.
+    :param args: A :class:`~catpred.args.TrainArgs` object containing optimizer arguments.
     :return: An initialized Optimizer.
     """
     params = [{"params": model.parameters(), "lr": args.init_lr, "weight_decay": 0}]
@@ -532,7 +532,7 @@ def build_lr_scheduler(
     Builds a PyTorch learning rate scheduler.
 
     :param optimizer: The Optimizer whose learning rate will be scheduled.
-    :param args: A :class:`~chemprop.args.TrainArgs` object containing learning rate arguments.
+    :param args: A :class:`~catpred.args.TrainArgs` object containing learning rate arguments.
     :param total_epochs: The total number of epochs for which the model will be run.
     :return: An initialized learning rate scheduler.
     """
@@ -648,9 +648,9 @@ def save_smiles_splits(
         If not provided, will use datafile header entries.
     :param features_path: List of path(s) to files with additional molecule features.
     :param constraints_path: Path to constraints applied to atomic/bond properties prediction.
-    :param train_data: Train :class:`~chemprop.data.data.MoleculeDataset`.
-    :param val_data: Validation :class:`~chemprop.data.data.MoleculeDataset`.
-    :param test_data: Test :class:`~chemprop.data.data.MoleculeDataset`.
+    :param train_data: Train :class:`~catpred.data.data.MoleculeDataset`.
+    :param val_data: Validation :class:`~catpred.data.data.MoleculeDataset`.
+    :param test_data: Test :class:`~catpred.data.data.MoleculeDataset`.
     :param smiles_columns: The name of the column containing SMILES. By default, uses the first column.
     :param logger: A logger for recording output.
     """
@@ -778,9 +778,9 @@ def update_prediction_args(
     Also raises errors for situations where the prediction arguments and training arguments
     are different but must match for proper function.
 
-    :param predict_args: The :class:`~chemprop.args.PredictArgs` object containing the arguments to use for making predictions.
-    :param train_args: The :class:`~chemprop.args.TrainArgs` object containing the arguments used to train the model previously.
-    :param missing_to_defaults: Whether to replace missing training arguments with the current defaults for :class: `~chemprop.args.TrainArgs`.
+    :param predict_args: The :class:`~catpred.args.PredictArgs` object containing the arguments to use for making predictions.
+    :param train_args: The :class:`~catpred.args.TrainArgs` object containing the arguments used to train the model previously.
+    :param missing_to_defaults: Whether to replace missing training arguments with the current defaults for :class: `~catpred.args.TrainArgs`.
         This is used for backwards compatibility.
     :param validate_feature_sources: Indicates whether the feature sources (from path or generator) are checked for consistency between
         the training and prediction arguments. This is not necessary for fingerprint generation, where molecule features are not used.
@@ -900,5 +900,5 @@ def multitask_mean(
             f"The metric used, {metric}, has not been added to the list of\
                 metrics that are scale-dependent or not scale-dependent.\
                 This metric must be added to the appropriate list in the multitask_mean\
-                function in `chemprop/utils.py` in order to be used."
+                function in `catpred/utils.py` in order to be used."
         )

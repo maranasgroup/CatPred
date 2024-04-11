@@ -2,16 +2,16 @@ from abc import ABC, abstractmethod
 from typing import Iterator, List
 
 import numpy as np
-from chemprop.data.data import MoleculeDataLoader
+from catpred.data.data import MoleculeDataLoader
 from scipy.special import erfinv, softmax, logit, expit
 from scipy.optimize import fmin
 from scipy.stats import t
 from sklearn.isotonic import IsotonicRegression
 
-from chemprop.data import MoleculeDataset, StandardScaler
-from chemprop.models import MoleculeModel
-from chemprop.uncertainty.uncertainty_predictor import build_uncertainty_predictor, UncertaintyPredictor
-from chemprop.multitask_utils import reshape_values
+from catpred.data import MoleculeDataset, StandardScaler
+from catpred.models import MoleculeModel
+from catpred.uncertainty.uncertainty_predictor import build_uncertainty_predictor, UncertaintyPredictor
+from catpred.multitask_utils import reshape_values
 
 
 class UncertaintyCalibrator(ABC):
@@ -667,7 +667,7 @@ class PlattCalibrator(UncertaintyCalibrator):
         else:
             class_size_correction = False
             print(
-                "Class sizes used in training models unavailable in checkpoints before Chemprop v1.5.0. "
+                "Class sizes used in training models unavailable in checkpoints before catpred v1.5.0. "
                 "No Bayesian correction perfomed as part of class scaling."
             )
 

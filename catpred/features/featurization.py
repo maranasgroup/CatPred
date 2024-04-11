@@ -6,7 +6,7 @@ from rdkit import Chem
 import torch
 import numpy as np
 
-from chemprop.rdkit import make_mol
+from catpred.rdkit import make_mol
 
 class Featurization_parameters:
     """

@@ -5,12 +5,12 @@ import torch
 import numpy as np
 from tqdm import tqdm
 
-from chemprop.args import FingerprintArgs, TrainArgs
-from chemprop.data import get_data, get_data_from_smiles, MoleculeDataLoader, MoleculeDataset
-from chemprop.utils import load_args, load_checkpoint, makedirs, timeit, load_scalers, update_prediction_args
-from chemprop.data import MoleculeDataLoader, MoleculeDataset
-from chemprop.features import set_reaction, set_explicit_h, set_adding_hs, set_keeping_atom_map, reset_featurization_parameters, set_extra_atom_fdim, set_extra_bond_fdim
-from chemprop.models import MoleculeModel
+from catpred.args import FingerprintArgs, TrainArgs
+from catpred.data import get_data, get_data_from_smiles, MoleculeDataLoader, MoleculeDataset
+from catpred.utils import load_args, load_checkpoint, makedirs, timeit, load_scalers, update_prediction_args
+from catpred.data import MoleculeDataLoader, MoleculeDataset
+from catpred.features import set_reaction, set_explicit_h, set_adding_hs, set_keeping_atom_map, reset_featurization_parameters, set_extra_atom_fdim, set_extra_bond_fdim
+from catpred.models import MoleculeModel
 
 @timeit()
 def molecule_fingerprint(args: FingerprintArgs,
@@ -19,7 +19,7 @@ def molecule_fingerprint(args: FingerprintArgs,
     """
     Loads data and a trained model and uses the model to encode fingerprint vectors for the data.
 
-    :param args: A :class:`~chemprop.args.PredictArgs` object containing arguments for
+    :param args: A :class:`~catpred.args.PredictArgs` object containing arguments for
                  loading data and a model and making predictions.
     :param smiles: List of list of SMILES to make predictions on.
     :param return_invalid_smiles: Whether to return predictions of "Invalid SMILES" for invalid SMILES, otherwise will skip them in returned predictions.
@@ -198,8 +198,8 @@ def model_fingerprint(model: MoleculeModel,
     """
     Encodes the provided molecules into the latent fingerprint vectors, according to the provided model.
 
-    :param model: A :class:`~chemprop.models.model.MoleculeModel`.
-    :param data_loader: A :class:`~chemprop.data.data.MoleculeDataLoader`.
+    :param model: A :class:`~catpred.models.model.MoleculeModel`.
+    :param data_loader: A :class:`~catpred.data.data.MoleculeDataLoader`.
     :param disable_progress_bar: Whether to disable the progress bar.
     :return: A list of fingerprint vector lists.
     """
@@ -226,9 +226,9 @@ def model_fingerprint(model: MoleculeModel,
 
     return fingerprints
 
-def chemprop_fingerprint() -> None:
+def catpred_fingerprint() -> None:
     """
-    Parses Chemprop predicting arguments and returns the latent representation vectors for
+    Parses catpred predicting arguments and returns the latent representation vectors for
     provided molecules, according to a previously trained model.
     """
     molecule_fingerprint(args=FingerprintArgs().parse_args())

@@ -4,13 +4,13 @@ from typing import List, Optional, Union, Tuple
 
 import numpy as np
 
-from chemprop.args import PredictArgs, TrainArgs
-from chemprop.data import get_data, get_data_from_smiles, MoleculeDataLoader, MoleculeDataset, StandardScaler, AtomBondScaler
-from chemprop.utils import load_args, load_checkpoint, load_scalers, makedirs, timeit, update_prediction_args
-from chemprop.features import set_extra_atom_fdim, set_extra_bond_fdim, set_reaction, set_explicit_h, set_adding_hs, set_keeping_atom_map, reset_featurization_parameters
-from chemprop.models import MoleculeModel
-from chemprop.uncertainty import UncertaintyCalibrator, build_uncertainty_calibrator, UncertaintyEstimator, build_uncertainty_evaluator
-from chemprop.multitask_utils import reshape_values
+from catpred.args import PredictArgs, TrainArgs
+from catpred.data import get_data, get_data_from_smiles, MoleculeDataLoader, MoleculeDataset, StandardScaler, AtomBondScaler
+from catpred.utils import load_args, load_checkpoint, load_scalers, makedirs, timeit, update_prediction_args
+from catpred.features import set_extra_atom_fdim, set_extra_bond_fdim, set_reaction, set_explicit_h, set_adding_hs, set_keeping_atom_map, reset_featurization_parameters
+from catpred.models import MoleculeModel
+from catpred.uncertainty import UncertaintyCalibrator, build_uncertainty_calibrator, UncertaintyEstimator, build_uncertainty_evaluator
+from catpred.multitask_utils import reshape_values
 
 
 def load_model(args: PredictArgs, generator: bool = False):
@@ -18,7 +18,7 @@ def load_model(args: PredictArgs, generator: bool = False):
     Function to load a model or ensemble of models from file. If generator is True, a generator of the respective model and scaler 
     objects is returned (memory efficient), else the full list (holding all models in memory, necessary for preloading).
 
-    :param args: A :class:`~chemprop.args.PredictArgs` object containing arguments for
+    :param args: A :class:`~catpred.args.PredictArgs` object containing arguments for
                  loading data and a model and making predictions.
     :param generator: A boolean to return a generator instead of a list of models and scalers.
     :return: A tuple of updated prediction arguments, training arguments, a list or generator object of models, a list or 
@@ -50,11 +50,11 @@ def load_data(args: PredictArgs, smiles: List[List[str]]):
     """
     Function to load data from a list of smiles or a file.
 
-    :param args: A :class:`~chemprop.args.PredictArgs` object containing arguments for
+    :param args: A :class:`~catpred.args.PredictArgs` object containing arguments for
                  loading data and a model and making predictions.
     :param smiles: A list of list of smiles, or None if data is to be read from file
-    :return: A tuple of a :class:`~chemprop.data.MoleculeDataset` containing all datapoints, a :class:`~chemprop.data.MoleculeDataset` containing only valid datapoints,
-                 a :class:`~chemprop.data.MoleculeDataLoader` and a dictionary mapping full to valid indices.
+    :return: A tuple of a :class:`~catpred.data.MoleculeDataset` containing all datapoints, a :class:`~catpred.data.MoleculeDataset` containing only valid datapoints,
+                 a :class:`~catpred.data.MoleculeDataLoader` and a dictionary mapping full to valid indices.
     """
     print("Loading data")
     if smiles is not None:
@@ -102,9 +102,9 @@ def set_features(args: PredictArgs, train_args: TrainArgs):
     """
     Function to set extra options.
 
-    :param args: A :class:`~chemprop.args.PredictArgs` object containing arguments for
+    :param args: A :class:`~catpred.args.PredictArgs` object containing arguments for
                  loading data and a model and making predictions.
-    :param train_args: A :class:`~chemprop.args.TrainArgs` object containing arguments for training the model.
+    :param train_args: A :class:`~catpred.args.TrainArgs` object containing arguments for training the model.
     """
     reset_featurization_parameters()
 
@@ -143,19 +143,19 @@ def predict_and_save(
     """
     Function to predict with a model and save the predictions to file.
 
-    :param args: A :class:`~chemprop.args.PredictArgs` object containing arguments for
+    :param args: A :class:`~catpred.args.PredictArgs` object containing arguments for
                  loading data and a model and making predictions.
-    :param train_args: A :class:`~chemprop.args.TrainArgs` object containing arguments for training the model.
-    :param test_data: A :class:`~chemprop.data.MoleculeDataset` containing valid datapoints.
+    :param train_args: A :class:`~catpred.args.TrainArgs` object containing arguments for training the model.
+    :param test_data: A :class:`~catpred.data.MoleculeDataset` containing valid datapoints.
     :param task_names: A list of task names.
     :param num_tasks: Number of tasks.
-    :param test_data_loader: A :class:`~chemprop.data.MoleculeDataLoader` to load the test data.
-    :param full_data:  A :class:`~chemprop.data.MoleculeDataset` containing all (valid and invalid) datapoints.
+    :param test_data_loader: A :class:`~catpred.data.MoleculeDataLoader` to load the test data.
+    :param full_data:  A :class:`~catpred.data.MoleculeDataset` containing all (valid and invalid) datapoints.
     :param full_to_valid_indices: A dictionary dictionary mapping full to valid indices.
-    :param models: A list or generator object of :class:`~chemprop.models.MoleculeModel`\ s.
-    :param scalers: A list or generator object of :class:`~chemprop.features.scaler.StandardScaler` objects.
+    :param models: A list or generator object of :class:`~catpred.models.MoleculeModel`\ s.
+    :param scalers: A list or generator object of :class:`~catpred.features.scaler.StandardScaler` objects.
     :param num_models: The number of models included in the models and scalers input.
-    :param calibrator: A :class: `~chemprop.uncertainty.UncertaintyCalibrator` object, for use in calibrating uncertainty predictions.
+    :param calibrator: A :class: `~catpred.uncertainty.UncertaintyCalibrator` object, for use in calibrating uncertainty predictions.
     :param return_invalid_smiles: Whether to return predictions of "Invalid SMILES" for invalid SMILES, otherwise will skip them in returned predictions.
     :param save_results: Whether to save the predictions in a csv. Function returns the predictions regardless.
     :return: A list of lists of target predictions.
@@ -367,12 +367,12 @@ def make_predictions(
     If SMILES are provided, then makes predictions on smiles.
     Otherwise makes predictions on :code:`args.test_data`.
 
-    :param args: A :class:`~chemprop.args.PredictArgs` object containing arguments for
+    :param args: A :class:`~catpred.args.PredictArgs` object containing arguments for
                 loading data and a model and making predictions.
     :param smiles: List of list of SMILES to make predictions on.
     :param model_objects: Tuple of output of load_model function which can be called separately outside this function. Preloaded model objects should have
                 used the non-generator option for load_model if the objects are to be used multiple times or are intended to be used for calibration as well.
-    :param calibrator: A :class: `~chemprop.uncertainty.UncertaintyCalibrator` object, for use in calibrating uncertainty predictions.
+    :param calibrator: A :class: `~catpred.uncertainty.UncertaintyCalibrator` object, for use in calibrating uncertainty predictions.
                 Can be preloaded and provided as a function input or constructed within the function from arguments. The models and scalers used
                 to initiate the calibrator must be lists instead of generators if the same calibrator is to be used multiple times or
                 if the same models and scalers objects are also part of the provided model_objects input.
@@ -514,17 +514,17 @@ def make_predictions(
             return preds, fps
 
 
-def chemprop_predict() -> None:
-    """Parses Chemprop predicting arguments and runs prediction using a trained Chemprop model.
+def catpred_predict() -> None:
+    """Parses catpred predicting arguments and runs prediction using a trained catpred model.
 
-    This is the entry point for the command line command :code:`chemprop_predict`.
+    This is the entry point for the command line command :code:`catpred_predict`.
     """
     make_predictions(args=PredictArgs().parse_args())
 
-def chemprop_predict_and_fp():
-    """Parses Chemprop predicting arguments and runs prediction using a trained Chemprop model.
+def catpred_predict_and_fp():
+    """Parses catpred predicting arguments and runs prediction using a trained catpred model.
 
-    This is the entry point for the command line command :code:`chemprop_predict`.
+    This is the entry point for the command line command :code:`catpred_predict`.
     """
     preds, unc, fps = make_predictions(args=PredictArgs().parse_args(),return_index_dict = True, return_uncertainty = True)
     

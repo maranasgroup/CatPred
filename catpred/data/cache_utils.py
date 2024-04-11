@@ -10,7 +10,7 @@ def exists(val):
 
 # constants
 
-CACHE_PATH = Path(os.getenv('CHEMPROP_CACHE_PATH', os.path.expanduser('~/.cache.esm2_embeddings')))
+CACHE_PATH = Path(os.getenv('CATPRED_CACHE_PATH', os.path.expanduser('~/.cache.esm2_embeddings')))
 CACHE_PATH.mkdir(exist_ok = True, parents = True)
 
 CLEAR_CACHE = exists(os.getenv('CLEAR_CACHE', None))

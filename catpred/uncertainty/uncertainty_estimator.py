@@ -1,11 +1,11 @@
 import numpy as np
 from typing import Iterator, List
 
-from chemprop.data import MoleculeDataset, StandardScaler
-from chemprop.data.data import MoleculeDataLoader
-from chemprop.models import MoleculeModel
-from chemprop.uncertainty.uncertainty_calibrator import UncertaintyCalibrator
-from chemprop.uncertainty.uncertainty_predictor import build_uncertainty_predictor
+from catpred.data import MoleculeDataset, StandardScaler
+from catpred.data.data import MoleculeDataLoader
+from catpred.models import MoleculeModel
+from catpred.uncertainty.uncertainty_calibrator import UncertaintyCalibrator
+from catpred.uncertainty.uncertainty_predictor import build_uncertainty_predictor
 
 
 class UncertaintyEstimator:

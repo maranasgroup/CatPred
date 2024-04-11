@@ -9,10 +9,10 @@ from torch.optim import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
 from tqdm import tqdm
 
-from chemprop.args import TrainArgs
-from chemprop.data import MoleculeDataLoader, MoleculeDataset, AtomBondScaler
-from chemprop.models import MoleculeModel
-from chemprop.nn_utils import compute_gnorm, compute_pnorm, NoamLR
+from catpred.args import TrainArgs
+from catpred.data import MoleculeDataLoader, MoleculeDataset, AtomBondScaler
+from catpred.models import MoleculeModel
+from catpred.nn_utils import compute_gnorm, compute_pnorm, NoamLR
 
 
 def train(
@@ -30,14 +30,14 @@ def train(
     """
     Trains a model for an epoch.
 
-    :param model: A :class:`~chemprop.models.model.MoleculeModel`.
-    :param data_loader: A :class:`~chemprop.data.data.MoleculeDataLoader`.
+    :param model: A :class:`~catpred.models.model.MoleculeModel`.
+    :param data_loader: A :class:`~catpred.data.data.MoleculeDataLoader`.
     :param loss_func: Loss function.
     :param optimizer: An optimizer.
     :param scheduler: A learning rate scheduler.
-    :param args: A :class:`~chemprop.args.TrainArgs` object containing arguments for training the model.
+    :param args: A :class:`~catpred.args.TrainArgs` object containing arguments for training the model.
     :param n_iter: The number of iterations (training examples) trained on so far.
-    :param atom_bond_scaler: A :class:`~chemprop.data.scaler.AtomBondScaler` fitted on the atomic/bond targets.
+    :param atom_bond_scaler: A :class:`~catpred.data.scaler.AtomBondScaler` fitted on the atomic/bond targets.
     :param logger: A logger for recording output.
     :param writer: A tensorboardX SummaryWriter.
     :return: The total number of iterations (training examples) trained on so far.

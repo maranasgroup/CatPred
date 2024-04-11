@@ -62,7 +62,7 @@ def scaffold_split(data: MoleculeDataset,
                                                            MoleculeDataset,
                                                            MoleculeDataset]:
     r"""
-    Splits a :class:`~chemprop.data.MoleculeDataset` by scaffold so that no molecules sharing a scaffold are in different splits.
+    Splits a :class:`~catpred.data.MoleculeDataset` by scaffold so that no molecules sharing a scaffold are in different splits.
 
     :param data: A :class:`MoleculeDataset`.
     :param sizes: A length-3 tuple with the proportions of data in the train, validation, and test sets.
@@ -70,7 +70,7 @@ def scaffold_split(data: MoleculeDataset,
     :param key_molecule_index: For data with multiple molecules, this sets which molecule will be considered during splitting.
     :param seed: Random seed for shuffling when doing balanced splitting.
     :param logger: A logger for recording output.
-    :return: A tuple of :class:`~chemprop.data.MoleculeDataset`\ s containing the train,
+    :return: A tuple of :class:`~catpred.data.MoleculeDataset`\ s containing the train,
              validation, and test splits of the data.
     """
     if not (len(sizes) == 3 and np.isclose(sum(sizes), 1)):
@@ -142,7 +142,7 @@ def log_scaffold_stats(data: MoleculeDataset,
     """
     Logs and returns statistics about counts and average target values in molecular scaffolds.
 
-    :param data: A :class:`~chemprop.data.MoleculeDataset`.
+    :param data: A :class:`~catpred.data.MoleculeDataset`.
     :param index_sets: A list of sets of indices representing splits of the data.
     :param num_scaffolds: The number of scaffolds about which to display statistics.
     :param num_labels: The number of labels about which to display statistics.

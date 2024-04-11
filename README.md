@@ -30,7 +30,7 @@ Then proceed to either option below to complete the installation. If installing 
 
 **Note for machines with GPUs:** You may need to manually install a GPU-enabled version of PyTorch by following the instructions [here](https://pytorch.org/get-started/locally/). If you're encountering issues with not using a GPU on your system after following the instructions below, check which version of PyTorch you have installed in your environment using `conda list | grep torch` or similar. If the PyTorch line includes `cpu`, please uninstall it using `conda remove pytorch` and reinstall a GPU-enabled version using the instructions at the link above.
 
-### Installing from source
+### Installing from source (~5 mins)
 
 1. `git clone https://github.com/maranasgroup/catpred.git`
 2. `cd catpred`
@@ -42,7 +42,7 @@ Then proceed to either option below to complete the installation. If installing 
 ## Web Interface
 
 For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred).
-
+It contains sample data, instructions and installation all in the Colab notebook.
 
 ## Reproducing publication training/results
 

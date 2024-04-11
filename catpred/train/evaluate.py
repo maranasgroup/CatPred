@@ -5,9 +5,9 @@ from typing import Dict, List
 import numpy as np
 
 from .predict import predict
-from chemprop.data import MoleculeDataLoader, StandardScaler, AtomBondScaler
-from chemprop.models import MoleculeModel
-from chemprop.train import get_metric_func
+from catpred.data import MoleculeDataLoader, StandardScaler, AtomBondScaler
+from catpred.models import MoleculeModel
+from catpred.train import get_metric_func
 
 
 def evaluate_predictions(preds: List[List[float]],
@@ -114,13 +114,13 @@ def evaluate(model: MoleculeModel,
     """
     Evaluates an ensemble of models on a dataset by making predictions and then evaluating the predictions.
 
-    :param model: A :class:`~chemprop.models.model.MoleculeModel`.
-    :param data_loader: A :class:`~chemprop.data.data.MoleculeDataLoader`.
+    :param model: A :class:`~catpred.models.model.MoleculeModel`.
+    :param data_loader: A :class:`~catpred.data.data.MoleculeDataLoader`.
     :param num_tasks: Number of tasks.
     :param metrics: A list of names of metric functions.
     :param dataset_type: Dataset type.
-    :param scaler: A :class:`~chemprop.features.scaler.StandardScaler` object fit on the training targets.
-    :param atom_bond_scaler: A :class:`~chemprop.data.scaler.AtomBondScaler` fitted on the atomic/bond targets.
+    :param scaler: A :class:`~catpred.features.scaler.StandardScaler` object fit on the training targets.
+    :param atom_bond_scaler: A :class:`~catpred.data.scaler.AtomBondScaler` fitted on the atomic/bond targets.
     :param logger: A logger to record output.
     :return: A dictionary mapping each metric in :code:`metrics` to a list of values for each task.
 

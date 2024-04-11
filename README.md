@@ -55,6 +55,7 @@ tar -xzf publication_training_datasets.tar.gz
 ## Training
 
 To train a model, run:
+TODO: Will be made available upon publication
 ```
 ```
 

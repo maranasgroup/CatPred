@@ -7,7 +7,6 @@ from tqdm import tqdm
 from catpred.data import MoleculeDataset, StandardScaler, MoleculeDataLoader
 from catpred.models import MoleculeModel
 from catpred.train.predict import predict
-from catpred.spectra_utils import normalize_spectra, roundrobin_sid
 from catpred.multitask_utils import reshape_values, reshape_individual_preds
 
 
@@ -157,13 +156,6 @@ class NoUncertaintyPredictor(UncertaintyPredictor):
                 atom_bond_scaler=atom_bond_scaler,
                 return_unc_parameters=False,
             )
-            if self.dataset_type == "spectra":
-                preds = normalize_spectra(
-                    spectra=preds,
-                    phase_features=self.test_data.phase_features(),
-                    phase_mask=self.spectra_phase_mask,
-                    excluded_sub_value=float("nan"),
-                )
             if i == 0:
                 sum_preds = np.array(preds)
                 if self.individual_ensemble_predictions:
@@ -288,13 +280,7 @@ class RoundRobinSpectraPredictor(UncertaintyPredictor):
                 atom_bond_scaler=atom_bond_scaler,
                 return_unc_parameters=False,
             )
-            if self.dataset_type == "spectra":
-                preds = normalize_spectra(
-                    spectra=preds,
-                    phase_features=self.test_data.phase_features(),
-                    phase_mask=self.spectra_phase_mask,
-                    excluded_sub_value=float("nan"),
-                )
+            
             if i == 0:
                 sum_preds = np.array(preds)
                 individual_preds = np.expand_dims(np.array(preds), axis=-1)
@@ -947,13 +933,7 @@ class EnsemblePredictor(UncertaintyPredictor):
                 atom_bond_scaler=atom_bond_scaler,
                 return_unc_parameters=False,
             )
-            if self.dataset_type == "spectra":
-                preds = normalize_spectra(
-                    spectra=preds,
-                    phase_features=self.test_data.phase_features(),
-                    phase_mask=self.spectra_phase_mask,
-                    excluded_sub_value=float("nan"),
-                )
+            
             if i == 0:
                 sum_preds = np.array(preds)
                 sum_squared = np.square(preds)

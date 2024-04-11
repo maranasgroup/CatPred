@@ -36,6 +36,7 @@ setup(
         "pandas>=1.0.3",
         "pandas-flavor>=0.2.0",
         "scikit-learn>=0.22.2.post1",
+        "tensorboardX>=2.0",
         "sphinx>=3.1.2",
         "torch>=1.4.0",
         "tqdm>=4.45.0",

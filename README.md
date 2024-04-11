@@ -57,7 +57,7 @@ Then proceed to either option below to complete the installation. If installing 
 
 ### Run a demo (~2 mins) <a name="run-demo"></a>
 
-Use the demo.ipynb jupyter notebook to run the demo. 
+Use the `demo.ipynb` jupyter notebook to run the demo. 
 
 ## Reproducing publication training/results
 

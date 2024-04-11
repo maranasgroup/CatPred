@@ -11,11 +11,11 @@ import numpy as np
 import pandas as pd
 
 from .run_training import run_training
-from chemprop.args import TrainArgs
-from chemprop.constants import TEST_SCORES_FILE_NAME, TRAIN_LOGGER_NAME
-from chemprop.data import get_data, get_task_names, MoleculeDataset, validate_dataset_type
-from chemprop.utils import create_logger, makedirs, timeit, multitask_mean
-from chemprop.features import set_extra_atom_fdim, set_extra_bond_fdim, set_explicit_h, set_adding_hs, set_keeping_atom_map, set_reaction, reset_featurization_parameters
+from catpred.args import TrainArgs
+from catpred.constants import TEST_SCORES_FILE_NAME, TRAIN_LOGGER_NAME
+from catpred.data import get_data, get_task_names, MoleculeDataset, validate_dataset_type
+from catpred.utils import create_logger, makedirs, timeit, multitask_mean
+from catpred.features import set_extra_atom_fdim, set_extra_bond_fdim, set_explicit_h, set_adding_hs, set_keeping_atom_map, set_reaction, reset_featurization_parameters
 
 
 @timeit(logger_name=TRAIN_LOGGER_NAME)
@@ -28,8 +28,8 @@ def cross_validate(args: TrainArgs,
     For each of k splits (folds) of the data, trains and tests a model on that split
     and aggregates the performance across folds.
 
-    :param args: A :class:`~chemprop.args.TrainArgs` object containing arguments for
-                 loading data and training the Chemprop model.
+    :param args: A :class:`~catpred.args.TrainArgs` object containing arguments for
+                 loading data and training the catpred model.
     :param train_func: Function which runs training.
     :return: A tuple containing the mean and standard deviation performance across folds.
     """
@@ -202,9 +202,9 @@ def cross_validate(args: TrainArgs,
     return mean_score, std_score
 
 
-def chemprop_train() -> None:
-    """Parses Chemprop training arguments and trains (cross-validates) a Chemprop model.
+def catpred_train() -> None:
+    """Parses catpred training arguments and trains (cross-validates) a catpred model.
 
-    This is the entry point for the command line command :code:`chemprop_train`.
+    This is the entry point for the command line command :code:`catpred_train`.
     """
     cross_validate(args=TrainArgs().parse_args(), train_func=run_training)

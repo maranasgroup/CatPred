@@ -6,16 +6,19 @@
 
 ## Table of Contents
 
-- [Requirements](#requirements)
+- [System Requirements](#requirements)
 - [Installation](#installation)
   * [Installing from source](#option-2-installing-from-source)
 - [Google Colab Interface](#web-interface)
 
-## Requirements
+## System Requirements
 
-We recommend using a GPU for training.
+For using pre-trained models to predict, any machine running a Linux based operating system is recommended.
+For training, we recommend using a Linux based operating system on a GPU-enabled machine.
 
-To use with GPUs, you will need:
+Both training and prediction have been tested on Ubuntu 20.04.5 LTS with NVIDIA A10 and CUDA Version: 12.0
+
+To train with GPUs, you will need:
  * cuda >= 11.7
  * cuDNN
 

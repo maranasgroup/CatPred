@@ -9,18 +9,21 @@
 - [Google Colab Interface Demo](#web-interface)
 - [Local Demo](#local-demo)
   * [System Requirements](#requirements)
-  * [Installing using pip](#installing-from-source)
+  * [Installing using pip](#installing)
+  * [Run demo](#run-demo)
+- [Acknowledgements](#acknw)
+- [License](#license)
 
-## Google Colab Interface Demo (easy)
+## Google Colab Interface Demo (easy) <a name="web-interface"></a>
 
 For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred).
 It contains sample data, instructions and installation all in the Colab notebook.
 
-## Local Demo
+## Local Demo <a name="local-demo"></a>
 
 If you would like to install the package on a local machine, please follow the following instructions.
 
-### System Requirements
+### System Requirements <a name="requirements"></a>
 
 For using pre-trained models to predict, any machine running a Linux based operating system is recommended.
 For training, we recommend using a Linux based operating system on a GPU-enabled machine.
@@ -31,7 +34,7 @@ To train with GPUs, you will need:
  * cuda >= 11.7
  * cuDNN
 
-### Installation
+### Installation <a name="installing"></a>
 
 Both options require conda, so first install Miniconda from [https://conda.io/miniconda.html](https://conda.io/miniconda.html).
 
@@ -52,8 +55,7 @@ Then proceed to either option below to complete the installation. If installing 
 9. `tar -xzf production_models.tar.gz`
 10. `tar -xzf processed_databases.tar.gz`
 
-#### Run a demo (~2 mins)
-
+### Run a demo (~2 mins) <a name="run-demo"></a>
 
 ## Reproducing publication training/results
 
@@ -68,6 +70,11 @@ tar -xzf publication_training_datasets.tar.gz
 TODO: Will be made available upon publication
 ```
 ```
+
+## Acknowledgements <a name="acknw"></a>
+
+Majority of the functionality in this codebase has been adapted from the chemprop library. We thank the authors of chemprop for open-sourcing it. 
+[Chemprop](http://github.com/chemprop/)
 
 ## License <a name="license"></a>
 

@@ -6,12 +6,22 @@
 
 ## Table of Contents
 
-- [System Requirements](#requirements)
-- [Installation](#installation)
-  * [Installing from source](#option-2-installing-from-source)
-- [Google Colab Interface](#web-interface)
+- [Google Colab Interface Demo](#web-interface)
+- [Local Demo](#local-demo)
+  * [System Requirements](#requirements)
+  * [Installing using pip](#installing-from-source)
 
-## System Requirements
+## Google Colab Interface Demo (easy)
+
+For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred).
+It contains sample data, instructions and installation all in the Colab notebook.
+
+## Local Demo
+
+For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred).
+It contains sample data, instructions and installation all in the Colab notebook.
+
+### System Requirements
 
 For using pre-trained models to predict, any machine running a Linux based operating system is recommended.
 For training, we recommend using a Linux based operating system on a GPU-enabled machine.
@@ -22,7 +32,7 @@ To train with GPUs, you will need:
  * cuda >= 11.7
  * cuDNN
 
-## Installation
+### Installation
 
 Both options require conda, so first install Miniconda from [https://conda.io/miniconda.html](https://conda.io/miniconda.html).
 
@@ -30,19 +40,13 @@ Then proceed to either option below to complete the installation. If installing 
 
 **Note for machines with GPUs:** You may need to manually install a GPU-enabled version of PyTorch by following the instructions [here](https://pytorch.org/get-started/locally/). If you're encountering issues with not using a GPU on your system after following the instructions below, check which version of PyTorch you have installed in your environment using `conda list | grep torch` or similar. If the PyTorch line includes `cpu`, please uninstall it using `conda remove pytorch` and reinstall a GPU-enabled version using the instructions at the link above.
 
-### Installing from source (~5 mins)
+#### Installing using pip (~5 mins)
 
 1. `git clone https://github.com/maranasgroup/catpred.git`
 2. `cd catpred`
 3. `conda env create -f environment.yml`
 4. `conda activate catpred`
 5. `pip install -e .`
-
-
-## Web Interface
-
-For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred).
-It contains sample data, instructions and installation all in the Colab notebook.
 
 ## Reproducing publication training/results
 

@@ -41,18 +41,18 @@ Then proceed to either option below to complete the installation. If installing 
 For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred).
 
 
-## Data
+## Reproducing publication training/results
 
-In order to train a model, you must download and extract training data using
+In order to train publication models, you must download and extract training datasets using
 ```
-wget https://
+wget https://https://catpred.s3.amazonaws.com/publication_training_datasets.tar.gz -q
+tar -xzf publication_training_datasets.tar.gz
 ```
 
 ## Training
 
 To train a model, run:
 ```
-chemprop_train --data_path <path> --dataset_type <type> --save_dir <dir>
 ```
 
 ## License <a name="license"></a>

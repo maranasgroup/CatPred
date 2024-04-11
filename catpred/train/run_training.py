@@ -16,7 +16,6 @@ from .evaluate import evaluate, evaluate_predictions
 from .predict import predict
 from .train import train
 from .loss_functions import get_loss_func
-from catpred.spectra_utils import normalize_spectra, load_phase_mask
 from catpred.args import TrainArgs
 from catpred.constants import MODEL_FILE_NAME
 from catpred.data import get_class_sizes, get_data, MoleculeDataLoader, MoleculeDataset, set_cache_graph, split_data
@@ -179,20 +178,6 @@ def run_training(args: TrainArgs,
             scaler = train_data.normalize_targets()
             atom_bond_scaler = None
         args.spectra_phase_mask = None
-    elif args.dataset_type == 'spectra':
-        debug('Normalizing spectra and excluding spectra regions based on phase')
-        args.spectra_phase_mask = load_phase_mask(args.spectra_phase_mask_path)
-        for dataset in [train_data, test_data, val_data]:
-            data_targets = normalize_spectra(
-                spectra=dataset.targets(),
-                phase_features=dataset.phase_features(),
-                phase_mask=args.spectra_phase_mask,
-                excluded_sub_value=None,
-                threshold=args.spectra_target_floor,
-            )
-            dataset.set_targets(data_targets)
-        scaler = None
-        atom_bond_scaler = None
     else:
         args.spectra_phase_mask = None
         scaler = None

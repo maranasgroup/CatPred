@@ -6,9 +6,9 @@ from rdkit import Chem
 import torch
 import torch.nn as nn
 
-from chemprop.args import TrainArgs
-from chemprop.features import BatchMolGraph, get_atom_fdim, get_bond_fdim, mol2graph
-from chemprop.nn_utils import index_select_ND, get_activation_function
+from catpred.args import TrainArgs
+from catpred.features import BatchMolGraph, get_atom_fdim, get_bond_fdim, mol2graph
+from catpred.nn_utils import index_select_ND, get_activation_function
 
 
 class MPNEncoder(nn.Module):
@@ -17,7 +17,7 @@ class MPNEncoder(nn.Module):
     def __init__(self, args: TrainArgs, atom_fdim: int, bond_fdim: int, hidden_size: int = None,
                  bias: bool = None, depth: int = None):
         """
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         :param atom_fdim: Atom feature vector dimension.
         :param bond_fdim: Bond feature vector dimension.
         :param hidden_size: Hidden layers dimension.
@@ -80,7 +80,7 @@ class MPNEncoder(nn.Module):
         """
         Encodes a batch of molecular graphs.
 
-        :param mol_graph: A :class:`~chemprop.features.featurization.BatchMolGraph` representing
+        :param mol_graph: A :class:`~catpred.features.featurization.BatchMolGraph` representing
                           a batch of molecular graphs.
         :param atom_descriptors_batch: A list of numpy arrays containing additional atomic descriptors.
         :param bond_descriptors_batch: A list of numpy arrays containing additional bond descriptors
@@ -204,7 +204,7 @@ class MPN(nn.Module):
                  atom_fdim: int = None,
                  bond_fdim: int = None):
         """
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         :param atom_fdim: Atom feature vector dimension.
         :param bond_fdim: Bond feature vector dimension.
         """
@@ -258,7 +258,7 @@ class MPN(nn.Module):
         Encodes a batch of molecules.
 
         :param batch: A list of list of SMILES, a list of list of RDKit molecules, or a
-                      list of :class:`~chemprop.features.featurization.BatchMolGraph`.
+                      list of :class:`~catpred.features.featurization.BatchMolGraph`.
                       The outer list or BatchMolGraph is of length :code:`num_molecules` (number of datapoints in batch),
                       the inner list is of length :code:`number_of_molecules` (number of molecules per datapoint).
         :param features_batch: A list of numpy arrays containing additional features.

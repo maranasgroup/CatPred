@@ -19,9 +19,9 @@ import ipdb
 from .esm_utils import get_protein_embedder, get_coords
 from .data import MoleculeDatapoint, MoleculeDataset, make_mols
 from .scaffold import log_scaffold_stats, scaffold_split
-from chemprop.args import PredictArgs, TrainArgs
-from chemprop.features import load_features, load_valid_atom_or_bond_features, is_mol
-from chemprop.rdkit import make_mol
+from catpred.args import PredictArgs, TrainArgs
+from catpred.features import load_features, load_valid_atom_or_bond_features, is_mol
+from catpred.rdkit import make_mol
 
 # Increase maximum size of field in the csv processing for the current architecture
 csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
@@ -280,8 +280,8 @@ def filter_invalid_smiles(data: MoleculeDataset) -> MoleculeDataset:
     """
     Filters out invalid SMILES.
 
-    :param data: A :class:`~chemprop.data.MoleculeDataset`.
-    :return: A :class:`~chemprop.data.MoleculeDataset` with only the valid molecules.
+    :param data: A :class:`~catpred.data.MoleculeDataset`.
+    :return: A :class:`~catpred.data.MoleculeDataset` with only the valid molecules.
     """
     return MoleculeDataset([datapoint for datapoint in tqdm(data)
                             if all(s != '' for s in datapoint.smiles) and all(m is not None for m in datapoint.mol)
@@ -375,7 +375,7 @@ def get_data(path: str,
                            except the :code:`smiles_column` and the :code:`ignore_columns`.
     :param ignore_columns: Name of the columns to ignore when :code:`target_columns` is not provided.
     :param skip_invalid_smiles: Whether to skip and filter out invalid smiles using :func:`filter_invalid_smiles`.
-    :param args: Arguments, either :class:`~chemprop.args.TrainArgs` or :class:`~chemprop.args.PredictArgs`.
+    :param args: Arguments, either :class:`~catpred.args.TrainArgs` or :class:`~catpred.args.PredictArgs`.
     :param data_weights_path: A path to a file containing weights for each molecule in the loss function.
     :param features_path: A list of paths to files containing features. If provided, it is used
                           in place of :code:`args.features_path`.
@@ -387,11 +387,11 @@ def get_data(path: str,
     :param constraints_path: The path to the file containing constraints applied to different atomic/bond properties.
     :param max_data_size: The maximum number of data points to load.
     :param logger: A logger for recording output.
-    :param store_row: Whether to store the raw CSV row in each :class:`~chemprop.data.data.MoleculeDatapoint`.
+    :param store_row: Whether to store the raw CSV row in each :class:`~catpred.data.data.MoleculeDatapoint`.
     :param skip_none_targets: Whether to skip targets that are all 'None'. This is mostly relevant when --target_columns
                               are passed in, so only a subset of tasks are examined.
     :param loss_function: The loss function to be used in training.
-    :return: A :class:`~chemprop.data.MoleculeDataset` containing SMILES and target values along
+    :return: A :class:`~catpred.data.MoleculeDataset` containing SMILES and target values along
              with other info such as additional features when desired.
     """
     debug = logger.debug if logger is not None else print
@@ -659,13 +659,13 @@ def get_data_from_smiles(smiles: List[List[str]],
                          logger: Logger = None,
                          features_generator: List[str] = None) -> MoleculeDataset:
     """
-    Converts a list of SMILES to a :class:`~chemprop.data.MoleculeDataset`.
+    Converts a list of SMILES to a :class:`~catpred.data.MoleculeDataset`.
 
     :param smiles: A list of lists of SMILES with length depending on the number of molecules.
     :param skip_invalid_smiles: Whether to skip and filter out invalid smiles using :func:`filter_invalid_smiles`
     :param logger: A logger for recording output.
     :param features_generator: List of features generators.
-    :return: A :class:`~chemprop.data.MoleculeDataset` with all of the provided SMILES.
+    :return: A :class:`~catpred.data.MoleculeDataset` with all of the provided SMILES.
     """
     debug = logger.debug if logger is not None else print
 
@@ -719,15 +719,15 @@ def split_data(data: MoleculeDataset,
     r"""
     Splits data into training, validation, and test splits.
 
-    :param data: A :class:`~chemprop.data.MoleculeDataset`.
+    :param data: A :class:`~catpred.data.MoleculeDataset`.
     :param split_type: Split type.
     :param sizes: A length-3 tuple with the proportions of data in the train, validation, and test sets.
     :param key_molecule_index: For data with multiple molecules, this sets which molecule will be considered during splitting.
     :param seed: The random seed to use before shuffling data.
     :param num_folds: Number of folds to create (only needed for "cv" split type).
-    :param args: A :class:`~chemprop.args.TrainArgs` object.
+    :param args: A :class:`~catpred.args.TrainArgs` object.
     :param logger: A logger for recording output.
-    :return: A tuple of :class:`~chemprop.data.MoleculeDataset`\ s containing the train,
+    :return: A tuple of :class:`~catpred.data.MoleculeDataset`\ s containing the train,
              validation, and test splits of the data.
     """
     if not (len(sizes) == 3 and np.isclose(sum(sizes), 1)):
@@ -901,7 +901,7 @@ def get_class_sizes(data: MoleculeDataset, proportion: bool = True) -> List[List
     """
     Determines the proportions of the different classes in a classification dataset.
 
-    :param data: A classification :class:`~chemprop.data.MoleculeDataset`.
+    :param data: A classification :class:`~catpred.data.MoleculeDataset`.
     :param proportion: Choice of whether to return proportions for class size or counts.
     :return: A list of lists of class proportions. Each inner list contains the class proportions for a task.
     """
@@ -942,7 +942,7 @@ def validate_dataset_type(data: MoleculeDataset, dataset_type: str) -> None:
     """
     Validates the dataset type to ensure the data matches the provided type.
 
-    :param data: A :class:`~chemprop.data.MoleculeDataset`.
+    :param data: A :class:`~catpred.data.MoleculeDataset`.
     :param dataset_type: The dataset type to check.
     """
     target_list = [target for targets in data.targets() for target in targets]

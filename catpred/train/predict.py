@@ -4,9 +4,9 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
-from chemprop.data import MoleculeDataLoader, MoleculeDataset, StandardScaler, AtomBondScaler
-from chemprop.models import MoleculeModel
-from chemprop.nn_utils import activate_dropout
+from catpred.data import MoleculeDataLoader, MoleculeDataset, StandardScaler, AtomBondScaler
+from catpred.models import MoleculeModel
+from catpred.nn_utils import activate_dropout
 
 
 def predict(
@@ -22,11 +22,11 @@ def predict(
     """
     Makes predictions on a dataset using an ensemble of models.
 
-    :param model: A :class:`~chemprop.models.model.MoleculeModel`.
-    :param data_loader: A :class:`~chemprop.data.data.MoleculeDataLoader`.
+    :param model: A :class:`~catpred.models.model.MoleculeModel`.
+    :param data_loader: A :class:`~catpred.data.data.MoleculeDataLoader`.
     :param disable_progress_bar: Whether to disable the progress bar.
-    :param scaler: A :class:`~chemprop.features.scaler.StandardScaler` object fit on the training targets.
-    :param atom_bond_scaler: A :class:`~chemprop.data.scaler.AtomBondScaler` fitted on the atomic/bond targets.
+    :param scaler: A :class:`~catpred.features.scaler.StandardScaler` object fit on the training targets.
+    :param atom_bond_scaler: A :class:`~catpred.data.scaler.AtomBondScaler` fitted on the atomic/bond targets.
     :param return_unc_parameters: A bool indicating whether additional uncertainty parameters would be returned alongside the mean predictions.
     :param dropout_prob: For use during uncertainty prediction only. The propout probability used in generating a dropout ensemble.
     :param return_fp: If return fp or not.

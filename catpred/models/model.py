@@ -8,9 +8,9 @@ import torch
 import torch.nn as nn
 from .mpn import MPN
 from .ffn import build_ffn, MultiReadout
-from chemprop.args import TrainArgs
-from chemprop.features import BatchMolGraph
-from chemprop.nn_utils import initialize_weights
+from catpred.args import TrainArgs
+from catpred.features import BatchMolGraph
+from catpred.nn_utils import initialize_weights
 from torch.nn.utils.rnn import pad_sequence
 from egnn_pytorch import EGNN
 
@@ -36,7 +36,7 @@ class EmbedderModel(nn.Module):
 
     def __init__(self, args: TrainArgs):
         """
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         """
         super(EmbedderModel, self).__init__()
 
@@ -149,7 +149,7 @@ class MoleculeModel(nn.Module):
 
     def __init__(self, args: TrainArgs):
         """
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         """
         super(MoleculeModel, self).__init__()
         self.classification = args.dataset_type == "classification"
@@ -218,7 +218,7 @@ class MoleculeModel(nn.Module):
     def create_embed_model(self, args: TrainArgs) -> None:
         """
         Creates the embedding model.
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         """
         self.embed_model = EmbedderModel(args)
         
@@ -226,7 +226,7 @@ class MoleculeModel(nn.Module):
         """
         Creates the sequence model.
 
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         """
         self.sequence_model = build_ffn(
                             first_linear_dim = args.gvp_node_hidden_dims[0] * args.gvp_num_layers,
@@ -240,7 +240,7 @@ class MoleculeModel(nn.Module):
         """
         Creates protein model
 
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         """
         # This is common to all models, embed sequence into a latent space with specified dimension
         self.seq_embedder = nn.Embedding(21, args.seq_embed_dim, padding_idx=20) #last index is for padding
@@ -283,7 +283,7 @@ class MoleculeModel(nn.Module):
         """
         Creates the message passing encoder for the model.
 
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         """
         self.encoder = MPN(args)
 
@@ -299,7 +299,7 @@ class MoleculeModel(nn.Module):
         """
         Creates the embedding model.
 
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         """
         self.embed_model = EmbedderModel(args)
 
@@ -307,7 +307,7 @@ class MoleculeModel(nn.Module):
         """
         Creates the feed-forward layers for the model.
 
-        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
         """
         second_linear_dim = None
         self.multiclass = args.dataset_type == "multiclass"
@@ -422,7 +422,7 @@ class MoleculeModel(nn.Module):
         Encodes the latent representations of the input molecules from intermediate stages of the model.
 
         :param batch: A list of list of SMILES, a list of list of RDKit molecules, or a
-                      list of :class:`~chemprop.features.featurization.BatchMolGraph`.
+                      list of :class:`~catpred.features.featurization.BatchMolGraph`.
                       The outer list or BatchMolGraph is of length :code:`num_molecules` (number of datapoints in batch),
                       the inner list is of length :code:`number_of_molecules` (number of molecules per datapoint).
         :param features_batch: A list of numpy arrays containing additional features.
@@ -487,7 +487,7 @@ class MoleculeModel(nn.Module):
         Runs the :class:`MoleculeModel` on input.
 
         :param batch: A list of list of SMILES, a list of list of RDKit molecules, or a
-                      list of :class:`~chemprop.features.featurization.BatchMolGraph`.
+                      list of :class:`~catpred.features.featurization.BatchMolGraph`.
                       The outer list or BatchMolGraph is of length :code:`num_molecules` (number of datapoints in batch),
                       the inner list is of length :code:`number_of_molecules` (number of molecules per datapoint).
         :param features_batch: A list of numpy arrays containing additional features.

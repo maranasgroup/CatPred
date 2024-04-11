@@ -16,13 +16,13 @@ from .evaluate import evaluate, evaluate_predictions
 from .predict import predict
 from .train import train
 from .loss_functions import get_loss_func
-from chemprop.spectra_utils import normalize_spectra, load_phase_mask
-from chemprop.args import TrainArgs
-from chemprop.constants import MODEL_FILE_NAME
-from chemprop.data import get_class_sizes, get_data, MoleculeDataLoader, MoleculeDataset, set_cache_graph, split_data
-from chemprop.models import MoleculeModel
-from chemprop.nn_utils import param_count, param_count_all
-from chemprop.utils import build_optimizer, build_lr_scheduler, load_checkpoint, makedirs, \
+from catpred.spectra_utils import normalize_spectra, load_phase_mask
+from catpred.args import TrainArgs
+from catpred.constants import MODEL_FILE_NAME
+from catpred.data import get_class_sizes, get_data, MoleculeDataLoader, MoleculeDataset, set_cache_graph, split_data
+from catpred.models import MoleculeModel
+from catpred.nn_utils import param_count, param_count_all
+from catpred.utils import build_optimizer, build_lr_scheduler, load_checkpoint, makedirs, \
     save_checkpoint, save_smiles_splits, load_frzn_model, multitask_mean
 
 
@@ -30,11 +30,11 @@ def run_training(args: TrainArgs,
                  data: MoleculeDataset,
                  logger: Logger = None) -> Dict[str, List[float]]:
     """
-    Loads data, trains a Chemprop model, and returns test scores for the model checkpoint with the highest validation score.
+    Loads data, trains a catpred model, and returns test scores for the model checkpoint with the highest validation score.
 
-    :param args: A :class:`~chemprop.args.TrainArgs` object containing arguments for
-                 loading data and training the Chemprop model.
-    :param data: A :class:`~chemprop.data.MoleculeDataset` containing the data.
+    :param args: A :class:`~catpred.args.TrainArgs` object containing arguments for
+                 loading data and training the catpred model.
+    :param data: A :class:`~catpred.data.MoleculeDataset` containing the data.
     :param logger: A logger to record output.
     :return: A dictionary mapping each metric in :code:`args.metrics` to a list of values for each task.
 
@@ -156,7 +156,7 @@ def run_training(args: TrainArgs,
           f'train size = {len(train_data):,} | val size = {len(val_data):,} | test size = {len(test_data):,}')
 
     if len(val_data) == 0:
-        raise ValueError('The validation data split is empty. During normal chemprop training (non-sklearn functions), \
+        raise ValueError('The validation data split is empty. During normal catpred training (non-sklearn functions), \
             a validation set is required to conduct early stopping according to the selected evaluation metric. This \
             may have occurred because validation data provided with `--separate_val_path` was empty or contained only invalid molecules.')
 

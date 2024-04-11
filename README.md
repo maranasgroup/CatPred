@@ -18,8 +18,7 @@ It contains sample data, instructions and installation all in the Colab notebook
 
 ## Local Demo
 
-For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred).
-It contains sample data, instructions and installation all in the Colab notebook.
+If you would like to install the package on a local machine, please follow the following instructions.
 
 ### System Requirements
 
@@ -40,13 +39,21 @@ Then proceed to either option below to complete the installation. If installing 
 
 **Note for machines with GPUs:** You may need to manually install a GPU-enabled version of PyTorch by following the instructions [here](https://pytorch.org/get-started/locally/). If you're encountering issues with not using a GPU on your system after following the instructions below, check which version of PyTorch you have installed in your environment using `conda list | grep torch` or similar. If the PyTorch line includes `cpu`, please uninstall it using `conda remove pytorch` and reinstall a GPU-enabled version using the instructions at the link above.
 
-#### Installing using pip (~5 mins)
+#### Installing and downloading pre-trained models (~5 mins)
 
 1. `git clone https://github.com/maranasgroup/catpred.git`
 2. `cd catpred`
 3. `conda env create -f environment.yml`
 4. `conda activate catpred`
 5. `pip install -e .`
+6. `pip install ipdb fair-esm rotary_embedding_torch egnn_pytorch -q`
+7. `wget https://catpred.s3.amazonaws.com/production_models.tar.gz -q`
+8. `wget https://catpred.s3.amazonaws.com/processed_databases.tar.gz -q`
+9. `tar -xzf production_models.tar.gz`
+10. `tar -xzf processed_databases.tar.gz`
+
+#### Run a demo (~2 mins)
+
 
 ## Reproducing publication training/results
 

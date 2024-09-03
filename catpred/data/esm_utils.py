@@ -1,3 +1,5 @@
+"""Code adopted from https://github.com/lucidrains/tf-bind-transformer/"""
+
 import torch
 import os
 import re

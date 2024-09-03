@@ -1,3 +1,5 @@
+"""Code adopted from https://github.com/lucidrains/tf-bind-transformer/"""
+
 import os
 from shutil import rmtree
 import torch

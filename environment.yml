@@ -1,4 +1,4 @@
-name: chemprop
+name: catpred
 
 channels:
   - pytorch

@@ -204,9 +204,6 @@ class MoleculeModel(nn.Module):
                                                       dim_model = args.seq_embed_dim,
                                                       dim_inner_hidden = args.seq_embed_dim,
                                                       embedding = False).to(self.device)
-        elif args.use_resnet:
-            resnet_config = ProteinResNetConfig(hidden_size=args.seq_embed_dim)
-            self.resnet = ResNet(resnet_config).to(self.device)
             
         elif self.args.use_egnn:
             depth = 3
@@ -483,8 +480,6 @@ class MoleculeModel(nn.Module):
             if self.args.include_embed_features:
                 embed_feature_arr = torch.from_numpy(np.array(batch[-1].embed_feature_list)).to(torch.int64).to(self.device) + 1
                 try:
-                    # print(max(embed_feature_arr[0]),max(embed_feature_arr[1]))
-                    # print(self.embed_model.embed_layers)
                     embed_output = self.embed_model(embed_feature_arr)
                 except:
                     print('Something wrong in embed model')
@@ -572,28 +567,6 @@ class MoleculeModel(nn.Module):
                 output = self.readout(encodings)
                 if return_fp: fp = self.readout[1](encodings)
 
-        # Don't apply sigmoid during training when using BCEWithLogitsLoss
-        if (
-            self.classification
-            and not (self.training and self.no_training_normalization)
-            and self.loss_function != "dirichlet"
-        ):
-            if self.is_atom_bond_targets:
-                output = [self.sigmoid(x) for x in output]
-            else:
-                output = self.sigmoid(output)
-        if self.multiclass:
-            output = output.reshape(
-                (output.shape[0], -1, self.num_classes)
-            )  # batch size x num targets x num classes per target
-            if (
-                not (self.training and self.no_training_normalization)
-                and self.loss_function != "dirichlet"
-            ):
-                output = self.multiclass_softmax(
-                    output
-                )  # to get probabilities during evaluation, but not during training when using CrossEntropyLoss
-
         # Modify multi-input loss functions
         if self.loss_function == "mve":
             if self.is_atom_bond_targets:
@@ -631,14 +604,6 @@ class MoleculeModel(nn.Module):
                 )  # + min_val # add 1 for numerical contraints of Gamma function
                 betas = self.softplus(betas)  # + min_val
                 output = torch.cat([means, lambdas, alphas, betas], dim=1)
-        if self.loss_function == "dirichlet":
-            if self.is_atom_bond_targets:
-                outputs = []
-                for x in output:
-                    outputs.append(nn.functional.softplus(x) + 1)
-                return outputs
-            else:
-                output = nn.functional.softplus(output) + 1
 
         if return_fp: return output, fp
         else: return output

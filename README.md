@@ -75,8 +75,12 @@ TODO: Will be made available upon publication
 
 ## Acknowledgements <a name="acknw"></a>
 
-Majority of the functionality in this codebase has been adapted from the chemprop library. We thank the authors of chemprop for open-sourcing it. 
+We thank the authors of following open-source repositories. 
+
+- Majority of the functionality in this codebase has been adapted from the chemprop library. 
 [Chemprop](http://github.com/chemprop/)
+- The rotary positional embeddings functionality
+[Rotary PyTorch](https://github.com/lucidrains/rotary-embedding-torch)
 
 ## License <a name="license"></a>
 

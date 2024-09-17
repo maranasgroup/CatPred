@@ -49,7 +49,7 @@ Then proceed to either option below to complete the installation. If installing 
 3. `conda env create -f environment.yml`
 4. `conda activate catpred`
 5. `pip install -e .`
-6. `pip install ipdb fair-esm rotary_embedding_torch egnn_pytorch -q`
+6. `pip install ipdb fair-esm rotary_embedding_torch==0.6.5 egnn_pytorch -q`
 7. `wget https://catpred.s3.amazonaws.com/production_models.tar.gz -q`
 8. `wget https://catpred.s3.amazonaws.com/processed_databases.tar.gz -q`
 9. `tar -xzf production_models.tar.gz`

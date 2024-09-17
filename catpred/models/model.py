@@ -31,55 +31,6 @@ def exists(val):
 def default(val, d):
     return val if exists(val) else d
     
-class EmbedderModel(nn.Module):
-    """A :class:`EmbedderModel` is a model which contains a series of embedding layers followed by an MLP layer."""
-
-    def __init__(self, args: TrainArgs):
-        """
-        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
-        """
-        super(EmbedderModel, self).__init__()
-
-        self.embed_dim_fn = lambda x: int(np.power(x, args.embed_size_to_dim_power))+1
-        self.device = args.device
-
-        self.embed_layers = []
-        embed_dims = []
-        for size in args.embed_sizes:
-            dim = self.embed_dim_fn(size)
-            embed_dims.append(dim)
-            layer = nn.Embedding(size, dim).to(self.device)
-            # print(size,dim)
-            nn.init.kaiming_normal_(layer.weight, nonlinearity='leaky_relu')
-            self.embed_layers.append(layer)
-
-        self.embed_dropout = nn.Dropout(args.embed_dropout) if args.embed_dropout>0 else None
-
-        self.mlp_module = build_ffn(
-                first_linear_dim = sum(embed_dims),
-                hidden_size = args.embed_mlp_hidden_size,
-                num_layers = args.embed_mlp_num_layers,
-                output_size = args.embed_mlp_output_size,
-                dropout = args.embed_mlp_dropout,
-                activation = 'LeakyReLU'
-                )
-
-    def forward(self, categorical_data: torch.Tensor) -> torch.Tensor:
-
-        embeds = []
-        for i, embedding_layer in enumerate(self.embed_layers):
-            # print(i,categorical_data[:,i])
-            # print(embedding_layer)
-            embeds.append(embedding_layer(categorical_data[:,i]))
-        embeds = torch.cat(embeds, dim=1)
-
-        if self.embed_dropout is not None:
-            embeds = self.embed_dropout(embeds)
-
-        output = self.mlp_module(embeds)
-
-        return output
-    
 class EGNN_Net(nn.Module):
     def __init__(self, dim, device, depth = 3, edge_dim = 0,
                                 m_dim = 16,

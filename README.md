@@ -45,7 +45,7 @@ Then proceed to either option below to complete the installation. If installing 
 #### Installing and downloading pre-trained models (~5 mins)
 
 1. `git clone https://github.com/maranasgroup/catpred.git`
-2. `cd catpred`
+2. `cd CatPred`
 3. `conda env create -f environment.yml`
 4. `conda activate catpred`
 5. `pip install -e .`

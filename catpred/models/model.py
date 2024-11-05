@@ -1,6 +1,6 @@
 from typing import List, Union, Tuple
 from rotary_embedding_torch import RotaryEmbedding
-import transformers
+# import transformers
 
 import numpy as np
 from rdkit import Chem

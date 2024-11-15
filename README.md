@@ -63,8 +63,8 @@ Use the `demo.ipynb` jupyter notebook to run the demo.
 
 To reproduce publication results, download and extract the scripts and required data using
 ```
+cd reproduce_publication_results
 wget https://catpred.s3.amazonaws.com/reproduce_publication_results.tar.gz 
-mkdir reproduce_publication_results.tar.gz; mv reproduce_publication_results.tar.gz ./reproduce_publication_results
 tar -xvzf reproduce_publication_results.tar.gz
 ```
 

@@ -61,10 +61,17 @@ Use the `demo.ipynb` jupyter notebook to run the demo.
 
 ## Reproducing publication training/results
 
+To reproduce publication results, download and extract the scripts and required data using
+```
+wget https://catpred.s3.amazonaws.com/reproduce_publication_results.tar.gz 
+mkdir reproduce_publication_results.tar.gz; mv reproduce_publication_results.tar.gz ./reproduce_publication_results
+tar -xvzf reproduce_publication_results.tar.gz
+```
+
 In order to train publication models, you must download and extract training datasets using
 ```
-wget https://https://catpred.s3.amazonaws.com/publication_training_datasets.tar.gz -q
-tar -xzf publication_training_datasets.tar.gz
+wget https://catpred.s3.amazonaws.com/publication_training_datasets.tar.gz
+tar -xvzf publication_training_datasets.tar.gz
 ```
 
 ### Training

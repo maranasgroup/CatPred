@@ -2,6 +2,12 @@
 
 [![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.biorxiv.org/content/10.1101/2024.03.10.584340v2)
 
+To reproduce publication results, download and extract the scripts and required data using
+```
+cd reproduce_publication_results
+wget https://catpred.s3.amazonaws.com/reproduce_publication_results.tar.gz 
+tar -xvzf reproduce_publication_results.tar.gz
+```
 
 ## Table of Contents
 

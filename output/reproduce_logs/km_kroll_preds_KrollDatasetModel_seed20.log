@@ -1,0 +1,24 @@
+/home/ubuntu/miniconda3/envs/catpred/lib/python3.12/site-packages/rotary_embedding_torch/rotary_embedding_torch.py:35: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled = False)
+/home/ubuntu/miniconda3/envs/catpred/lib/python3.12/site-packages/rotary_embedding_torch/rotary_embedding_torch.py:268: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled = False)
+Traceback (most recent call last):
+  File "/home/ubuntu/mychemprop/CatPred/predict.py", line 35, in <module>
+    results = main()
+              ^^^^^^
+  File "/home/ubuntu/mychemprop/CatPred/predict.py", line 30, in main
+    results = catpred_predict()
+              ^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/mychemprop/CatPred/catpred/train/make_predictions.py", line 515, in catpred_predict
+    make_predictions(args=PredictArgs().parse_args())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/miniconda3/envs/catpred/lib/python3.12/site-packages/tap/tap.py", line 478, in parse_args
+    self.process_args()
+  File "/home/ubuntu/mychemprop/CatPred/catpred/args.py", line 990, in process_args
+    super(PredictArgs, self).process_args()
+  File "/home/ubuntu/mychemprop/CatPred/catpred/args.py", line 214, in process_args
+    self.checkpoint_paths = get_checkpoint_paths(
+                            ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/mychemprop/CatPred/catpred/args.py", line 59, in get_checkpoint_paths
+    raise ValueError(f'Failed to find any checkpoints with extension "{ext}" in directory "{checkpoint_dir}"')
+ValueError: Failed to find any checkpoints with extension ".pt" in directory "./pretrained/reproduce_checkpoints//km_kroll/seed20"

@@ -91,7 +91,7 @@ class CommonArgs(Tap):
     """Turn off scaling of features."""
     max_data_size: int = None
     """Maximum number of data points to load."""
-    num_workers: int = 8
+    num_workers: int = 0
     """Number of workers for the parallel data loading (0 means sequential)."""
     batch_size: int = 50
     """Batch size."""
@@ -390,6 +390,8 @@ class TrainArgs(CommonArgs):
     """ Skip GVP or not """
     skip_attentive_pooling: bool = False
     """ To skip attentive pooling or not """
+    skip_substrate: bool = False
+    """ Skip substrate or not """
     gvp_num_layers: int = 3
     """ NUm of gvp layers """
     gvp_node_hidden_dims: List[int] = [200, 100]
@@ -404,22 +406,10 @@ class TrainArgs(CommonArgs):
     """ Whether to append esm features in GVP """
     add_esm_feats: bool = False
     """ Whether to add esm features """
-    use_egnn: bool = False
-    """ Whether to use egnn """
-    include_embed_features: bool = False
-    """ Whether to use embed features"""
-    embed_dropout: bool = 0.0
-    """ Dropout for embeds"""
-    embed_mlp_dropout: bool = 0.0
-    """ Dropout for MLP in bembeds"""
-    embed_mlp_hidden_size: int = 100
-    """ Embed hidden size"""
-    embed_mlp_output_size: int = 100
-    """ Embed output size"""
-    embed_mlp_num_layers: int = 2
-    """ Embed MLP layers"""
-    embed_size_to_dim_power: float = 0.33
-    """param for embed dim"""
+    add_pretrained_egnn_feats: bool = False
+    """ Whether to add pretrained egnn features """
+    pretrained_egnn_feats_path: str = ''
+    """ If adding, path to pretrained egnn features """
     esm_feat_size: int = 1280
     """ sequence feature size to input sequence model."""
     protein_mlp_hidden_size: int = 600
@@ -935,6 +925,10 @@ class PredictArgs(CommonArgs):
     """:class:`PredictArgs` includes :class:`CommonArgs` along with additional arguments used for predicting with a catpred model."""
     protein_records_path: str = None
     """ Path to protein records json file """
+    add_pretrained_egnn_feats: bool = False
+    """ Whether to add pretrained egnn features """
+    pretrained_egnn_feats_path: str = ''
+    """ If adding, path to pretrained egnn features """
     test_path: str
     """Path to CSV file containing testing data for which predictions will be made."""
     preds_path: str

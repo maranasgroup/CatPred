@@ -1,0 +1,1182 @@
+/home/ubuntu/miniconda3/envs/catpred/lib/python3.12/site-packages/rotary_embedding_torch/rotary_embedding_torch.py:35: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled = False)
+/home/ubuntu/miniconda3/envs/catpred/lib/python3.12/site-packages/rotary_embedding_torch/rotary_embedding_torch.py:268: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  @autocast(enabled = False)
+/home/ubuntu/mychemprop/CatPred/catpred/utils.py:501: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  vars(torch.load(path, map_location=lambda storage, loc: storage)["args"]),
+Loading training args
+Loading models
+Setting molecule featurization parameters to default.
+Loading data
+0it [00:00, ?it/s]/home/ubuntu/mychemprop/CatPred/catpred/data/cache_utils.py:95: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(str(entry_path))
+1it [00:00,  4.32it/s]18it [00:00, 67.48it/s]53it [00:00, 165.85it/s]84it [00:00, 213.83it/s]120it [00:00, 259.50it/s]152it [00:00, 277.79it/s]182it [00:00, 272.63it/s]211it [00:00, 274.22it/s]240it [00:01, 267.46it/s]276it [00:01, 293.60it/s]310it [00:01, 305.78it/s]364it [00:01, 372.07it/s]425it [00:01, 439.50it/s]478it [00:01, 465.74it/s]537it [00:01, 500.31it/s]594it [00:01, 520.59it/s]647it [00:01, 501.39it/s]698it [00:02, 493.22it/s]760it [00:02, 528.56it/s]823it [00:02, 555.89it/s]879it [00:02, 556.77it/s]945it [00:02, 584.57it/s]1004it [00:02, 580.97it/s]1064it [00:02, 581.77it/s]1129it [00:02, 599.28it/s]1189it [00:02, 562.02it/s]1246it [00:02, 543.58it/s]1305it [00:03, 554.01it/s]1367it [00:03, 571.13it/s]1430it [00:03, 588.07it/s]1493it [00:03, 599.74it/s]1555it [00:03, 604.81it/s]1618it [00:03, 607.86it/s]1684it [00:03, 621.69it/s]1747it [00:03, 616.10it/s]1809it [00:03, 579.11it/s]1868it [00:04, 542.48it/s]1938it [00:04, 584.16it/s]2007it [00:04, 610.52it/s]2069it [00:04, 611.08it/s]2135it [00:04, 623.90it/s]2198it [00:04, 625.35it/s]2261it [00:04, 618.19it/s]2324it [00:04, 615.43it/s]2386it [00:04, 577.86it/s]2445it [00:04, 559.83it/s]2506it [00:05, 573.06it/s]2564it [00:05, 572.80it/s]2629it [00:05, 594.12it/s]2694it [00:05, 609.63it/s]2757it [00:05, 614.59it/s]2819it [00:05, 503.21it/s]2876it [00:05, 519.12it/s]2931it [00:05, 520.30it/s]2988it [00:05, 530.70it/s]3043it [00:06, 534.60it/s]3109it [00:06, 569.00it/s]3172it [00:06, 586.23it/s]3234it [00:06, 593.98it/s]3301it [00:06, 614.70it/s]3357it [00:06, 513.93it/s]
+  0%|                                                                                   | 0/3357 [00:00<?, ?it/s]100%|████████████████████████████████████████████████████████████████████| 3357/3357 [00:00<00:00, 159975.90it/s]
+  0%|                                                                                   | 0/3357 [00:00<?, ?it/s] 26%|██████████████████▎                                                    | 863/3357 [00:00<00:00, 8563.21it/s] 72%|█████████████████████████████████████████████████▊                   | 2426/3357 [00:00<00:00, 12691.80it/s]100%|█████████████████████████████████████████████████████████████████████| 3357/3357 [00:00<00:00, 13504.60it/s]
+Validating SMILES
+Test size = 3,357
+  0%|                                                                                     | 0/10 [00:00<?, ?it/s]/home/ubuntu/mychemprop/CatPred/catpred/utils.py:113: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state = torch.load(path, map_location=lambda storage, loc: storage)
+/home/ubuntu/mychemprop/CatPred/catpred/utils.py:446: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state = torch.load(path, map_location=lambda storage, loc: storage)
+Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:02<03:00,  2.69s/it][A
+  3%|██▎                                                                          | 2/68 [00:02<01:22,  1.25s/it][A
+  4%|███▍                                                                         | 3/68 [00:03<00:54,  1.20it/s][A
+  6%|████▌                                                                        | 4/68 [00:03<00:36,  1.75it/s][A
+  7%|█████▋                                                                       | 5/68 [00:03<00:28,  2.25it/s][A
+  9%|██████▊                                                                      | 6/68 [00:03<00:20,  3.02it/s][A
+ 10%|███████▉                                                                     | 7/68 [00:03<00:17,  3.49it/s][A
+ 12%|█████████                                                                    | 8/68 [00:04<00:14,  4.14it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:04<00:16,  3.65it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:04<00:15,  3.74it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:05<00:17,  3.23it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:05<00:12,  4.36it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:05<00:12,  4.42it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:05<00:10,  5.03it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:05<00:09,  5.51it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:06<00:11,  4.61it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:06<00:11,  4.51it/s][A
+ 28%|█████████████████████▏                                                      | 19/68 [00:06<00:10,  4.66it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:06<00:10,  4.67it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:07<00:08,  5.66it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:07<00:07,  6.04it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:07<00:07,  5.97it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:07<00:07,  5.90it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:07<00:09,  4.63it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:08<00:10,  3.83it/s][A
+ 41%|███████████████████████████████▎                                            | 28/68 [00:08<00:09,  4.41it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:08<00:08,  4.83it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:08<00:08,  4.46it/s][A
+ 46%|██████████████████████████████████▋                                         | 31/68 [00:09<00:07,  4.80it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:09<00:06,  5.19it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:09<00:08,  4.17it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:09<00:07,  4.45it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:09<00:07,  4.17it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:10<00:07,  4.50it/s][A
+ 54%|█████████████████████████████████████████▎                                  | 37/68 [00:10<00:06,  5.01it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:10<00:06,  4.40it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:10<00:05,  5.06it/s][A
+ 59%|████████████████████████████████████████████▋                               | 40/68 [00:10<00:04,  5.87it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:11<00:04,  5.74it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:11<00:05,  4.98it/s][A
+ 63%|████████████████████████████████████████████████                            | 43/68 [00:11<00:04,  5.76it/s][A
+ 65%|█████████████████████████████████████████████████▏                          | 44/68 [00:11<00:04,  5.84it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:11<00:03,  6.22it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:11<00:04,  5.39it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:12<00:03,  6.03it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:12<00:02,  6.86it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:12<00:03,  4.70it/s][A
+ 75%|█████████████████████████████████████████████████████████                   | 51/68 [00:12<00:03,  4.46it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:13<00:03,  5.19it/s][A
+ 78%|███████████████████████████████████████████████████████████▏                | 53/68 [00:13<00:02,  5.93it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:13<00:02,  4.92it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:13<00:02,  5.23it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:13<00:02,  5.23it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:14<00:02,  5.35it/s][A
+ 85%|████████████████████████████████████████████████████████████████▊           | 58/68 [00:14<00:01,  5.19it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:14<00:01,  5.60it/s][A
+ 90%|████████████████████████████████████████████████████████████████████▏       | 61/68 [00:14<00:00,  7.54it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:14<00:00,  7.18it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:14<00:00,  7.44it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:15<00:00,  7.37it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:15<00:00,  7.30it/s][A
+100%|████████████████████████████████████████████████████████████████████████████| 68/68 [00:15<00:00,  9.73it/s][A
+                                                                                                                 [A 10%|███████▋                                                                     | 1/10 [00:15<02:23, 15.93s/it]/home/ubuntu/mychemprop/CatPred/catpred/utils.py:113: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state = torch.load(path, map_location=lambda storage, loc: storage)
+/home/ubuntu/mychemprop/CatPred/catpred/utils.py:446: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state = torch.load(path, map_location=lambda storage, loc: storage)
+Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:01<01:33,  1.40s/it][A
+  3%|██▎                                                                          | 2/68 [00:01<00:54,  1.20it/s][A
+  4%|███▍                                                                         | 3/68 [00:01<00:34,  1.91it/s][A
+  6%|████▌                                                                        | 4/68 [00:02<00:23,  2.69it/s][A
+  7%|█████▋                                                                       | 5/68 [00:02<00:19,  3.23it/s][A
+  9%|██████▊                                                                      | 6/68 [00:02<00:15,  4.07it/s][A
+ 10%|███████▉                                                                     | 7/68 [00:02<00:12,  4.92it/s][A
+ 12%|█████████                                                                    | 8/68 [00:02<00:12,  4.72it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:03<00:14,  4.02it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:03<00:12,  4.50it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:03<00:14,  3.92it/s][A
+ 18%|█████████████▍                                                              | 12/68 [00:03<00:12,  4.57it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:03<00:10,  5.26it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:04<00:09,  5.47it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:04<00:08,  5.94it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:04<00:09,  5.56it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:04<00:09,  5.56it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:04<00:12,  3.99it/s][A
+ 28%|█████████████████████▏                                                      | 19/68 [00:05<00:10,  4.70it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:05<00:08,  5.37it/s][A
+ 31%|███████████████████████▍                                                    | 21/68 [00:05<00:07,  6.22it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:05<00:09,  4.80it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:05<00:08,  5.51it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:05<00:07,  5.87it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:06<00:08,  5.26it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:06<00:07,  5.45it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:06<00:07,  5.81it/s][A
+ 41%|███████████████████████████████▎                                            | 28/68 [00:06<00:06,  6.31it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:06<00:06,  5.76it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:07<00:09,  3.98it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:07<00:06,  5.39it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:07<00:06,  5.22it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:07<00:06,  5.59it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:07<00:06,  5.49it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:08<00:05,  5.38it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:08<00:05,  5.04it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:08<00:05,  5.53it/s][A
+ 59%|████████████████████████████████████████████▋                               | 40/68 [00:08<00:04,  5.73it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:09<00:06,  4.33it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:09<00:06,  4.28it/s][A
+ 63%|████████████████████████████████████████████████                            | 43/68 [00:09<00:04,  5.03it/s][A
+ 65%|█████████████████████████████████████████████████▏                          | 44/68 [00:09<00:04,  5.18it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:10<00:04,  4.61it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:10<00:06,  3.24it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:10<00:05,  3.63it/s][A
+ 71%|█████████████████████████████████████████████████████▋                      | 48/68 [00:10<00:04,  4.17it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:11<00:04,  4.16it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:11<00:04,  3.98it/s][A
+ 75%|█████████████████████████████████████████████████████████                   | 51/68 [00:11<00:04,  4.01it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:11<00:03,  4.58it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:12<00:02,  4.97it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:12<00:02,  5.21it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:12<00:02,  5.21it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:12<00:02,  5.24it/s][A
+ 85%|████████████████████████████████████████████████████████████████▊           | 58/68 [00:12<00:01,  5.62it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:13<00:01,  5.88it/s][A
+ 88%|███████████████████████████████████████████████████████████████████         | 60/68 [00:13<00:01,  4.75it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:13<00:01,  5.88it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:13<00:00,  6.34it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:14<00:00,  6.70it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:14<00:00,  6.85it/s][A
+100%|████████████████████████████████████████████████████████████████████████████| 68/68 [00:14<00:00,  9.04it/s][A
+                                                                                                                 [A 20%|███████████████▍                                                             | 2/10 [00:30<02:03, 15.39s/it]Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:01<01:45,  1.57s/it][A
+  3%|██▎                                                                          | 2/68 [00:01<00:50,  1.32it/s][A
+  4%|███▍                                                                         | 3/68 [00:02<00:40,  1.60it/s][A
+  6%|████▌                                                                        | 4/68 [00:02<00:27,  2.33it/s][A
+  7%|█████▋                                                                       | 5/68 [00:02<00:22,  2.83it/s][A
+  9%|██████▊                                                                      | 6/68 [00:02<00:16,  3.69it/s][A
+ 10%|███████▉                                                                     | 7/68 [00:02<00:14,  4.19it/s][A
+ 12%|█████████                                                                    | 8/68 [00:02<00:12,  4.82it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:03<00:14,  3.95it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:03<00:12,  4.63it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:03<00:15,  3.65it/s][A
+ 18%|█████████████▍                                                              | 12/68 [00:04<00:13,  4.29it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:04<00:11,  4.95it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:04<00:10,  5.03it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:04<00:11,  4.69it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:04<00:09,  5.25it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:04<00:09,  5.15it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:05<00:10,  4.72it/s][A
+ 28%|█████████████████████▏                                                      | 19/68 [00:05<00:09,  4.96it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:05<00:08,  5.62it/s][A
+ 31%|███████████████████████▍                                                    | 21/68 [00:05<00:07,  6.36it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:05<00:06,  6.75it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:05<00:06,  6.73it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:06<00:06,  6.78it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:06<00:07,  5.68it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:06<00:06,  6.25it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:06<00:06,  6.08it/s][A
+ 41%|███████████████████████████████▎                                            | 28/68 [00:06<00:06,  6.40it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:06<00:05,  6.54it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:07<00:06,  5.46it/s][A
+ 46%|██████████████████████████████████▋                                         | 31/68 [00:07<00:06,  5.46it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:07<00:06,  5.88it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:07<00:08,  4.30it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:07<00:06,  5.07it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:08<00:06,  4.94it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:08<00:07,  4.04it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:08<00:07,  4.12it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:09<00:06,  4.66it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:09<00:05,  5.30it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:09<00:04,  5.43it/s][A
+ 63%|████████████████████████████████████████████████                            | 43/68 [00:09<00:05,  4.56it/s][A
+ 65%|█████████████████████████████████████████████████▏                          | 44/68 [00:09<00:04,  5.24it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:10<00:04,  5.26it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:10<00:04,  4.92it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:10<00:03,  5.59it/s][A
+ 71%|█████████████████████████████████████████████████████▋                      | 48/68 [00:10<00:03,  5.75it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:10<00:03,  4.76it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:11<00:05,  3.44it/s][A
+ 75%|█████████████████████████████████████████████████████████                   | 51/68 [00:11<00:04,  3.72it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:11<00:03,  4.09it/s][A
+ 78%|███████████████████████████████████████████████████████████▏                | 53/68 [00:11<00:03,  4.95it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:12<00:03,  4.33it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:12<00:02,  4.55it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:12<00:02,  4.51it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:12<00:02,  4.12it/s][A
+ 85%|████████████████████████████████████████████████████████████████▊           | 58/68 [00:13<00:02,  4.87it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:13<00:01,  5.12it/s][A
+ 88%|███████████████████████████████████████████████████████████████████         | 60/68 [00:13<00:01,  5.96it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:13<00:00,  6.64it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:13<00:00,  6.84it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:14<00:00,  6.91it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:14<00:00,  6.94it/s][A
+100%|████████████████████████████████████████████████████████████████████████████| 68/68 [00:14<00:00,  9.09it/s][A
+                                                                                                                 [A 30%|███████████████████████                                                      | 3/10 [00:45<01:46, 15.20s/it]Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:01<01:37,  1.46s/it][A
+  3%|██▎                                                                          | 2/68 [00:01<00:56,  1.16it/s][A
+  4%|███▍                                                                         | 3/68 [00:02<00:34,  1.90it/s][A
+  6%|████▌                                                                        | 4/68 [00:02<00:28,  2.25it/s][A
+  7%|█████▋                                                                       | 5/68 [00:02<00:22,  2.86it/s][A
+  9%|██████▊                                                                      | 6/68 [00:02<00:17,  3.52it/s][A
+ 10%|███████▉                                                                     | 7/68 [00:02<00:13,  4.45it/s][A
+ 12%|█████████                                                                    | 8/68 [00:03<00:13,  4.44it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:03<00:14,  3.94it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:03<00:13,  4.15it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:03<00:13,  4.26it/s][A
+ 18%|█████████████▍                                                              | 12/68 [00:03<00:11,  4.94it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:04<00:09,  5.60it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:04<00:11,  4.71it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:04<00:11,  4.80it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:04<00:09,  5.36it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:04<00:09,  5.64it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:05<00:09,  5.18it/s][A
+ 28%|█████████████████████▏                                                      | 19/68 [00:05<00:09,  4.99it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:05<00:08,  5.54it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:05<00:08,  5.72it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:05<00:07,  6.22it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:05<00:06,  6.45it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:06<00:06,  6.49it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:06<00:08,  4.87it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:06<00:07,  5.69it/s][A
+ 41%|███████████████████████████████▎                                            | 28/68 [00:06<00:06,  6.19it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:06<00:07,  5.53it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:07<00:08,  4.60it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:07<00:06,  5.42it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:07<00:06,  5.54it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:08<00:07,  4.28it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:08<00:06,  4.79it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:08<00:05,  5.37it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:08<00:07,  4.21it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:09<00:06,  4.75it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:09<00:05,  4.68it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:09<00:05,  4.58it/s][A
+ 65%|█████████████████████████████████████████████████▏                          | 44/68 [00:09<00:04,  5.87it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:10<00:03,  5.79it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:10<00:04,  4.82it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:10<00:03,  5.40it/s][A
+ 71%|█████████████████████████████████████████████████████▋                      | 48/68 [00:10<00:03,  5.58it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:10<00:03,  5.87it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:11<00:04,  4.36it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:11<00:02,  5.48it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:11<00:02,  5.18it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:12<00:02,  5.18it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:12<00:02,  5.11it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:12<00:02,  5.36it/s][A
+ 85%|████████████████████████████████████████████████████████████████▊           | 58/68 [00:12<00:01,  5.37it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:12<00:01,  6.06it/s][A
+ 88%|███████████████████████████████████████████████████████████████████         | 60/68 [00:12<00:01,  6.81it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:13<00:00,  7.00it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:13<00:00,  7.24it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:13<00:00,  7.29it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:13<00:00,  7.04it/s][A
+                                                                                                                 [A 40%|██████████████████████████████▊                                              | 4/10 [01:00<01:29, 14.89s/it]Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:01<01:35,  1.42s/it][A
+  3%|██▎                                                                          | 2/68 [00:01<00:48,  1.36it/s][A
+  4%|███▍                                                                         | 3/68 [00:01<00:31,  2.09it/s][A
+  6%|████▌                                                                        | 4/68 [00:01<00:21,  2.93it/s][A
+  7%|█████▋                                                                       | 5/68 [00:02<00:18,  3.45it/s][A
+  9%|██████▊                                                                      | 6/68 [00:02<00:14,  4.35it/s][A
+ 10%|███████▉                                                                     | 7/68 [00:02<00:14,  4.23it/s][A
+ 12%|█████████                                                                    | 8/68 [00:02<00:13,  4.35it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:03<00:15,  3.72it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:03<00:13,  4.21it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:03<00:12,  4.56it/s][A
+ 18%|█████████████▍                                                              | 12/68 [00:03<00:10,  5.17it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:03<00:09,  5.72it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:03<00:09,  5.98it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:04<00:09,  5.71it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:04<00:08,  6.12it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:04<00:09,  5.66it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:04<00:11,  4.21it/s][A
+ 28%|█████████████████████▏                                                      | 19/68 [00:04<00:10,  4.90it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:05<00:08,  5.52it/s][A
+ 31%|███████████████████████▍                                                    | 21/68 [00:05<00:07,  6.35it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:05<00:06,  7.07it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:05<00:06,  7.20it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:05<00:07,  6.24it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:05<00:09,  4.67it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:06<00:08,  5.14it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:06<00:07,  5.64it/s][A
+ 41%|███████████████████████████████▎                                            | 28/68 [00:06<00:09,  4.39it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:06<00:07,  4.97it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:06<00:08,  4.40it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:07<00:06,  5.83it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:07<00:07,  4.69it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:07<00:06,  5.10it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:07<00:06,  4.93it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:08<00:06,  5.12it/s][A
+ 54%|█████████████████████████████████████████▎                                  | 37/68 [00:08<00:05,  5.68it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:08<00:06,  4.77it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:08<00:06,  4.76it/s][A
+ 59%|████████████████████████████████████████████▋                               | 40/68 [00:08<00:05,  5.38it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:09<00:05,  4.60it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:09<00:06,  4.09it/s][A
+ 63%|████████████████████████████████████████████████                            | 43/68 [00:09<00:05,  4.73it/s][A
+ 65%|█████████████████████████████████████████████████▏                          | 44/68 [00:09<00:05,  4.37it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:10<00:04,  4.67it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:10<00:05,  4.19it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:10<00:04,  4.30it/s][A
+ 71%|█████████████████████████████████████████████████████▋                      | 48/68 [00:10<00:04,  4.83it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:10<00:04,  4.41it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:11<00:05,  3.47it/s][A
+ 75%|█████████████████████████████████████████████████████████                   | 51/68 [00:11<00:04,  3.54it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:11<00:04,  3.89it/s][A
+ 78%|███████████████████████████████████████████████████████████▏                | 53/68 [00:11<00:03,  4.71it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:12<00:03,  4.11it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:12<00:02,  4.34it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:12<00:02,  4.51it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:12<00:02,  4.76it/s][A
+ 85%|████████████████████████████████████████████████████████████████▊           | 58/68 [00:13<00:02,  4.52it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:13<00:02,  4.47it/s][A
+ 88%|███████████████████████████████████████████████████████████████████         | 60/68 [00:13<00:01,  5.36it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:13<00:00,  6.42it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:13<00:00,  6.45it/s][A
+ 94%|███████████████████████████████████████████████████████████████████████▌    | 64/68 [00:13<00:00,  6.77it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:14<00:00,  6.17it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:14<00:00,  6.12it/s][A
+ 99%|██████████████████████████████████████████████████████████████████████████▉ | 67/68 [00:14<00:00,  6.72it/s][A
+                                                                                                                 [A 50%|██████████████████████████████████████▌                                      | 5/10 [01:15<01:14, 14.97s/it]Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:01<01:43,  1.54s/it][A
+  3%|██▎                                                                          | 2/68 [00:01<00:57,  1.14it/s][A
+  4%|███▍                                                                         | 3/68 [00:02<00:34,  1.87it/s][A
+  6%|████▌                                                                        | 4/68 [00:02<00:23,  2.72it/s][A
+  7%|█████▋                                                                       | 5/68 [00:02<00:19,  3.18it/s][A
+  9%|██████▊                                                                      | 6/68 [00:02<00:19,  3.22it/s][A
+ 12%|█████████                                                                    | 8/68 [00:02<00:13,  4.42it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:03<00:14,  4.14it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:03<00:13,  4.29it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:03<00:12,  4.74it/s][A
+ 18%|█████████████▍                                                              | 12/68 [00:03<00:12,  4.60it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:04<00:10,  5.03it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:04<00:10,  5.37it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:04<00:09,  5.79it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:04<00:08,  5.85it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:04<00:09,  5.66it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:05<00:12,  3.85it/s][A
+ 28%|█████████████████████▏                                                      | 19/68 [00:05<00:10,  4.68it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:05<00:13,  3.46it/s][A
+ 31%|███████████████████████▍                                                    | 21/68 [00:06<00:13,  3.44it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:06<00:10,  4.22it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:06<00:09,  4.80it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:06<00:08,  5.05it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:06<00:08,  5.30it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:06<00:08,  4.79it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:06<00:07,  5.61it/s][A
+ 41%|███████████████████████████████▎                                            | 28/68 [00:07<00:06,  6.31it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:07<00:06,  5.61it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:07<00:07,  4.82it/s][A
+ 46%|██████████████████████████████████▋                                         | 31/68 [00:07<00:09,  3.94it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:08<00:08,  4.41it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:08<00:08,  4.14it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:08<00:07,  4.74it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:08<00:06,  4.86it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:08<00:05,  5.67it/s][A
+ 54%|█████████████████████████████████████████▎                                  | 37/68 [00:08<00:05,  6.02it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:09<00:05,  5.63it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:09<00:05,  5.32it/s][A
+ 59%|████████████████████████████████████████████▋                               | 40/68 [00:09<00:05,  5.17it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:09<00:06,  4.14it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:10<00:05,  4.83it/s][A
+ 65%|█████████████████████████████████████████████████▏                          | 44/68 [00:10<00:03,  6.74it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:10<00:04,  5.65it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:10<00:04,  5.19it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:10<00:04,  5.13it/s][A
+ 71%|█████████████████████████████████████████████████████▋                      | 48/68 [00:11<00:04,  4.74it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:11<00:03,  5.20it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:11<00:03,  4.93it/s][A
+ 75%|█████████████████████████████████████████████████████████                   | 51/68 [00:11<00:03,  5.36it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:11<00:02,  6.03it/s][A
+ 78%|███████████████████████████████████████████████████████████▏                | 53/68 [00:11<00:02,  6.22it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:12<00:02,  5.38it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:12<00:02,  5.54it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:12<00:02,  4.19it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:12<00:02,  4.26it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:13<00:01,  5.87it/s][A
+ 90%|████████████████████████████████████████████████████████████████████▏       | 61/68 [00:13<00:01,  6.85it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:13<00:00,  6.96it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:13<00:00,  7.17it/s][A
+ 94%|███████████████████████████████████████████████████████████████████████▌    | 64/68 [00:13<00:00,  6.98it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:14<00:00,  6.28it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:14<00:00,  6.86it/s][A
+                                                                                                                 [A 60%|██████████████████████████████████████████████▏                              | 6/10 [01:30<00:59, 14.93s/it]Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:01<01:40,  1.50s/it][A
+  3%|██▎                                                                          | 2/68 [00:02<01:06,  1.01s/it][A
+  4%|███▍                                                                         | 3/68 [00:02<00:40,  1.61it/s][A
+  6%|████▌                                                                        | 4/68 [00:02<00:36,  1.76it/s][A
+  7%|█████▋                                                                       | 5/68 [00:03<00:28,  2.24it/s][A
+  9%|██████▊                                                                      | 6/68 [00:03<00:26,  2.35it/s][A
+ 12%|█████████                                                                    | 8/68 [00:03<00:16,  3.58it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:04<00:17,  3.33it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:04<00:15,  3.66it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:04<00:13,  4.13it/s][A
+ 18%|█████████████▍                                                              | 12/68 [00:04<00:11,  4.95it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:04<00:10,  5.30it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:04<00:09,  5.63it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:05<00:09,  5.51it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:05<00:08,  5.90it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:05<00:10,  5.05it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:05<00:13,  3.77it/s][A
+ 28%|█████████████████████▏                                                      | 19/68 [00:05<00:11,  4.39it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:06<00:09,  5.26it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:06<00:06,  6.75it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:06<00:06,  6.92it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:06<00:06,  6.98it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:06<00:06,  6.18it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:07<00:08,  5.20it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:07<00:06,  6.01it/s][A
+ 41%|███████████████████████████████▎                                            | 28/68 [00:07<00:06,  5.76it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:07<00:06,  6.12it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:07<00:08,  4.74it/s][A
+ 46%|██████████████████████████████████▋                                         | 31/68 [00:07<00:07,  4.91it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:08<00:06,  5.43it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:08<00:07,  4.92it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:08<00:06,  5.14it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:08<00:06,  5.02it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:08<00:05,  5.84it/s][A
+ 54%|█████████████████████████████████████████▎                                  | 37/68 [00:09<00:05,  5.50it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:09<00:06,  4.89it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:09<00:05,  5.49it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:09<00:04,  5.62it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:10<00:05,  5.16it/s][A
+ 63%|████████████████████████████████████████████████                            | 43/68 [00:10<00:04,  5.40it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:10<00:03,  6.58it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:10<00:03,  5.78it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:10<00:03,  6.28it/s][A
+ 71%|█████████████████████████████████████████████████████▋                      | 48/68 [00:10<00:02,  6.80it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:11<00:03,  5.23it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:11<00:04,  4.19it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:11<00:02,  5.65it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:12<00:02,  5.55it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:12<00:02,  5.67it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:12<00:02,  5.55it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:12<00:02,  5.26it/s][A
+ 85%|████████████████████████████████████████████████████████████████▊           | 58/68 [00:12<00:01,  5.38it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:13<00:01,  5.79it/s][A
+ 88%|███████████████████████████████████████████████████████████████████         | 60/68 [00:13<00:01,  6.53it/s][A
+ 90%|████████████████████████████████████████████████████████████████████▏       | 61/68 [00:13<00:00,  7.04it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:13<00:00,  6.29it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:13<00:00,  6.40it/s][A
+ 94%|███████████████████████████████████████████████████████████████████████▌    | 64/68 [00:13<00:00,  6.85it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:13<00:00,  5.93it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:14<00:00,  5.72it/s][A
+                                                                                                                 [A 70%|█████████████████████████████████████████████████████▉                       | 7/10 [01:45<00:44, 14.90s/it]Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:01<01:38,  1.47s/it][A
+  3%|██▎                                                                          | 2/68 [00:01<00:49,  1.32it/s][A
+  4%|███▍                                                                         | 3/68 [00:01<00:32,  1.98it/s][A
+  6%|████▌                                                                        | 4/68 [00:02<00:23,  2.74it/s][A
+  7%|█████▋                                                                       | 5/68 [00:02<00:20,  3.14it/s][A
+  9%|██████▊                                                                      | 6/68 [00:02<00:15,  3.88it/s][A
+ 10%|███████▉                                                                     | 7/68 [00:02<00:14,  4.18it/s][A
+ 12%|█████████                                                                    | 8/68 [00:02<00:12,  4.81it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:03<00:16,  3.53it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:03<00:15,  3.86it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:03<00:14,  3.98it/s][A
+ 18%|█████████████▍                                                              | 12/68 [00:03<00:12,  4.63it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:03<00:10,  5.32it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:04<00:10,  5.24it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:04<00:09,  5.73it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:04<00:08,  6.01it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:04<00:11,  4.60it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:05<00:11,  4.20it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:05<00:09,  5.09it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:05<00:07,  6.08it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:05<00:07,  5.91it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:05<00:07,  6.24it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:06<00:07,  5.89it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:06<00:08,  5.20it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:06<00:06,  5.98it/s][A
+ 41%|███████████████████████████████▎                                            | 28/68 [00:06<00:06,  6.42it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:06<00:06,  6.29it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:07<00:07,  4.97it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:07<00:05,  6.28it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:07<00:05,  6.05it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:07<00:05,  5.88it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:07<00:06,  5.43it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:07<00:05,  5.79it/s][A
+ 54%|█████████████████████████████████████████▎                                  | 37/68 [00:08<00:05,  5.58it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:08<00:06,  4.87it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:08<00:05,  5.51it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:09<00:05,  4.77it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:09<00:05,  4.65it/s][A
+ 65%|█████████████████████████████████████████████████▏                          | 44/68 [00:09<00:04,  5.95it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:09<00:03,  6.07it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:10<00:04,  4.77it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:10<00:03,  5.32it/s][A
+ 71%|█████████████████████████████████████████████████████▋                      | 48/68 [00:10<00:03,  6.05it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:10<00:03,  5.11it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:10<00:04,  3.85it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:11<00:03,  5.10it/s][A
+ 78%|███████████████████████████████████████████████████████████▏                | 53/68 [00:11<00:02,  5.60it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:11<00:03,  4.37it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:11<00:02,  4.76it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:12<00:02,  4.87it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:12<00:02,  5.21it/s][A
+ 85%|████████████████████████████████████████████████████████████████▊           | 58/68 [00:12<00:02,  4.71it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:12<00:01,  5.51it/s][A
+ 88%|███████████████████████████████████████████████████████████████████         | 60/68 [00:12<00:01,  6.34it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:12<00:00,  6.81it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:13<00:00,  7.07it/s][A
+ 94%|███████████████████████████████████████████████████████████████████████▌    | 64/68 [00:13<00:00,  7.63it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:13<00:00,  6.97it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:13<00:00,  4.96it/s][A
+                                                                                                                 [A 80%|█████████████████████████████████████████████████████████████▌               | 8/10 [01:59<00:29, 14.78s/it]Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:01<01:38,  1.46s/it][A
+  3%|██▎                                                                          | 2/68 [00:01<00:53,  1.24it/s][A
+  4%|███▍                                                                         | 3/68 [00:01<00:34,  1.91it/s][A
+  6%|████▌                                                                        | 4/68 [00:02<00:23,  2.78it/s][A
+  7%|█████▋                                                                       | 5/68 [00:02<00:19,  3.18it/s][A
+  9%|██████▊                                                                      | 6/68 [00:02<00:15,  3.99it/s][A
+ 10%|███████▉                                                                     | 7/68 [00:02<00:13,  4.52it/s][A
+ 12%|█████████                                                                    | 8/68 [00:02<00:11,  5.07it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:03<00:14,  3.95it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:03<00:14,  4.10it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:03<00:14,  3.95it/s][A
+ 18%|█████████████▍                                                              | 12/68 [00:03<00:11,  4.83it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:03<00:09,  5.57it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:04<00:09,  5.89it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:04<00:08,  6.35it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:04<00:08,  6.37it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:04<00:08,  6.06it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:04<00:12,  4.14it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:05<00:09,  5.24it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:05<00:07,  6.48it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:05<00:07,  6.21it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:05<00:06,  6.46it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:05<00:06,  6.20it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:06<00:08,  4.82it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:06<00:07,  5.62it/s][A
+ 41%|███████████████████████████████▎                                            | 28/68 [00:06<00:06,  6.38it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:06<00:06,  6.19it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:06<00:07,  5.33it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:07<00:06,  5.98it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:07<00:06,  5.59it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:07<00:06,  5.26it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:07<00:06,  5.17it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:07<00:05,  5.90it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:08<00:05,  5.52it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:08<00:04,  5.89it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:08<00:04,  6.22it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:08<00:04,  5.51it/s][A
+ 63%|████████████████████████████████████████████████                            | 43/68 [00:09<00:04,  6.07it/s][A
+ 65%|█████████████████████████████████████████████████▏                          | 44/68 [00:09<00:03,  6.52it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:09<00:03,  6.72it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:09<00:03,  5.72it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:09<00:03,  6.29it/s][A
+ 71%|█████████████████████████████████████████████████████▋                      | 48/68 [00:09<00:03,  5.78it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:10<00:03,  5.47it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:10<00:05,  3.49it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:10<00:03,  4.99it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:11<00:02,  5.60it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:11<00:02,  5.72it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:11<00:02,  5.59it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:11<00:01,  5.53it/s][A
+ 85%|████████████████████████████████████████████████████████████████▊           | 58/68 [00:11<00:01,  5.31it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:11<00:01,  5.65it/s][A
+ 90%|████████████████████████████████████████████████████████████████████▏       | 61/68 [00:12<00:00,  7.48it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:12<00:00,  7.13it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:12<00:00,  7.36it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:12<00:00,  7.33it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:12<00:00,  6.93it/s][A
+                                                                                                                 [A 90%|█████████████████████████████████████████████████████████████████████▎       | 9/10 [02:13<00:14, 14.42s/it]Creating protein model
+MoleculeModel(
+  (softplus): Softplus(beta=1.0, threshold=20.0)
+  (encoder): MPN(
+    (encoder): ModuleList(
+      (0): MPNEncoder(
+        (dropout): Dropout(p=0.0, inplace=False)
+        (act_func): ReLU()
+        (W_i): Linear(in_features=147, out_features=300, bias=False)
+        (W_h): Linear(in_features=300, out_features=300, bias=False)
+        (W_o): Linear(in_features=433, out_features=300, bias=True)
+      )
+    )
+  )
+  (seq_embedder): Embedding(21, 36, padding_idx=20)
+  (rotary_embedder): RotaryEmbedding()
+  (multihead_attn): MultiheadAttention(
+    (out_proj): NonDynamicallyQuantizableLinear(in_features=36, out_features=36, bias=True)
+  )
+  (attentive_pooler): AttentivePooling(
+    (linear1): Linear(in_features=1316, out_features=1316, bias=True)
+    (tanh): Tanh()
+    (linear2): Linear(in_features=1316, out_features=1, bias=True)
+    (softmax): Softmax(dim=1)
+  )
+  (readout): Sequential(
+    (0): Dropout(p=0.0, inplace=False)
+    (1): Linear(in_features=1616, out_features=300, bias=True)
+    (2): ReLU()
+    (3): Dropout(p=0.0, inplace=False)
+    (4): Linear(in_features=300, out_features=2, bias=True)
+  )
+)
+Loading pretrained parameter "encoder.encoder.0.cached_zero_vector".
+Loading pretrained parameter "encoder.encoder.0.W_i.weight".
+Loading pretrained parameter "encoder.encoder.0.W_h.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.weight".
+Loading pretrained parameter "encoder.encoder.0.W_o.bias".
+Loading pretrained parameter "readout.1.weight".
+Loading pretrained parameter "readout.1.bias".
+Loading pretrained parameter "readout.4.weight".
+Loading pretrained parameter "readout.4.bias".
+Loading pretrained parameter "seq_embedder.weight".
+Loading pretrained parameter "rotary_embedder.freqs".
+Loading pretrained parameter "multihead_attn.in_proj_weight".
+Loading pretrained parameter "multihead_attn.in_proj_bias".
+Loading pretrained parameter "multihead_attn.out_proj.weight".
+Loading pretrained parameter "multihead_attn.out_proj.bias".
+Loading pretrained parameter "attentive_pooler.linear1.weight".
+Loading pretrained parameter "attentive_pooler.linear1.bias".
+Loading pretrained parameter "attentive_pooler.linear2.weight".
+Loading pretrained parameter "attentive_pooler.linear2.bias".
+Moving model to cuda
+
+  0%|                                                                                     | 0/68 [00:00<?, ?it/s][A
+  1%|█▏                                                                           | 1/68 [00:01<01:43,  1.55s/it][A
+  3%|██▎                                                                          | 2/68 [00:01<00:52,  1.27it/s][A
+  4%|███▍                                                                         | 3/68 [00:01<00:31,  2.06it/s][A
+  6%|████▌                                                                        | 4/68 [00:02<00:21,  2.95it/s][A
+  7%|█████▋                                                                       | 5/68 [00:02<00:17,  3.53it/s][A
+  9%|██████▊                                                                      | 6/68 [00:02<00:15,  4.06it/s][A
+ 10%|███████▉                                                                     | 7/68 [00:02<00:13,  4.37it/s][A
+ 12%|█████████                                                                    | 8/68 [00:02<00:12,  4.99it/s][A
+ 13%|██████████▏                                                                  | 9/68 [00:03<00:15,  3.93it/s][A
+ 15%|███████████▏                                                                | 10/68 [00:03<00:13,  4.15it/s][A
+ 16%|████████████▎                                                               | 11/68 [00:03<00:12,  4.43it/s][A
+ 18%|█████████████▍                                                              | 12/68 [00:03<00:11,  4.78it/s][A
+ 19%|██████████████▌                                                             | 13/68 [00:03<00:09,  5.53it/s][A
+ 21%|███████████████▋                                                            | 14/68 [00:04<00:10,  4.97it/s][A
+ 22%|████████████████▊                                                           | 15/68 [00:04<00:09,  5.53it/s][A
+ 24%|█████████████████▉                                                          | 16/68 [00:04<00:09,  5.55it/s][A
+ 25%|███████████████████                                                         | 17/68 [00:04<00:09,  5.35it/s][A
+ 26%|████████████████████                                                        | 18/68 [00:04<00:12,  3.88it/s][A
+ 29%|██████████████████████▎                                                     | 20/68 [00:05<00:08,  5.48it/s][A
+ 32%|████████████████████████▌                                                   | 22/68 [00:05<00:07,  5.94it/s][A
+ 34%|█████████████████████████▋                                                  | 23/68 [00:05<00:07,  6.33it/s][A
+ 35%|██████████████████████████▊                                                 | 24/68 [00:05<00:07,  5.70it/s][A
+ 37%|███████████████████████████▉                                                | 25/68 [00:06<00:07,  5.52it/s][A
+ 38%|█████████████████████████████                                               | 26/68 [00:06<00:07,  5.45it/s][A
+ 40%|██████████████████████████████▏                                             | 27/68 [00:06<00:06,  6.17it/s][A
+ 43%|████████████████████████████████▍                                           | 29/68 [00:06<00:05,  6.99it/s][A
+ 44%|█████████████████████████████████▌                                          | 30/68 [00:06<00:06,  5.46it/s][A
+ 47%|███████████████████████████████████▊                                        | 32/68 [00:07<00:05,  6.51it/s][A
+ 49%|████████████████████████████████████▉                                       | 33/68 [00:07<00:05,  6.10it/s][A
+ 50%|██████████████████████████████████████                                      | 34/68 [00:07<00:05,  5.89it/s][A
+ 51%|███████████████████████████████████████                                     | 35/68 [00:07<00:05,  6.06it/s][A
+ 53%|████████████████████████████████████████▏                                   | 36/68 [00:07<00:05,  6.12it/s][A
+ 56%|██████████████████████████████████████████▍                                 | 38/68 [00:08<00:06,  4.97it/s][A
+ 57%|███████████████████████████████████████████▌                                | 39/68 [00:08<00:05,  5.43it/s][A
+ 60%|█████████████████████████████████████████████▊                              | 41/68 [00:08<00:04,  5.66it/s][A
+ 62%|██████████████████████████████████████████████▉                             | 42/68 [00:09<00:06,  4.22it/s][A
+ 65%|█████████████████████████████████████████████████▏                          | 44/68 [00:09<00:04,  5.33it/s][A
+ 66%|██████████████████████████████████████████████████▎                         | 45/68 [00:09<00:04,  5.57it/s][A
+ 68%|███████████████████████████████████████████████████▍                        | 46/68 [00:09<00:04,  4.85it/s][A
+ 69%|████████████████████████████████████████████████████▌                       | 47/68 [00:09<00:03,  5.40it/s][A
+ 71%|█████████████████████████████████████████████████████▋                      | 48/68 [00:10<00:03,  5.79it/s][A
+ 72%|██████████████████████████████████████████████████████▊                     | 49/68 [00:10<00:03,  5.73it/s][A
+ 74%|███████████████████████████████████████████████████████▉                    | 50/68 [00:10<00:03,  4.55it/s][A
+ 75%|█████████████████████████████████████████████████████████                   | 51/68 [00:10<00:03,  5.03it/s][A
+ 76%|██████████████████████████████████████████████████████████                  | 52/68 [00:10<00:02,  5.79it/s][A
+ 79%|████████████████████████████████████████████████████████████▎               | 54/68 [00:11<00:02,  5.37it/s][A
+ 81%|█████████████████████████████████████████████████████████████▍              | 55/68 [00:11<00:02,  5.53it/s][A
+ 82%|██████████████████████████████████████████████████████████████▌             | 56/68 [00:11<00:02,  5.42it/s][A
+ 84%|███████████████████████████████████████████████████████████████▋            | 57/68 [00:11<00:02,  5.37it/s][A
+ 85%|████████████████████████████████████████████████████████████████▊           | 58/68 [00:12<00:02,  4.66it/s][A
+ 87%|█████████████████████████████████████████████████████████████████▉          | 59/68 [00:12<00:01,  5.42it/s][A
+ 90%|████████████████████████████████████████████████████████████████████▏       | 61/68 [00:12<00:00,  7.26it/s][A
+ 91%|█████████████████████████████████████████████████████████████████████▎      | 62/68 [00:12<00:00,  6.64it/s][A
+ 93%|██████████████████████████████████████████████████████████████████████▍     | 63/68 [00:12<00:00,  6.97it/s][A
+ 96%|████████████████████████████████████████████████████████████████████████▋   | 65/68 [00:12<00:00,  7.04it/s][A
+ 97%|█████████████████████████████████████████████████████████████████████████▊  | 66/68 [00:13<00:00,  6.71it/s][A
+                                                                                                                 [A100%|████████████████████████████████████████████████████████████████████████████| 10/10 [02:27<00:00, 14.25s/it]100%|████████████████████████████████████████████████████████████████████████████| 10/10 [02:27<00:00, 14.71s/it]
+Saving predictions to ./output/reproduce_results/kcat_dlkcat/kcat_dlkcat_preds_DLKcatDatasetModel_seed10.csv
+Elapsed time = 0:02:34
+Prediction completed.

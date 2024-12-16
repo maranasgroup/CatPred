@@ -1,0 +1,106 @@
+Using device: cuda
+parameter km
+seed 0
+n_fingerprint: 7833
+n_word: 8852
+Training
+Epoch 1, Loss: 1.3969, Test MAE: 1.1655, Test R2: 0.2913, Test p1mag: 0.5084
+Dev40 MAE: 1.2375, Dev40 R2: 0.0901, Dev40 p1mag: 0.4839
+Dev60 MAE: 1.2199, Dev60 R2: 0.1602, Dev60 p1mag: 0.4902
+Dev80 MAE: 1.1942, Dev80 R2: 0.1509, Dev80 p1mag: 0.5032
+Dev99 MAE: 1.1840, Dev99 R2: 0.2060, Dev99 p1mag: 0.5104
+Epoch 2, Loss: 1.0944, Test MAE: 1.1918, Test R2: 0.3662, Test p1mag: 0.4976
+Dev40 MAE: 1.2556, Dev40 R2: 0.0693, Dev40 p1mag: 0.4797
+Dev60 MAE: 1.2306, Dev60 R2: 0.1633, Dev60 p1mag: 0.4881
+Dev80 MAE: 1.2099, Dev80 R2: 0.1565, Dev80 p1mag: 0.4981
+Dev99 MAE: 1.2020, Dev99 R2: 0.2091, Dev99 p1mag: 0.5046
+Epoch 3, Loss: 0.9614, Test MAE: 1.2075, Test R2: 0.4146, Test p1mag: 0.4929
+Dev40 MAE: 1.2552, Dev40 R2: 0.0785, Dev40 p1mag: 0.4787
+Dev60 MAE: 1.2333, Dev60 R2: 0.1807, Dev60 p1mag: 0.4871
+Dev80 MAE: 1.2109, Dev80 R2: 0.1744, Dev80 p1mag: 0.4958
+Dev99 MAE: 1.2083, Dev99 R2: 0.2343, Dev99 p1mag: 0.5014
+Epoch 4, Loss: 0.8732, Test MAE: 1.2189, Test R2: 0.4311, Test p1mag: 0.4912
+Dev40 MAE: 1.2299, Dev40 R2: 0.1221, Dev40 p1mag: 0.4851
+Dev60 MAE: 1.2077, Dev60 R2: 0.2285, Dev60 p1mag: 0.4944
+Dev80 MAE: 1.1880, Dev80 R2: 0.2182, Dev80 p1mag: 0.5037
+Dev99 MAE: 1.1892, Dev99 R2: 0.2665, Dev99 p1mag: 0.5085
+Epoch 5, Loss: 0.8098, Test MAE: 1.2081, Test R2: 0.4242, Test p1mag: 0.4925
+Dev40 MAE: 1.2711, Dev40 R2: 0.0648, Dev40 p1mag: 0.4749
+Dev60 MAE: 1.2472, Dev60 R2: 0.1575, Dev60 p1mag: 0.4835
+Dev80 MAE: 1.2271, Dev80 R2: 0.1458, Dev80 p1mag: 0.4921
+Dev99 MAE: 1.2272, Dev99 R2: 0.2019, Dev99 p1mag: 0.4962
+Epoch 6, Loss: 0.7608, Test MAE: 1.2438, Test R2: 0.4544, Test p1mag: 0.4823
+Dev40 MAE: 1.2581, Dev40 R2: 0.0754, Dev40 p1mag: 0.4773
+Dev60 MAE: 1.2374, Dev60 R2: 0.1836, Dev60 p1mag: 0.4861
+Dev80 MAE: 1.2142, Dev80 R2: 0.1833, Dev80 p1mag: 0.4955
+Dev99 MAE: 1.2186, Dev99 R2: 0.2363, Dev99 p1mag: 0.4991
+Epoch 7, Loss: 0.7211, Test MAE: 1.2733, Test R2: 0.4619, Test p1mag: 0.4718
+Dev40 MAE: 1.2898, Dev40 R2: 0.0589, Dev40 p1mag: 0.4692
+Dev60 MAE: 1.2774, Dev60 R2: 0.1556, Dev60 p1mag: 0.4725
+Dev80 MAE: 1.2583, Dev80 R2: 0.1471, Dev80 p1mag: 0.4808
+Dev99 MAE: 1.2594, Dev99 R2: 0.2105, Dev99 p1mag: 0.4850
+Epoch 8, Loss: 0.6855, Test MAE: 1.2499, Test R2: 0.4484, Test p1mag: 0.4783
+Dev40 MAE: 1.3029, Dev40 R2: 0.0372, Dev40 p1mag: 0.4659
+Dev60 MAE: 1.2849, Dev60 R2: 0.1332, Dev60 p1mag: 0.4731
+Dev80 MAE: 1.2640, Dev80 R2: 0.1251, Dev80 p1mag: 0.4806
+Dev99 MAE: 1.2634, Dev99 R2: 0.1810, Dev99 p1mag: 0.4836
+Epoch 9, Loss: 0.6596, Test MAE: 1.2678, Test R2: 0.4711, Test p1mag: 0.4739
+Dev40 MAE: 1.2923, Dev40 R2: 0.0270, Dev40 p1mag: 0.4683
+Dev60 MAE: 1.2767, Dev60 R2: 0.1374, Dev60 p1mag: 0.4737
+Dev80 MAE: 1.2569, Dev80 R2: 0.1372, Dev80 p1mag: 0.4818
+Dev99 MAE: 1.2531, Dev99 R2: 0.1993, Dev99 p1mag: 0.4873
+Epoch 10, Loss: 0.6176, Test MAE: 1.2835, Test R2: 0.4741, Test p1mag: 0.4681
+Dev40 MAE: 1.3054, Dev40 R2: 0.0138, Dev40 p1mag: 0.4653
+Dev60 MAE: 1.2873, Dev60 R2: 0.1294, Dev60 p1mag: 0.4701
+Dev80 MAE: 1.2696, Dev80 R2: 0.1327, Dev80 p1mag: 0.4773
+Dev99 MAE: 1.2646, Dev99 R2: 0.1962, Dev99 p1mag: 0.4830
+Epoch 11, Loss: 0.6021, Test MAE: 1.2974, Test R2: 0.4534, Test p1mag: 0.4648
+Dev40 MAE: 1.3155, Dev40 R2: -0.0462, Dev40 p1mag: 0.4632
+Dev60 MAE: 1.2982, Dev60 R2: 0.0676, Dev60 p1mag: 0.4687
+Dev80 MAE: 1.2798, Dev80 R2: 0.0743, Dev80 p1mag: 0.4750
+Dev99 MAE: 1.2720, Dev99 R2: 0.1442, Dev99 p1mag: 0.4820
+Epoch 12, Loss: 0.5897, Test MAE: 1.2871, Test R2: 0.4669, Test p1mag: 0.4670
+Dev40 MAE: 1.3256, Dev40 R2: -0.0592, Dev40 p1mag: 0.4596
+Dev60 MAE: 1.3064, Dev60 R2: 0.0562, Dev60 p1mag: 0.4663
+Dev80 MAE: 1.2919, Dev80 R2: 0.0574, Dev80 p1mag: 0.4720
+Dev99 MAE: 1.2844, Dev99 R2: 0.1334, Dev99 p1mag: 0.4777
+Epoch 13, Loss: 0.5804, Test MAE: 1.2945, Test R2: 0.4736, Test p1mag: 0.4644
+Dev40 MAE: 1.3230, Dev40 R2: -0.0364, Dev40 p1mag: 0.4599
+Dev60 MAE: 1.2990, Dev60 R2: 0.0818, Dev60 p1mag: 0.4681
+Dev80 MAE: 1.2837, Dev80 R2: 0.0840, Dev80 p1mag: 0.4735
+Dev99 MAE: 1.2788, Dev99 R2: 0.1595, Dev99 p1mag: 0.4792
+Epoch 14, Loss: 0.5706, Test MAE: 1.2952, Test R2: 0.4738, Test p1mag: 0.4644
+Dev40 MAE: 1.3274, Dev40 R2: -0.0417, Dev40 p1mag: 0.4572
+Dev60 MAE: 1.3113, Dev60 R2: 0.0723, Dev60 p1mag: 0.4643
+Dev80 MAE: 1.2981, Dev80 R2: 0.0718, Dev80 p1mag: 0.4693
+Dev99 MAE: 1.2922, Dev99 R2: 0.1467, Dev99 p1mag: 0.4747
+Epoch 15, Loss: 0.5610, Test MAE: 1.2966, Test R2: 0.4713, Test p1mag: 0.4634
+Dev40 MAE: 1.3301, Dev40 R2: -0.0602, Dev40 p1mag: 0.4561
+Dev60 MAE: 1.3151, Dev60 R2: 0.0532, Dev60 p1mag: 0.4627
+Dev80 MAE: 1.3038, Dev80 R2: 0.0526, Dev80 p1mag: 0.4675
+Dev99 MAE: 1.2990, Dev99 R2: 0.1252, Dev99 p1mag: 0.4723
+Epoch 16, Loss: 0.5519, Test MAE: 1.2687, Test R2: 0.4720, Test p1mag: 0.4728
+Dev40 MAE: 1.3127, Dev40 R2: -0.0578, Dev40 p1mag: 0.4615
+Dev60 MAE: 1.2920, Dev60 R2: 0.0468, Dev60 p1mag: 0.4702
+Dev80 MAE: 1.2797, Dev80 R2: 0.0622, Dev80 p1mag: 0.4751
+Dev99 MAE: 1.2725, Dev99 R2: 0.1285, Dev99 p1mag: 0.4809
+Epoch 17, Loss: 0.5450, Test MAE: 1.2964, Test R2: 0.4703, Test p1mag: 0.4638
+Dev40 MAE: 1.3460, Dev40 R2: -0.0782, Dev40 p1mag: 0.4527
+Dev60 MAE: 1.3262, Dev60 R2: 0.0302, Dev60 p1mag: 0.4607
+Dev80 MAE: 1.3125, Dev80 R2: 0.0445, Dev80 p1mag: 0.4658
+Dev99 MAE: 1.3067, Dev99 R2: 0.1149, Dev99 p1mag: 0.4704
+Epoch 18, Loss: 0.5388, Test MAE: 1.3040, Test R2: 0.4755, Test p1mag: 0.4611
+Dev40 MAE: 1.3381, Dev40 R2: -0.0701, Dev40 p1mag: 0.4526
+Dev60 MAE: 1.3208, Dev60 R2: 0.0416, Dev60 p1mag: 0.4608
+Dev80 MAE: 1.3082, Dev80 R2: 0.0558, Dev80 p1mag: 0.4658
+Dev99 MAE: 1.3011, Dev99 R2: 0.1321, Dev99 p1mag: 0.4714
+Epoch 19, Loss: 0.5292, Test MAE: 1.3040, Test R2: 0.4787, Test p1mag: 0.4612
+Dev40 MAE: 1.3416, Dev40 R2: -0.0662, Dev40 p1mag: 0.4537
+Dev60 MAE: 1.3271, Dev60 R2: 0.0398, Dev60 p1mag: 0.4602
+Dev80 MAE: 1.3113, Dev80 R2: 0.0599, Dev80 p1mag: 0.4663
+Dev99 MAE: 1.3063, Dev99 R2: 0.1308, Dev99 p1mag: 0.4705
+Epoch 20, Loss: 0.5098, Test MAE: 1.3046, Test R2: 0.4756, Test p1mag: 0.4611
+Dev40 MAE: 1.3406, Dev40 R2: -0.0780, Dev40 p1mag: 0.4512
+Dev60 MAE: 1.3224, Dev60 R2: 0.0281, Dev60 p1mag: 0.4592
+Dev80 MAE: 1.3095, Dev80 R2: 0.0481, Dev80 p1mag: 0.4642
+Dev99 MAE: 1.3027, Dev99 R2: 0.1224, Dev99 p1mag: 0.4703

@@ -12,10 +12,10 @@ from catpred.args import TrainArgs
 from catpred.features import BatchMolGraph
 from catpred.nn_utils import initialize_weights
 from torch.nn.utils.rnn import pad_sequence
-from egnn_pytorch import EGNN
 
 from collections import OrderedDict
 import ipdb
+import os
 
 import torch
 import torch.nn as nn
@@ -30,48 +30,6 @@ def exists(val):
 
 def default(val, d):
     return val if exists(val) else d
-    
-class EGNN_Net(nn.Module):
-    def __init__(self, dim, device, depth = 3, edge_dim = 0,
-                                m_dim = 16,
-                                fourier_features = 0,
-                                num_nearest_neighbors = 30,
-                                dropout = 0.0,
-                                init_eps = 1e-3,
-                                norm_feats = True,
-                                norm_coors = True,
-                                norm_coors_scale_init = 1e-2,
-                                update_feats = True,
-                                update_coors = False,
-                                only_sparse_neighbors = False,
-                                valid_radius = float('inf'),
-                                m_pool_method = 'sum',
-                                soft_edges = True,
-                                coor_weights_clamp_value = 2.):
-        super(EGNN_Net, self).__init__()
-        self.depth = depth
-        self.layers = [EGNN(dim, edge_dim,
-                                m_dim,
-                                fourier_features,
-                                num_nearest_neighbors,
-                                dropout,
-                                init_eps,
-                                norm_feats,
-                                norm_coors,
-                                norm_coors_scale_init,
-                                update_feats,
-                                update_coors,
-                                only_sparse_neighbors,
-                                valid_radius,
-                                m_pool_method,
-                                soft_edges,
-                                coor_weights_clamp_value).to(device) for _ in range(depth)]
-
-    def forward(self, feats, coords):
-        for layer in self.layers:
-            feats, coords = layer(feats, coords)
-            
-        return feats
     
 class AttentivePooling(nn.Module):
     def __init__(self, input_size=1280, hidden_size=1280):
@@ -155,9 +113,7 @@ class MoleculeModel(nn.Module):
             self.softplus = nn.Softplus()
 
         self.create_encoder(args)
-        
-        if args.include_embed_features: self.create_embed_model(args)
-        
+                
         print('Creating protein model')
         self.create_protein_model(args)
         self.create_ffn(args)
@@ -165,27 +121,6 @@ class MoleculeModel(nn.Module):
         initialize_weights(self)
         # print('Creating graph sequence model')
         # self.create_graph_sequence_model(args)
-
-    def create_embed_model(self, args: TrainArgs) -> None:
-        """
-        Creates the embedding model.
-        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
-        """
-        self.embed_model = EmbedderModel(args)
-        
-    def create_sequence_model(self, args: TrainArgs) -> None:
-        """
-        Creates the sequence model.
-
-        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
-        """
-        self.sequence_model = build_ffn(
-                            first_linear_dim = args.gvp_node_hidden_dims[0] * args.gvp_num_layers,
-                            hidden_size = args.protein_mlp_hidden_size,
-                            num_layers = args.protein_mlp_num_layers,
-                            output_size = args.protein_mlp_output_size,
-                            dropout = args.protein_mlp_dropout,
-                            activation = args.activation)
     
     def create_protein_model(self, args: TrainArgs) -> None:
         """
@@ -196,18 +131,10 @@ class MoleculeModel(nn.Module):
         # This is common to all models, embed sequence into a latent space with specified dimension
         self.seq_embedder = nn.Embedding(21, args.seq_embed_dim, padding_idx=20) #last index is for padding
 
-        if args.use_transformer:
-            self.transformer = TransformerEncoder(vocab_size = 21, 
-                                                      qty_encoder_layer = 3,
-                                                      qty_attention_head = 6,
-                                                      dim_vocab_embedding = args.seq_embed_dim,
-                                                      dim_model = args.seq_embed_dim,
-                                                      dim_inner_hidden = args.seq_embed_dim,
-                                                      embedding = False).to(self.device)
-            
-        elif self.args.use_egnn:
-            depth = 3
-            self.egnn_net = EGNN_Net(self.args.seq_embed_dim, self.device, valid_radius = 15)
+        if self.args.add_pretrained_egnn_feats:
+            self.pretrained_egnn_feats_dict = torch.load(self.args.pretrained_egnn_feats_path)
+            x = list(self.pretrained_egnn_feats_dict.values())
+            self.pretrained_egnn_feats_avg = torch.stack(x).mean(dim=0)
             
         # For rotary positional embeddings
         self.rotary_embedder = RotaryEmbedding(dim=args.seq_embed_dim//4)
@@ -225,7 +152,6 @@ class MoleculeModel(nn.Module):
         self.attentive_pooler = AttentivePooling(seq_attn_pooling_dim, seq_attn_pooling_dim)
         self.max_pooler = lambda x: torch.max(x, dim=1, 
                                               keepdim=False, out=None)
-        
         
     def create_encoder(self, args: TrainArgs) -> None:
         """
@@ -255,7 +181,7 @@ class MoleculeModel(nn.Module):
         """
         Creates the feed-forward layers for the model.
 
-        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
+        :param args: A :class:`~chemprop.args.TrainArgs` object containing model arguments.
         """
         second_linear_dim = None
         self.multiclass = args.dataset_type == "multiclass"
@@ -301,13 +227,21 @@ class MoleculeModel(nn.Module):
                 weights_ffn_num_layers=args.weights_ffn_num_layers,
             )
         else:
-            first_linear_dim_now = atom_first_linear_dim
+            # ipdb.set_trace()
+            if not args.skip_substrate:
+                first_linear_dim_now = atom_first_linear_dim
+            else:
+                first_linear_dim_now = 0
+                
             if not args.skip_protein and not args.protein_records_path is None:
                 first_linear_dim_now += args.seq_embed_dim
                 if args.add_esm_feats:
                     first_linear_dim_now += 1280
-            
-            elif args.skip_protein and args.include_embed_features:
+                if args.add_pretrained_egnn_feats:
+                    first_linear_dim_now+=128
+                    assert(os.path.exists(args.pretrained_egnn_feats_path))
+                    
+            if args.skip_protein and args.include_embed_features:
                 first_linear_dim_now += args.embed_mlp_output_size
             
             self.readout = build_ffn(
@@ -370,7 +304,7 @@ class MoleculeModel(nn.Module):
         Encodes the latent representations of the input molecules from intermediate stages of the model.
 
         :param batch: A list of list of SMILES, a list of list of RDKit molecules, or a
-                      list of :class:`~catpred.features.featurization.BatchMolGraph`.
+                      list of :class:`~chemprop.features.featurization.BatchMolGraph`.
                       The outer list or BatchMolGraph is of length :code:`num_molecules` (number of datapoints in batch),
                       the inner list is of length :code:`number_of_molecules` (number of molecules per datapoint).
         :param features_batch: A list of numpy arrays containing additional features.
@@ -429,13 +363,12 @@ class MoleculeModel(nn.Module):
         bond_features_batch: List[np.ndarray] = None,
         constraints_batch: List[torch.Tensor] = None,
         bond_types_batch: List[torch.Tensor] = None,
-        return_fp: bool = False
     ) -> torch.Tensor:
         """
         Runs the :class:`MoleculeModel` on input.
 
         :param batch: A list of list of SMILES, a list of list of RDKit molecules, or a
-                      list of :class:`~catpred.features.featurization.BatchMolGraph`.
+                      list of :class:`~chemprop.features.featurization.BatchMolGraph`.
                       The outer list or BatchMolGraph is of length :code:`num_molecules` (number of datapoints in batch),
                       the inner list is of length :code:`number_of_molecules` (number of molecules per datapoint).
         :param features_batch: A list of numpy arrays containing additional features.
@@ -445,7 +378,6 @@ class MoleculeModel(nn.Module):
         :param bond_features_batch: A list of numpy arrays containing additional bond features.
         :param constraints_batch: A list of PyTorch tensors which applies constraint on atomic/bond properties.
         :param bond_types_batch: A list of PyTorch tensors storing bond types of each bond determined by RDKit molecules.
-        :param return_fp: To return the last layer as fp or not.
         :return: The output of the :class:`MoleculeModel`, containing a list of property predictions.
         """
         def seq_to_tensor(seq):
@@ -477,21 +409,22 @@ class MoleculeModel(nn.Module):
                 bond_features_batch,
             )
 
-            if self.args.include_embed_features:
-                embed_feature_arr = torch.from_numpy(np.array(batch[-1].embed_feature_list)).to(torch.int64).to(self.device) + 1
-                try:
-                    embed_output = self.embed_model(embed_feature_arr)
-                except:
-                    print('Something wrong in embed model')
-                encodings = torch.concat([encodings,embed_output],dim=-1)
-                
             if not self.args.skip_protein and not self.args.protein_records_path is None:
                 protein_records = batch[-1].protein_record_list
+                pretrained_egnn_arr = []
+                if self.args.add_pretrained_egnn_feats:
+                    for each in protein_records:
+                        name = each['name']
+                        if name in self.pretrained_egnn_feats_dict:
+                            pretrained_egnn_arr.append(self.pretrained_egnn_feats_dict[name])
+                        else:
+                            pretrained_egnn_arr.append(self.pretrained_egnn_feats_avg)
+                    pretrained_egnn_arr = torch.stack(pretrained_egnn_arr).to(self.device)
                 
                 seq_arr = [seq_to_tensor(each['seq']) for each in protein_records]
                 seq_arr = pad_sequence(seq_arr, batch_first=True,
                                        padding_value=20).to(self.device)
-
+                
                 if self.args.add_esm_feats:
                     esm_feature_arr = [each['esm2_feats'] for each in protein_records]
                     esm_feature_arr = pad_sequence(esm_feature_arr,
@@ -500,72 +433,60 @@ class MoleculeModel(nn.Module):
                         seq_arr = seq_arr[:,:esm_feature_arr.shape[1]:]
 
                 # project sequence to embed dim
-                seq_outs = self.seq_embedder(seq_arr)
-                
-                if self.args.use_transformer:
-                    seq_outs = self.transformer(seq_outs)
-                    if self.add_esm_feats:
-                        seq_outs = torch.cat([esm_feature_arr, seq_outs], dim=-1)
+                seq_outs = self.seq_embedder(seq_arr)                    
+                # else:
+                # add rotary embeddings
+                q = self.rotary_embedder.rotate_queries_or_keys(seq_outs,
+                                                             seq_dim=1)
+                k = self.rotary_embedder.rotate_queries_or_keys(seq_outs,
+                                                            seq_dim=1)    
+                # attended seq features
+                seq_outs, _ = self.multihead_attn(q, k, seq_outs)
+
+                if self.args.add_esm_feats:
+                    seq_outs = torch.cat([esm_feature_arr, seq_outs], dim=-1)
+                    
+                # pool attentively
+                if not self.args.skip_attentive_pooling:
                     seq_pooled_outs, seq_wts = self.attentive_pooler(seq_outs)
-                    
-                elif self.args.use_resnet:
-                    seq_outs = self.resnet(seq_outs.transpose(1,2))[0]
-                    seq_outs = seq_outs.transpose(1,2)
-                    seq_pooled_outs = self.max_pooler(seq_outs).values
-                    if self.args.add_esm_feats:
-                        seq_pooled_outs = torch.cat([esm_feature_arr.mean(dim=1), 
-                                                     seq_pooled_outs], dim=-1)
-                
-                elif self.args.use_egnn:
-                    # print('egnn')
-                    coord_arr = [torch.as_tensor(each['coords'], 
-                                                 device='cuda', 
-                                                 dtype=torch.float32) for each in protein_records]
-                    
-                    coords = pad_sequence(coord_arr,batch_first=True,
-                                           padding_value=0).to(self.device)[:,:,1,:]
-                    mask = torch.isfinite(coords.sum(dim=(-1)))
-                    coords[~mask] = 0
-
-                    if seq_arr.shape[1]!=coords.shape[1]: 
-                        coords = coords[:,:seq_arr.shape[1],:]
-                        mask = mask[:,:seq_arr.shape[1]]
-                    # ipdb.set_trace()
-                    seq_outs = self.rotary_embedder.rotate_queries_or_keys(seq_outs,
-                                                                 seq_dim=1)
-                    seq_outs = self.egnn_net(seq_outs, coords)
-                    if self.args.add_esm_feats:
-                        seq_outs = torch.cat([esm_feature_arr, seq_outs], dim=-1)
-                    
-                    # pool attentively
-                    if not self.args.skip_attentive_pooling:
-                        seq_pooled_outs, seq_wts = self.attentive_pooler(seq_outs)
-                    else:
-                        seq_pooled_outs = seq_outs.mean(dim=1)
                 else:
-                    # add rotary embeddings
-                    q = self.rotary_embedder.rotate_queries_or_keys(seq_outs,
-                                                                 seq_dim=1)
-                    k = self.rotary_embedder.rotate_queries_or_keys(seq_outs,
-                                                                seq_dim=1)    
-                    # attended seq features
-                    seq_outs, _ = self.multihead_attn(q, k, seq_outs)
-
-                    if self.args.add_esm_feats:
-                        seq_outs = torch.cat([esm_feature_arr, seq_outs], dim=-1)
-                        
-                    # pool attentively
-                    if not self.args.skip_attentive_pooling:
-                        seq_pooled_outs, seq_wts = self.attentive_pooler(seq_outs)
-                    else:
-                        seq_pooled_outs = seq_outs.mean(dim=1)
-                
-                total_outs = torch.cat([seq_pooled_outs, encodings], dim=-1)
-                if return_fp: fp = self.readout[1](total_outs)
+                    seq_pooled_outs = seq_outs.mean(dim=1)
+                # ipdb.set_trace()
+                if self.args.add_pretrained_egnn_feats:
+                    seq_pooled_outs = torch.cat([seq_pooled_outs, pretrained_egnn_arr],
+                                                dim=-1)
+                    
+                if not self.args.skip_substrate:
+                    # ipdb.set_trace()
+                    total_outs = torch.cat([seq_pooled_outs, encodings], dim=-1)
+                else:
+                    total_outs = seq_pooled_outs
+                    
                 output = self.readout(total_outs)
+                
             else:
                 output = self.readout(encodings)
-                if return_fp: fp = self.readout[1](encodings)
+                
+        if (
+            self.classification
+            and not (self.training and self.no_training_normalization)
+            and self.loss_function != "dirichlet"
+        ):
+            if self.is_atom_bond_targets:
+                output = [self.sigmoid(x) for x in output]
+            else:
+                output = self.sigmoid(output)
+        if self.multiclass:
+            output = output.reshape(
+                (output.shape[0], -1, self.num_classes)
+            )  # batch size x num targets x num classes per target
+            if (
+                not (self.training and self.no_training_normalization)
+                and self.loss_function != "dirichlet"
+            ):
+                output = self.multiclass_softmax(
+                    output
+                )  # to get probabilities during evaluation, but not during training when using CrossEntropyLoss
 
         # Modify multi-input loss functions
         if self.loss_function == "mve":
@@ -604,6 +525,13 @@ class MoleculeModel(nn.Module):
                 )  # + min_val # add 1 for numerical contraints of Gamma function
                 betas = self.softplus(betas)  # + min_val
                 output = torch.cat([means, lambdas, alphas, betas], dim=1)
+        if self.loss_function == "dirichlet":
+            if self.is_atom_bond_targets:
+                outputs = []
+                for x in output:
+                    outputs.append(nn.functional.softplus(x) + 1)
+                return outputs
+            else:
+                output = nn.functional.softplus(output) + 1
 
-        if return_fp: return output, fp
-        else: return output
+        return output

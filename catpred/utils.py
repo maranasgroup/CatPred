@@ -93,7 +93,8 @@ def save_checkpoint(
 
 
 def load_checkpoint(
-    path: str, device: torch.device = None, logger: logging.Logger = None
+    path: str, pretrained_egnn_feats_path = None, 
+    device: torch.device = None, logger: logging.Logger = None
 ) -> MoleculeModel:
     """
     Loads a model checkpoint.
@@ -112,6 +113,8 @@ def load_checkpoint(
     state = torch.load(path, map_location=lambda storage, loc: storage)
     args = TrainArgs()
     args.from_dict(vars(state["args"]), skip_unsettable=True)
+    if not pretrained_egnn_feats_path is None: 
+        args.pretrained_egnn_feats_path = pretrained_egnn_feats_path
     loaded_state_dict = state["state_dict"]
 
     if device is not None:

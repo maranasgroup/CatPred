@@ -4,6 +4,8 @@ import re
 import numpy as np
 from scipy import stats
 import csv
+import ipdb
+
 
 def parse_log_file(file_path):
     with open(file_path, 'r') as file:
@@ -31,7 +33,7 @@ def parse_log_file(file_path):
             if match:
                 metrics[dataset]['MAE'].append(float(match.group(1)))
                 metrics[dataset]['R2'].append(float(match.group(2)))
-                metrics[dataset]['p1mag'].append(float(match.group(3)))
+                metrics[dataset]['p1mag'].append(float(match.group(3))*100)
 
     return epochs, metrics
 
@@ -41,11 +43,11 @@ def find_max_epoch(r2_values):
     return r2_values.index(max(r2_values)) + 1  # Adding 1 because epochs are 1-indexed
 
 
-def process_files(param):
+def process_files(param, log_dir):
     results = []
 
     for seed in range(10):
-        file_name = f"{param}_{seed}_dim10.log"
+        file_name = f"{log_dir}/{param}_{seed}_dim20.log"
         if os.path.exists(file_name):
             epochs, metrics = parse_log_file(file_name)
             if not epochs:  # Skip this file if no epochs were found
@@ -60,6 +62,7 @@ def process_files(param):
                     if optimal_epoch <= len(values):
                         result[f'{dataset.lower()}_{metric.lower()}'] = values[optimal_epoch - 1]
                     else:
+                        print(f"Warning: Optimal epoch {optimal_epoch} exceeds available data in {file_name}")
                         result[f'{dataset.lower()}_{metric.lower()}'] = values[-1]  # Use the last available value
             
             results.append(result)
@@ -81,15 +84,14 @@ def calculate_stats(results):
 
 def write_results_to_tsv(param, stats_results, output_file):
     with open(output_file, 'w', newline='') as tsv_file:
-        writer = csv.writer(tsv_file, delimiter='\t')
+        writer = csv.writer(tsv_file, delimiter=',')
         
         # Write header
-        writer.writerow(['c', 'R2', '', 'MAE', '', 'p1mag', ''])
-        writer.writerow(['Metric', 'Mean', 'SEM', 'Mean', 'SEM', 'Mean', 'SEM'])
+        writer.writerow(['Test', 'R2_mean', 'R2_stderr', 'MAE_mean', 'MAE_stderr', 'p1mag_mean', 'p1mag_stderr'])
         
         # Define the order of datasets and map to the format in stats_results
         datasets = [
-            ('Test', 'test'),
+            ('Heldout', 'test'),
             ('CLUSTER_99', 'dev99'),
             ('CLUSTER_80', 'dev80'),
             ('CLUSTER_60', 'dev60'),
@@ -107,22 +109,23 @@ def write_results_to_tsv(param, stats_results, output_file):
             
             writer.writerow([
                 display_name,
-                f'{r2_mean:.4f}', f'{r2_sem:.4f}',
-                f'{mae_mean:.4f}', f'{mae_sem:.4f}',
-                f'{p1mag_mean:.4f}', f'{p1mag_sem:.4f}'
+                f'{r2_mean}', f'{r2_sem}',
+                f'{mae_mean}', f'{mae_sem}',
+                f'{p1mag_mean}', f'{p1mag_sem}'
             ])
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <param>")
+    if len(sys.argv) != 4:
+        print("Usage: python analyze_experiments_new.py <param> <logs_dir> <result_csv>")
         sys.exit(1)
 
     param = sys.argv[1]
-    results = process_files(param)
+    log_dir = sys.argv[2]
+    output_file = sys.argv[3]
+    
+    results = process_files(param, log_dir)
+    
     stats_results = calculate_stats(results)
-
-    # Define the output fi../le name
-    output_file = f"../../../{param}_results.tsv"
 
     # Write results to TSV file
     write_results_to_tsv(param, stats_results, output_file)

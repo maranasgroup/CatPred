@@ -4,7 +4,11 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from scipy import stats
 import argparse
 import sys
+import os
+import csv
+import matplotlib.pyplot as plt
 
+OUTPUT_DIR = '../results/'
 # Define constants for cluster levels
 CLUSTER_LEVELS = [99, 80, 60, 40]
 
@@ -122,43 +126,42 @@ def print_results(stats_dict):
             stderr = stats_dict[dataset][metric]['stderr']
             print(f"{metric:<5}: {mean:.4f} ± {stderr:.4f}")
 
-def output_results_csv(stats_dict, output_file):
+def output_results_csv(all_results, exp_names, output_file):
     """
     Save results to a CSV file.
 
     Parameters:
-        stats_dict (dict): Dictionary containing aggregated metrics.
-        output_file (str): Path to the output CSV file.
+        all_results (list): List of dictionary objects containing aggregated metrics for each experiment
+        exp_names (list): List of experiment names
+        output_file (str): Path to the output CSV file
     """
-    # Prepare data for DataFrame
-    data = {
-        'Metric': ['R2_mean', 'R2_stderr', 'MAE_mean', 'MAE_stderr', 'p1mag_mean', 'p1mag_stderr'],
-        'Heldout': [
-            stats_dict['overall']['R2']['mean'], stats_dict['overall']['R2']['stderr'],
-            stats_dict['overall']['MAE']['mean'], stats_dict['overall']['MAE']['stderr'],
-            stats_dict['overall']['p1mag']['mean'], stats_dict['overall']['p1mag']['stderr']
-        ]
-    }
+    import csv
 
-    # Add OOD cluster results for each cluster level
-    for N in CLUSTER_LEVELS:
-        cluster_key = f'ood_cluster_{N}'
-        if cluster_key in stats_dict:
-            data[f'CLUSTER_{N}'] = [
-                stats_dict[cluster_key]['R2']['mean'], stats_dict[cluster_key]['R2']['stderr'],
-                stats_dict[cluster_key]['MAE']['mean'], stats_dict[cluster_key]['MAE']['stderr'],
-                stats_dict[cluster_key]['p1mag']['mean'], stats_dict[cluster_key]['p1mag']['stderr']
-            ]
+    # Function to write a metric to a CSV file
+    def _write_metric_to_csv(metric_name, file_name):
+        # Open the CSV file for writing
+        with open(file_name, mode='w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            
+            # Write the header row
+            header = ['Metric'] + exp_names  # First column is "Metric", rest are experiment names
+            writer.writerow(header)
+            
+            # Determine all unique keys (like 'overall', 'ood_cluster_99', etc.)
+            keys = list(all_results[0].keys())
+            
+            # Write rows for each key
+            for key in keys:
+                row = [key]  # First cell is the metric name (e.g., 'overall', 'ood_cluster_99', etc.)
+                for result in all_results:
+                    row.append(result[key][metric_name])  # Append the metric value
+                writer.writerow(row)
+        
+    # Write CSV files for each metric
+    _write_metric_to_csv('R2', output_file[:-4]+'_R2.csv')
+    _write_metric_to_csv('MAE', output_file[:-4]+'_MAE.csv')
+    _write_metric_to_csv('p1mag', output_file[:-4]+'_p1mag.csv')        
 
-    # Create DataFrame
-    df = pd.DataFrame(data)
-    df.set_index('Metric', inplace=True)
-    df_transposed = df.transpose()
-    df_transposed['Test'] = df_transposed.index
-    
-    # Save to CSV
-    df_transposed.to_csv(output_file)
-    print(f"Results saved to {output_file}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process prediction results for ML models.")
@@ -195,7 +198,11 @@ if __name__ == "__main__":
         ) for pred_file in args.prediction_files
     ]
 
-    # Calculate and output statistics
-    stats_dict = calculate_stats(all_results)
-    print_results(stats_dict)
-    output_results_csv(stats_dict, args.output_file)
+    exp_names = []
+    for file in args.prediction_files:
+        exp_names.append(file.split('_exp')[-1][:-4])
+
+    output_results_csv(all_results, exp_names, args.output_file)
+
+    print(args.output_file)
+    

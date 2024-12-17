@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -14,6 +15,7 @@ import argparse
 from torch.nn.utils.rnn import pad_sequence
 import pandas as pd
 
+DATADIR = '../../../../../../data/external/DLKcat/Data'
 OOD_INDICES = json.load(open('./catpred_sequence_ood_test_indices.json'))
 TEST_INDICES = {'kcat': 20835, 'km': 37056, 'ki': 10736}
 VAL_INDICES = {'kcat': 18520, 'km': 32939, 'ki': 9544}
@@ -136,8 +138,9 @@ def main(args):
     print(f'Using device: {device}')
     print('parameter', args.parameter)
     print('seed', args.seed)
+
     # Load data
-    dir_input = f'../../Data/{args.parameter}_input/'
+    dir_input = f'{DATADIR}/{args.parameter}_input/'
     compounds = load_tensor(dir_input + 'compounds', torch.LongTensor)
     adjacencies = load_tensor(dir_input + 'adjacencies', torch.FloatTensor)
     proteins = load_tensor(dir_input + 'proteins', torch.LongTensor)
@@ -240,6 +243,8 @@ def main(args):
         # Save model and results if needed
 
 if __name__ == "__main__":
+    import os
+    print(os.getcwd())
     parser = argparse.ArgumentParser(description='Kcat Prediction Model')
     parser.add_argument('parameter', type=str, help='Parameter type (kcat, km, or ki)')
     parser.add_argument('--is_validation', action='store_true', help='If doing a validation run or not')

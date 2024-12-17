@@ -65,7 +65,7 @@ run_training() {
         --target_columns "$target_col" \
         --extra_metrics mae mse r2 \
         --ensemble_size 10 --seq_embed_dim 36 --seq_self_attn_nheads 6 --loss_function mve --batch_size 16 \
-        --save_dir "$CKPT_DIR/${parameter}_retrain/seed${seed}" --epochs 30\
+        --save_dir "$CKPT_DIR/${parameter}/seed${seed}" --epochs 30\
         $additional_args \
         # > "$LOG_DIR/${parameter}_training_trainvalModel_seed${seed}.log" 2>&1
       echo "Prediction completed for parameter=$parameter and seed=$seed. Logs saved to $LOG_DIR/${parameter}_test_preds_trainvalModel_seed${seed}.log"
@@ -74,7 +74,6 @@ run_training() {
 }
 
 run_prediction() {
-  local retrain="$1"
   for parameter in ki km kcat; do
     echo "Estimated run time: ~5 mins per seed, total ~50 mins on NVIDIA-Ampere GPU (Tested on A100)"
     
@@ -98,7 +97,7 @@ run_prediction() {
         --test_path "./$DATA_DIR/data/$parameter/${parameter}-random_test.csv" \
         --smiles_columns "$smiles_col" \
         --preds_path "$OUTPUT_DIR/$parameter/${parameter}_test_preds_trainvalModel_seed${seed}.csv" \
-        --checkpoint_dir "$CKPT_DIR/${parameter}$retrain/seed${seed}" \
+        --checkpoint_dir "$CKPT_DIR/${parameter}/seed${seed}" \
         --individual_ensemble_predictions \
         --batch_size 4 \
         $additional_args \
@@ -115,10 +114,10 @@ run_analysis() {
         "$parameter" \
         "./$DATA_DIR/data/$parameter/${parameter}-random_trainval.csv" \
         "./$DATA_DIR/data/$parameter/${parameter}-random_test.csv" \
-        "$OUTPUT_DIR/$parameter/${parameter}_CatPredDB_CatPred_results.csv" \
+        "$OUTPUT_DIR/${parameter}_analysis-summary.csv" \
         $OUTPUT_DIR/$parameter/${parameter}_test_preds_trainvalModel_seed* \
         > "$LOG_DIR/${parameter}_analysis_trainvalModel.log" 2>&1
-    echo "   Analysis completed. Results saved to $OUTPUT_DIR/${parameter}/${parameter}_CatPredDB_CatPred_results.csv"
+    echo "   Analysis completed. Results saved to $OUTPUT_DIR/${parameter}_analysis-summary.csv"
     echo "   Logs saved to $LOG_DIR/${parameter}_test_trainvalModel_analysis.log"
   done
 }
@@ -137,12 +136,12 @@ case $1 in
   training)
     echo "Running pipeline: Training -> Prediction -> Analysis"
     run_training
-    run_prediction _retrain
+    run_prediction
     run_analysis
     ;;
   prediction)
     echo "Running pipeline: Prediction -> Analysis"
-    run_prediction /
+    run_prediction
     run_analysis
     ;;
   analysis)

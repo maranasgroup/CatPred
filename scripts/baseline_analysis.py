@@ -7,6 +7,7 @@ from concurrent.futures import ProcessPoolExecutor
 from collections import defaultdict
 from sklearn.metrics import r2_score, mean_absolute_error
 import ipdb
+import csv
 
 OUTPUT_DIR="../results/reproduce_results"
 DATA_DIR = "../data/external/Baseline/"
@@ -73,40 +74,72 @@ def compute_metrics(test_df, label_col):
     p1mag = (absolute_errors < 1.0).mean() * 100
     return r2, mae, p1mag
 
-def write_results_to_file(r2, mae, p1mag, output_file):
-    """Write results to a file."""
-    with open(output_file, 'w') as f:
-        f.write(f"R2: {r2:.4f}\n")
-        f.write(f"MAE: {mae:.4f}\n")
-        f.write(f"p1mag: {p1mag:.4f}\n")
-    print(f"Results saved to {output_file}")
-
-def main():
-    PARAMETER = sys.argv[1].lower()
-    OUTPUT_FILE = sys.argv[2]
+def write_results_to_csv(results_dict, output_file):
+    # Open the CSV file for writing
+    with open(output_file, 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        
+        # Write the header row
+        header = ['Test', 'R2_mean', 'R2_stderr', 'MAE_mean', 'MAE_stderr', 'p1mag_mean', 'p1mag_stderr']
+        writer.writerow(header)
+        
+        # Write the data rows
+        for i, (dataset, metrics) in enumerate(results_dict.items(), start=1):
+            row = [
+                dataset,
+                metrics.get('R2', 0),         # Assign value to R2_mean
+                0,                            # R2_stderr set to 0
+                metrics.get('MAE', 0),        # Assign value to MAE_mean
+                0,                            # MAE_stderr set to 0
+                metrics.get('p1mag', 0),      # Assign value to p1mag_mean
+                0                             # p1mag_stderr set to 0
+            ]
+            writer.writerow(row)
+            
+def main(PARAMETER, OUTPUT_FILE, recalculate=False):
     print(f"Processing parameter: {PARAMETER}")
 
     DATA_PATH = f'{DATA_DIR}/{PARAMETER}'
     SIM_CUTOFFS = [99, 80, 60, 40]
     TOP_N = 3
-    OUTPUT_FILE = f'{OUTPUT_DIR}/{OUTPUT_FILE}'  # Specify the output file here
 
     # Load data
     data, train_seqs_dict, test_seqs_dict = load_identity_data(PARAMETER)
     train_df, label_col = load_train_data(DATA_PATH, PARAMETER)
     test_files, cluster_labels = get_test_files(DATA_PATH, PARAMETER, SIM_CUTOFFS)
+
+    all_results = {}
+    for i, test_file in enumerate(test_files):
+        if i==0: 
+            key = 'Heldout'
+        else:
+            key = f'CLUSTER_{SIM_CUTOFFS[i-1]}'
+        if not recalculate:
+            test_df = pd.read_csv(test_file[:-4]+'_mean_3sim.csv')
+        else:
+            # Process test files
+            test_df = pd.read_csv(test_files[0])  # Assuming the main test file is first
+            # Load pre-calculated identity dictionary
+            data, train_seqs_dict, test_seqs_dict = load_identity_data(PARAMETER)
+            
+            identity_dict = data['data']
+            mean_labels = compute_mean_labels(test_df, data, identity_dict, train_df[label_col].to_dict(), train_seqs_dict, top_n=TOP_N)
+            test_df = update_test_df(test_df, mean_labels, label_col, top_n=TOP_N)
     
-    # Process test files
-    test_df = pd.read_csv(test_files[0])  # Assuming the main test file is first
-    identity_dict = {}  # Assuming identity_dict is already generated or loaded
-    mean_labels = compute_mean_labels(test_df, data, identity_dict, train_df[label_col].to_dict(), train_seqs_dict, top_n=TOP_N)
-    test_df = update_test_df(test_df, mean_labels, label_col, top_n=TOP_N)
-    
-    # Compute metrics
-    r2, mae, p1mag = compute_metrics(test_df, label_col)
-    
+        # Compute metrics
+        r2, mae, p1mag = compute_metrics(test_df, label_col)
+
+        all_results[key] = {'R2':r2, 'MAE':mae, 'p1mag': p1mag}
+
     # Write results to file
-    write_results_to_file(r2, mae, p1mag, OUTPUT_FILE)
+    write_results_to_csv(all_results, OUTPUT_FILE)
 
 if __name__ == "__main__":
-    main()
+    import sys
+    PARAMETER = sys.argv[2].lower()
+    OUTPUT_FILE = sys.argv[3]
+    
+    if sys.argv[1]=='recalculate':
+        main(PARAMETER, OUTPUT_FILE, True)
+    else:
+        main(PARAMETER, OUTPUT_FILE, False)

@@ -1,6 +1,5 @@
 from typing import List, Union, Tuple
 from rotary_embedding_torch import RotaryEmbedding
-# import transformers
 
 import numpy as np
 from rdkit import Chem
@@ -168,14 +167,6 @@ class MoleculeModel(nn.Module):
             else:  # Freeze all encoders
                 for param in self.encoder.parameters():
                     param.requires_grad = False
-                    
-    def create_embed_model(self, args: TrainArgs) -> None:
-        """
-        Creates the embedding model.
-
-        :param args: A :class:`~catpred.args.TrainArgs` object containing model arguments.
-        """
-        self.embed_model = EmbedderModel(args)
 
     def create_ffn(self, args: TrainArgs) -> None:
         """
@@ -240,9 +231,6 @@ class MoleculeModel(nn.Module):
                 if args.add_pretrained_egnn_feats:
                     first_linear_dim_now+=128
                     assert(os.path.exists(args.pretrained_egnn_feats_path))
-                    
-            if args.skip_protein and args.include_embed_features:
-                first_linear_dim_now += args.embed_mlp_output_size
             
             self.readout = build_ffn(
                 first_linear_dim=first_linear_dim_now,

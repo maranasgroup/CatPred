@@ -245,7 +245,7 @@ if __name__ == '__main__':
     Label_train = np.array(Label_train)
     feature_test = np.array(feature_test)
     Label_test = np.array(Label_test)
-    results_dict_all = Kcat_predict_Ntimes(feature_train, Label_train, feature_test, Label_test, train, test, N=10)
+    results_dict_all = Kcat_predict_Ntimes(feature_train, Label_train, feature_test, Label_test, train, test, N=5)
     # Calculate statistics
     stats_dict = calculate_stats(results_dict_all)
 

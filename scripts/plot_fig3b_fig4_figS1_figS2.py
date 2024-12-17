@@ -71,7 +71,16 @@ def plot_all(metric, outfile):
     for ax, param in zip(axes, params):
         file_name = f'{OUTDIR}/{param}_ablation_analysis-summary_{metric}.csv'
         plot_r2_results(file_name, metric, ax)
-    
+
+    for ax in axes:
+        # Set the y-axis label
+        if metric == 'R2': 
+            ax.set_xlabel('R²')
+        elif metric == 'MAE': 
+            ax.set_xlabel('MAE')
+        elif metric == 'p1mag': 
+            ax.set_xlabel(r'$p_{1mag}$')
+            
     # Add a legend outside the plots
     handles = [plt.Rectangle((0,0),1,1, color=color) for color in ['#CAC2F6', '#003F5C', '#4493A5', '#E67C69']]
     labels = ['+ EGNN', '+ pLM', '+ Seq-Attn', 'Substrate Only']
@@ -95,16 +104,15 @@ outfile = f'../results/figS1b.png'
 metric = 'p1mag'
 # Run the plotting function
 plot_all(metric, outfile)
-
+    
 # Plot Vertical Bar Chart with Adjacent Bars and Value Labels
-def plot_r2_vertical_results(file_name, metric):
+def plot_r2_vertical_results(file_name, metric, ax):
     exp_labels = {
         'Substrate Only': 'substrate_only',
         '+ Seq-Attn': 'seqemb36_attn6_ens10',
         '+ pLM': 'seqemb36_attn6_esm_ens10',
         '+ EGNN': 'seqemb36_attn6_esm_ens10_Pretrained_egnnFeats'
     }
-        
     # Read the R2 data
     data = {}
     with open(file_name, mode='r') as csvfile:
@@ -126,10 +134,8 @@ def plot_r2_vertical_results(file_name, metric):
     
     y_pos = np.arange(len(categories))  # y-axis positions for categories
     bar_width = 0.15  # Width of the bars
-    colors = ['#CAC2F6', '#003F5C', '#4493A5', '#E67C69']  # Colors for each experiment
+    colors = ['#E67C69', '#4493A5', '#003F5C', '#CAC2F6']  # Colors for each experiment
     
-    fig, ax = plt.subplots(figsize=(10, 6))
-
     # Plot bars for each experiment in each category
     for i, (experiment, color) in enumerate(zip(exp_labels, colors)):
         # Adjust the x-position of each experiment's bar
@@ -147,22 +153,57 @@ def plot_r2_vertical_results(file_name, metric):
     # Set the ticks and labels for the x-axis (categories)
     ax.set_xticks(y_pos)
     ax.set_xticklabels(categories_labels)
-    ax.set_ylabel('R²')
-
-    # Add legend outside the plot area
-    ax.legend(title="Experiments", loc='upper left', bbox_to_anchor=(1.05, 1))
-
-    if metric == 'R2': ax.set_xlabel('Clusters')
-    elif metric == 'MAE': ax.set_xlabel('MAE')
-    elif metric == 'p1mag': ax.set_xlabel(r'$p_1^{mag}$')
+    ax.set_xlabel('Max. % seq. id.')
 
     # Remove top and right spines
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
+# Adjusting figure layout and explicitly positioning the y-axis label
+def plot_all_vertical(metric, outfile):
+    OUTDIR = '../results/reproduce_results/'
+    params = ['kcat', 'km', 'ki']
 
-    # Adjust layout and save
-    plt.tight_layout()
-    plt.savefig(f'{OUTPUT_DIR}/{os.path.basename(file_name)[:-4]}_vertical_with_labels.png', dpi=300)
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # Three plots side by side
+    
+    # Plot data for each parameter on a different axis
+    for ax, param in zip(axes, params):
+        file_name = f'{OUTDIR}/{param}_ablation_analysis-summary_{metric}.csv'
+        plot_r2_vertical_results(file_name, metric, ax)
+    
+    # Add a legend outside the plots
+    handles = [plt.Rectangle((0,0),1,1, color=color) for color in ['#E67C69', '#4493A5', '#003F5C', '#CAC2F6']]
+    labels = ['+ EGNN', '+ pLM', '+ Seq-Attn', 'Substrate Only']
+    fig.legend(handles, labels, title='Method', loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=4)
+
+    # Adjust layout to prevent overlap
+    plt.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space for the legend
+
+    for ax in axes:
+        # Set the y-axis label
+        if metric == 'R2': 
+            ax.set_ylabel('R²')
+        elif metric == 'MAE': 
+            ax.set_ylabel('MAE')
+        elif metric == 'p1mag': 
+            ax.set_ylabel(r'$p_{1mag}$')
+
+    plt.savefig(outfile, dpi=300)
+
+outfile = f'../results/fig4.png'
+metric = 'R2'
+# Run the plotting function
+plot_all_vertical(metric, outfile)
+
+outfile = f'../results/figS2a.png'
+metric = 'MAE'
+# Run the plotting function
+plot_all_vertical(metric, outfile)
+
+outfile = f'../results/figS2b.png'
+metric = 'p1mag'
+# Run the plotting function
+plot_all_vertical(metric, outfile)
+
 
 # plot_r2_results('km', args.output_file[:-4]+'_R2.csv', 'R2')
 # plot_r2_results('ki', args.output_file[:-4]+'_R2.csv', 'R2')

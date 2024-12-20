@@ -3,16 +3,49 @@
 [![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.biorxiv.org/content/10.1101/2024.03.10.584340v2)
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)
 
-
 ## Table of Contents
 
+- [Reproducibility](#reproduce)
 - [Google Colab Interface Demo](#web-interface)
 - [Local Demo](#local-demo)
-  * [System Requirements](#requirements)
-  * [Installing using pip](#installing)
-  * [Run demo](#run-demo)
 - [Acknowledgements](#acknw)
 - [License](#license)
+
+## Reproducing publication results <a name="reproduce"></a>
+
+We provide three separate ways for reproducing the results of the publication. 
+
+### 1. Quick method: 
+
+Estimated run time: Few minutes
+
+This is the default script triggered by 'Reproducible Run' 
+Can be run using ./code/reproduce_quick.sh
+
+For all results pertaining to CatPred, UniKP, DLKcat and Baseline models, this method only uses pre-trained predictions and analyses to reproduce results of the publications including all main and supplementary figures. 
+
+### 2. Prediction method: 
+
+Estimated run time: Upto a day
+
+Can be run using ./code/reproduce_prediction.sh
+
+Highly recommend running this using the instructions on our Github on a local machine. 
+
+For results pertaining to CatPred, this method uses pre-trained models to perform predictions on test sets. 
+For results pertaining to UniKP, DLKcat and Baseline, this method uses only uses pre-trained predictions and analyses to reproduce results of the publications including all main and supplementary figures. 
+
+### 3. Training method: 
+
+Estimated run time: Upto 12-14 days
+
+Can be run using ./code/reproduce_training.sh
+
+Highly recommend running this using the instructions on our Github on a local machine. 
+
+For all results pertaining to CatPred, UniKP, DLKcat and Baseline models, this method trains everything from scratch. Then, uses the trained checkpoints to make predictions and then analyzes them to reproduce results of the publications including all main and supplementary figures. 
+
+Note:- Codes for reproducing Supp. Figures S4-S6 could not be uploaded on CodeOcean because of storage limitations. These will be made available on the Github repository separately. 
 
 ## Google Colab Interface Demo (easy) <a name="web-interface"></a>
 
@@ -21,64 +54,8 @@ It contains sample data, instructions and installation all in the Colab notebook
 
 ## Local Demo <a name="local-demo"></a>
 
-If you would like to install the package on a local machine, please follow the following instructions.
-
-### System Requirements <a name="requirements"></a>
-
-For using pre-trained models to predict, any machine running a Linux based operating system is recommended.
-For training, we recommend using a Linux based operating system on a GPU-enabled machine.
-
-Both training and prediction have been tested on Ubuntu 20.04.5 LTS with NVIDIA A10 and CUDA Version: 12.0
-
-To train with GPUs, you will need:
- * cuda >= 11.7
- * cuDNN
-
-### Installation <a name="installing"></a>
-
-Both options require conda, so first install Miniconda from [https://conda.io/miniconda.html](https://conda.io/miniconda.html).
-
-Then proceed to either option below to complete the installation. If installing the environment with conda seems to be taking too long, you can also try running `conda install -c conda-forge mamba` and then replacing `conda` with `mamba` in each of the steps below.
-
-**Note for machines with GPUs:** You may need to manually install a GPU-enabled version of PyTorch by following the instructions [here](https://pytorch.org/get-started/locally/). If you're encountering issues with not using a GPU on your system after following the instructions below, check which version of PyTorch you have installed in your environment using `conda list | grep torch` or similar. If the PyTorch line includes `cpu`, please uninstall it using `conda remove pytorch` and reinstall a GPU-enabled version using the instructions at the link above.
-
-#### Installing and downloading pre-trained models (~5 mins)
-
-1. `git clone https://github.com/maranasgroup/catpred.git`
-2. `cd CatPred`
-3. `conda env create -f environment.yml`
-4. `conda activate catpred`
-5. `pip install -e .`
-6. `pip install ipdb fair-esm rotary_embedding_torch==0.6.5 egnn_pytorch -q`
-7. `wget https://catpred.s3.amazonaws.com/production_models.tar.gz -q`
-8. `wget https://catpred.s3.amazonaws.com/processed_databases.tar.gz -q`
-9. `tar -xzf production_models.tar.gz`
-10. `tar -xzf processed_databases.tar.gz`
-
-### Run a demo (~2 mins) <a name="run-demo"></a>
-
-Use the `demo.ipynb` jupyter notebook to run the demo. 
-
-## Reproducing publication training/results
-
-To reproduce publication results, download and extract the scripts and required data using
-```
-cd reproduce_publication_results
-wget https://catpred.s3.amazonaws.com/reproduce_publication_results.tar.gz 
-tar -xvzf reproduce_publication_results.tar.gz
-```
-
-In order to train publication models, you must download and extract training datasets using
-```
-wget https://catpred.s3.amazonaws.com/publication_training_datasets.tar.gz
-tar -xvzf publication_training_datasets.tar.gz
-```
-
-### Training
-
-TODO: Will be made available upon publication
-```
-```
+If you would like to install the package on a local machine, please follow the instructions on our Github repository. 
+[CatPred](http://github.com/maranasgroup/catpred)
 
 ## Acknowledgements <a name="acknw"></a>
 
@@ -88,6 +65,8 @@ We thank the authors of following open-source repositories.
 [Chemprop](http://github.com/chemprop/)
 - The rotary positional embeddings functionality
 [Rotary PyTorch](https://github.com/lucidrains/rotary-embedding-torch)
+- Progres - Protein Graph Embedding Search using pre-trained EGNN models
+[Progres](https://github.com/greener-group/progres.git)
 
 ## License <a name="license"></a>
 

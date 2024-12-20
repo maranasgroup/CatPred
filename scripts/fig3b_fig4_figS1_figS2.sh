@@ -7,7 +7,7 @@
 # Because training all models takes several days, pretrained checkpoints are provided which can be used for prediction directly
 # Prediction csv files are also provided which can be used for analysis directly
 # So, the script can be run for either training, prediction or analysis
-# Training can take total of 10 - 20 days depending on your GPU
+# Training can take total of 10 days or lesser depending on your GPU
 # Prediction can take upto few hours 
 # Analysis takes a couple of minutes
 

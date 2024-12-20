@@ -62,7 +62,7 @@ def plot_r2_results(file_name, metric, ax):
 
 # Set up figure for three adjacent plots
 def plot_all(metric, outfile):
-    OUTDIR = '../results/reproduce_results/'
+    OUTDIR = '../data/results/reproduce_results/'
     params = ['kcat', 'km', 'ki']
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # Three plots side by side
@@ -160,7 +160,7 @@ def plot_r2_vertical_results(file_name, metric, ax):
     ax.spines['right'].set_visible(False)
 # Adjusting figure layout and explicitly positioning the y-axis label
 def plot_all_vertical(metric, outfile):
-    OUTDIR = '../results/reproduce_results/'
+    OUTDIR = '../data/results/reproduce_results/'
     params = ['kcat', 'km', 'ki']
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))  # Three plots side by side
@@ -172,7 +172,7 @@ def plot_all_vertical(metric, outfile):
     
     # Add a legend outside the plots
     handles = [plt.Rectangle((0,0),1,1, color=color) for color in ['#E67C69', '#4493A5', '#003F5C', '#CAC2F6']]
-    labels = ['+ EGNN', '+ pLM', '+ Seq-Attn', 'Substrate Only']
+    labels = ['Substrate Only', '+ Seq-Attn', '+ pLM', '+ EGNN']
     fig.legend(handles, labels, title='Method', loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=4)
 
     # Adjust layout to prevent overlap

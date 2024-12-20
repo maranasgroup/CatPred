@@ -13,8 +13,8 @@ set -e
 # Define variables for directories and files
 DATA_DIR="../data/CatPred-DB/"
 CKPT_DIR="../data/pretrained/reproduce_checkpoints/"
-LOG_DIR="../results/reproduce_logs"
-OUTPUT_DIR="../results/reproduce_results"
+LOG_DIR="../data/results/reproduce_logs"
+OUTPUT_DIR="../data/results/reproduce_results"
 TRAINING_SCRIPT="train.py"
 PREDICTION_SCRIPT="predict.py"
 ANALYSIS_SCRIPT="./scripts/analyze_ablation.py"
@@ -69,7 +69,7 @@ run_training() {
         --ensemble_size 10 --seq_embed_dim 36 --seq_self_attn_nheads 6 --loss_function mve --batch_size 16 \
         --save_dir "$CKPT_DIR/${parameter}_ablation_retrain/${exp}" --epochs 30 \
         $additional_args \
-        # > "$LOG_DIR/${parameter}_training_trainvalModel_seed${seed}.log" 2>&1
+        > "$LOG_DIR/${parameter}_training_trainvalModel_seed${seed}.log" 2>&1
     done
   done
 }
@@ -109,7 +109,7 @@ run_prediction() {
             --preds_path "$OUTPUT_DIR/$parameter/${parameter}_ablation_trainvalModel_exp${dir}.csv" \
             --checkpoint_dir "$CKPT_DIR/${parameter}_ablation$retrain/${dir}" \
             --individual_ensemble_predictions \
-            --batch_size 32 \
+            --batch_size 16 \
             $additional_args \
             > "$LOG_DIR/${parameter}_ablation_trainvalModel_exp${dir}.log" 2>&1
           echo "Prediction completed for parameter=$parameter and experiment=$dir. Logs saved to $LOG_DIR/${parameter}_ablation_trainvalModel_exp${dir}.log"
@@ -126,7 +126,7 @@ run_analysis() {
         "./$DATA_DIR/data/$parameter/${parameter}-random_test.csv" \
         "$OUTPUT_DIR/${parameter}_ablation_analysis-summary.csv" \
         $OUTPUT_DIR/$parameter/${parameter}_ablation_trainvalModel* \
-        # > "$LOG_DIR/${parameter}_ablation_analysis_trainvalModel.log" 2>&1
+        > "$LOG_DIR/${parameter}_ablation_analysis_trainvalModel.log" 2>&1
     echo "   Analysis completed. Results saved to $OUTPUT_DIR/${parameter}_ablation_analysis-summary_R2.csv, $OUTPUT_DIR/${parameter}_ablation_analysis-summary_MAE.csv and $OUTPUT_DIR/${parameter}_ablation_analysis-summary_p1mag.csv"
     echo "   Logs saved to $LOG_DIR/${parameter}_ablation_analysis_trainvalModel.log"
   done

@@ -13,8 +13,8 @@ set -e
 # Define variables for directories and files
 DATA_DIR="../data/CatPred-DB/"
 CKPT_DIR="../data/pretrained/reproduce_checkpoints/"
-LOG_DIR="../results/reproduce_logs"
-OUTPUT_DIR="../results/reproduce_results"
+LOG_DIR="../data/results/reproduce_logs"
+OUTPUT_DIR="../data/results/reproduce_results"
 TRAINING_SCRIPT="train.py"
 PREDICTION_SCRIPT="predict.py"
 ANALYSIS_SCRIPT="./scripts/analyze_reproduce.py"
@@ -65,7 +65,7 @@ run_training() {
         --target_columns "$target_col" \
         --extra_metrics mae mse r2 \
         --ensemble_size 10 --seq_embed_dim 36 --seq_self_attn_nheads 6 --loss_function mve --batch_size 16 \
-        --save_dir "$CKPT_DIR/${parameter}_retrain/seed${seed}" --epochs 30\
+        --save_dir "$CKPT_DIR/${parameter}_retrain/seed${seed}" --epochs 30 \
         $additional_args \
         # > "$LOG_DIR/${parameter}_training_trainvalModel_seed${seed}.log" 2>&1
       echo "Prediction completed for parameter=$parameter and seed=$seed. Logs saved to $LOG_DIR/${parameter}_test_preds_trainvalModel_seed${seed}.log"
@@ -100,7 +100,7 @@ run_prediction() {
         --preds_path "$OUTPUT_DIR/$parameter/${parameter}_test_preds_trainvalModel_seed${seed}.csv" \
         --checkpoint_dir "$CKPT_DIR/${parameter}$retrain/seed${seed}" \
         --individual_ensemble_predictions \
-        --batch_size 4 \
+        --batch_size 16 \
         $additional_args \
         # > "$LOG_DIR/${parameter}_prediction_trainvalModel_seed${seed}.log" 2>&1
       echo "Prediction completed for parameter=$parameter and seed=$seed. Logs saved to $LOG_DIR/${parameter}_test_preds_trainvalModel_seed${seed}.log"

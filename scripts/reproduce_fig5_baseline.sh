@@ -7,8 +7,8 @@
 # Exit script on error
 set -e
 
-OUTPUT_DIR="../results/reproduce_results"
-LOG_DIR="../results/reproduce_logs"
+OUTPUT_DIR="../data/results/reproduce_results"
+LOG_DIR="../data/results/reproduce_logs"
 PARAMS=("kcat" "km" "ki")
 
 # Main pipeline

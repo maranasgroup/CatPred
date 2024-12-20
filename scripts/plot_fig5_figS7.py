@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-RESULTS_DIR = '../results/reproduce_results/'
+RESULTS_DIR = '../data/results/reproduce_results/'
 
 def plot_all(metric, outfile):
     # Define parameters, methods, and their respective colors
@@ -104,6 +104,6 @@ def plot_all(metric, outfile):
     print('Saved', outfile)
     plt.show()
 
-plot_all('R2', f'{RESULTS_DIR}/../fig5.png')
-plot_all('MAE', f'{RESULTS_DIR}/../figS7_abc.png')
-plot_all('p1mag', f'{RESULTS_DIR}/../figS7_def.png')
+plot_all('R2', f'../results/fig5.png')
+plot_all('MAE', f'../results/figS7_abc.png')
+plot_all('p1mag', f'../results/figS7_def.png')

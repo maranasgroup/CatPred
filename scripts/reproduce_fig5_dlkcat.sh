@@ -14,8 +14,8 @@ set -e
 BASE_DIR=$(pwd)
 
 # Define absolute paths for log and output directories
-LOG_DIR="$BASE_DIR/../results/reproduce_logs"
-OUTPUT_DIR="$BASE_DIR/../results/reproduce_results"
+LOG_DIR="$BASE_DIR/../data/results/reproduce_logs"
+OUTPUT_DIR="$BASE_DIR/../data/results/reproduce_results"
 
 # Ensure the log and output directories exist
 mkdir -p "$LOG_DIR"

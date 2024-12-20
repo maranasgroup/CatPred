@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -ex
+
+# This is the master script for the capsule. When you click "Reproducible Run", the code in this file will execute.
+echo -e "\033[1;32mStarting reproduction runs with pre-trained checkpoints and predictions. Only performing analysis now.\033[0m"
+echo "=================================================="
+bash reproduce_quick.sh "$@"
+echo "=================================================="
+echo -e "\033[1;32mFinished reproduction runs with pre-trained checkpoints and predictions\033[0m"
+echo "=================================================="
+echo -e "\033[1;32mNote: If you want to run training from scratch, please follow the instructions on Github. These runs cannot be completed on this platform due to limited compute quota. You would need a dedicated machine with a GPU for this. And the runs could take upto two weeks.\033[0m"
+
+# echo -e "\033[1;32mStarting reproduction runs with pre-trained checkpoints but performing predictions and analysis now\033[0m"
+# echo "=================================================="
+# bash reproduce_prediction.sh "$@"
+# echo "=================================================="
+# echo -e "\033[1;Finished reproduction runs with pre-trained checkpoints but performing predictions and analysis now\033[0m"
+
+# echo -e "\033[1;32mStarting reproduction runs with training everything from scratch033[0m"
+# bash reproduce_training.sh "$@"

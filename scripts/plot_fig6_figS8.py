@@ -277,9 +277,9 @@ def plot_merged_metrics(metrics_std100, metrics_std99, output_dir):
         print(titles[i])
         # Save figure
         if 'std99' in titles[i]: 
-            output_file = f"{output_dir}/figS8.png"
+            output_file = f"../results/figS8.png"
         if 'std100' in titles[i]: 
-            output_file = f"{output_dir}/fig6.png"
+            output_file = f"../results/fig6.png"
             
         plt.tight_layout(rect=[0, 0, 1, 0.95])
         plt.savefig(output_file)
@@ -289,14 +289,14 @@ def plot_merged_metrics(metrics_std100, metrics_std99, output_dir):
 # Main function to process and plot all metrics
 def main():
     parameters = ['kcat', 'km', 'ki']
-    output_dir = "../results/"  # Output directory for plots
+    output_dir = "../data/results/"  # Output directory for plots
     
     all_metrics_std100 = {}
     all_metrics_std99 = {}
     
     # Loop through each parameter and process files
     for parameter in parameters:
-        prediction_file = f"../results/reproduce_results/{parameter}/{parameter}_uncertainty_preds.csv" 
+        prediction_file = f"../data/results/reproduce_results/{parameter}/{parameter}_uncertainty_preds.csv" 
         train_file = f'../data/CatPred-DB/data/{parameter}/{parameter}-random_trainval.csv'
         ground_truth_file = f'../data/CatPred-DB/data/{parameter}/{parameter}-random_test.csv'
         

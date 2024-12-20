@@ -215,8 +215,8 @@ def print_results(stats_dict):
 
 if __name__ == '__main__':
     # Dataset Load
-    train = pd.read_csv('./Km_test_11722_train.csv')[:]
-    test = pd.read_csv('./Km_test_11722_test.csv')[:]
+    train = pd.read_csv('../data/CatPred-DB/external_data/Km_test_11722_train.csv')[:]
+    test = pd.read_csv('../data/CatPred-DB/external_data/Km_test_11722_test.csv')[:]
     sequence_train = train['sequence']
     sequence_test = test['sequence']
     smiles_train = train['substrate_smiles']
@@ -224,21 +224,21 @@ if __name__ == '__main__':
     Label_train = train['log10km_mean']
     Label_test = test['log10km_mean']
     print(len(Label_train), len(Label_test))
-    if not os.path.exists('./kroll_km/Km_test_11722_train.pkl') or not os.path.exists('./kroll_km/Km_test_11722_test.pkl'):
+    if not os.path.exists('../data/external/UniKP/kroll_km/Km_test_11722_train.pkl') or not os.path.exists('../data/external/UniKP/kroll_km/Km_test_11722_test.pkl'):
         smiles_input_train = smiles_to_vec(smiles_train)
         sequence_input_train = Seq_to_vec(sequence_train)
         feature_train = np.concatenate((smiles_input_train, sequence_input_train), axis=1)
         smiles_input_test = smiles_to_vec(smiles_test)
         sequence_input_test = Seq_to_vec(sequence_test)
         feature_test = np.concatenate((smiles_input_test, sequence_input_test), axis=1)
-        with open("./kroll_km/Km_test_11722_train.pkl", "wb") as f:
+        with open("../data/external/UniKP/kroll_km/Km_test_11722_train.pkl", "wb") as f:
             pickle.dump(feature_train, f)
-        with open("./kroll_km/Km_test_11722_test.pkl", "wb") as f:
+        with open("../data/external/UniKP/kroll_km/Km_test_11722_test.pkl", "wb") as f:
             pickle.dump(feature_test, f)
     else:
-        with open("./kroll_km/Km_test_11722_train.pkl", "rb") as f:
+        with open("../data/external/UniKP/kroll_km/Km_test_11722_train.pkl", "rb") as f:
             feature_train = pickle.load(f)
-        with open("./kroll_km/Km_test_11722_test.pkl", "rb") as f:
+        with open("../data/external/UniKP/kroll_km/Km_test_11722_test.pkl", "rb") as f:
             feature_test = pickle.load(f)
 
     feature_train = np.array(feature_train)

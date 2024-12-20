@@ -12,8 +12,8 @@ set -e
 
 BASE_DIR=$(pwd)
 
-LOG_DIR="$BASE_DIR/../results/reproduce_logs"
-OUTPUT_DIR="$BASE_DIR/../results/reproduce_results"
+LOG_DIR="$BASE_DIR/../data/results/reproduce_logs"
+OUTPUT_DIR="$BASE_DIR/../data/results/reproduce_results"
 
 # Main pipeline
 usage() {

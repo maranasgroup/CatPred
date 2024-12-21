@@ -59,7 +59,7 @@ The Jupyter Notebook `batch_demo.ipynb` and the Python script `demo_run.py` show
 
 We provide three separate ways for reproducing the results of the publication. 
 
-### 1. Quick method: 
+#### 1. Quick method: 
 
 Estimated run time: Few minutes
 
@@ -68,7 +68,7 @@ Can be run using
 
 For all results pertaining to CatPred, UniKP, DLKcat and Baseline models, this method only uses pre-trained predictions and analyses to reproduce results of the publications including all main and supplementary figures. 
 
-### 2. Prediction method: 
+#### 2. Prediction method: 
 
 Estimated run time: Upto a day depending on your GPU
 
@@ -78,7 +78,7 @@ Can be run using
 For results pertaining to CatPred, this method uses pre-trained models to perform predictions on test sets. 
 For results pertaining to UniKP, DLKcat and Baseline, this method uses only uses pre-trained predictions and analyses to reproduce results of the publications including all main and supplementary figures. 
 
-### 3. Training method: 
+#### 3. Training method: 
 
 Estimated run time: Upto 12-14 days depending on your GPU
 

@@ -5,18 +5,18 @@
 
 ## Table of Contents
 
-- [Google Colab Interface](#web-interface)
-- [Local Installation](#local-demo)
+- [Google Colab Interface](#colab-interface)
+- [Local Installation](#local-installation)
 - [Reproducibility](#reproduce)
 - [Acknowledgements](#acknw)
 - [License](#license)
 
-## Google Colab Interface Demo (easy) <a name="web-interface"></a>
+## Google Colab Interface <a name="colab-interface"></a>
 
 For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred).
 It contains sample data, instructions and installation all in the Colab notebook.
 
-## Local Installation <a name="local-demo"></a>
+## Local Installation <a name="local-installation"></a>
 
 If you would like to install the package on a local machine, please follow the following instructions.
 
@@ -40,8 +40,9 @@ Then proceed to either option below to complete the installation. If installing 
 **Note for machines with GPUs:** You may need to manually install a GPU-enabled version of PyTorch by following the instructions [here](https://pytorch.org/get-started/locally/). If you're encountering issues with not using a GPU on your system after following the instructions below, check which version of PyTorch you have installed in your environment using `conda list | grep torch` or similar. If the PyTorch line includes `cpu`, please uninstall it using `conda remove pytorch` and reinstall a GPU-enabled version using the instructions at the link above.
 
 #### Installing and downloading pre-trained models (~5 mins)
-1. `mkdir catpred_pipeline`
-2. `wget https://catpred.s3.amazonaws.com/capsule_data.tar.gz -q`
+
+1. `mkdir catpred_pipeline;mkdir catpred_pipeline/results`
+2. `cd catpred_pipeline;wget https://catpred.s3.amazonaws.com/capsule_data.tar.gz -q`
 3. `tar -xzf capsule_data.tar.gz`
 4. `git clone https://github.com/maranasgroup/catpred.git`
 5. `cd CatPred`

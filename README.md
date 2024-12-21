@@ -7,7 +7,8 @@
 
 - [Google Colab Interface](#colab-interface)
 - [Local Installation](#local-installation)
-- [Reproducibility](#reproduce)
+   - [Prediction](#predict)
+   - [Reproducibility](#reproduce)
 - [Acknowledgements](#acknw)
 - [License](#license)
 
@@ -50,7 +51,11 @@ Then proceed to either option below to complete the installation. If installing 
 7. `conda activate catpred`
 8. `pip install -e .`
 
-## Reproducing publication results <a name="reproduce"></a>
+### Prediction <a name="predict"></a>
+
+The Jupyter Notebook `batch_demo.ipynb` and the Python script `demo_run.py` show the usage of pretrained models for prediction. 
+
+### Reproducing publication results <a name="reproduce"></a>
 
 We provide three separate ways for reproducing the results of the publication. 
 

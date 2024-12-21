@@ -116,7 +116,7 @@ def rmse(targets: List[float], preds: List[float]) -> float:
     :param preds: A list of predictions.
     :return: The computed rmse.
     """
-    return mean_squared_error(targets, preds, squared=False)
+    return np.sqrt(mean_squared_error(targets, preds))
 
 
 def bounded_rmse(targets: List[float], preds: List[float], gt_targets: List[bool] = None, lt_targets: List[bool] = None) -> float:

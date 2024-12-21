@@ -3,23 +3,20 @@
 [![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.biorxiv.org/content/10.1101/2024.03.10.584340v2)
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)
 
-
 ## Table of Contents
 
-- [Google Colab Interface Demo](#web-interface)
-- [Local Demo](#local-demo)
-  * [System Requirements](#requirements)
-  * [Installing using pip](#installing)
-  * [Run demo](#run-demo)
+- [Google Colab Interface](#colab-interface)
+- [Local Installation](#local-installation)
+- [Reproducibility](#reproduce)
 - [Acknowledgements](#acknw)
 - [License](#license)
 
-## Google Colab Interface Demo (easy) <a name="web-interface"></a>
+## Google Colab Interface <a name="colab-interface"></a>
 
 For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred).
 It contains sample data, instructions and installation all in the Colab notebook.
 
-## Local Demo <a name="local-demo"></a>
+## Local Installation <a name="local-installation"></a>
 
 If you would like to install the package on a local machine, please follow the following instructions.
 
@@ -30,7 +27,7 @@ For training, we recommend using a Linux based operating system on a GPU-enabled
 
 Both training and prediction have been tested on Ubuntu 20.04.5 LTS with NVIDIA A10 and CUDA Version: 12.0
 
-To train with GPUs, you will need:
+To train or predict with GPUs, you will need:
  * cuda >= 11.7
  * cuDNN
 
@@ -44,41 +41,46 @@ Then proceed to either option below to complete the installation. If installing 
 
 #### Installing and downloading pre-trained models (~5 mins)
 
-1. `git clone https://github.com/maranasgroup/catpred.git`
-2. `cd CatPred`
-3. `conda env create -f environment.yml`
-4. `conda activate catpred`
-5. `pip install -e .`
-6. `pip install ipdb fair-esm rotary_embedding_torch==0.6.5 egnn_pytorch -q`
-7. `wget https://catpred.s3.amazonaws.com/production_models.tar.gz -q`
-8. `wget https://catpred.s3.amazonaws.com/processed_databases.tar.gz -q`
-9. `tar -xzf production_models.tar.gz`
-10. `tar -xzf processed_databases.tar.gz`
+1. `mkdir catpred_pipeline;mkdir catpred_pipeline/results`
+2. `cd catpred_pipeline;wget https://catpred.s3.amazonaws.com/capsule_data.tar.gz -q`
+3. `tar -xzf capsule_data.tar.gz`
+4. `git clone https://github.com/maranasgroup/catpred.git`
+5. `cd CatPred`
+6. `conda env create -f environment.yml`
+7. `conda activate catpred`
+8. `pip install -e .`
 
-### Run a demo (~2 mins) <a name="run-demo"></a>
+## Reproducing publication results <a name="reproduce"></a>
 
-Use the `demo.ipynb` jupyter notebook to run the demo. 
+We provide three separate ways for reproducing the results of the publication. 
 
-## Reproducing publication training/results
+### 1. Quick method: 
 
-To reproduce publication results, download and extract the scripts and required data using
-```
-cd reproduce_publication_results
-wget https://catpred.s3.amazonaws.com/reproduce_publication_results.tar.gz 
-tar -xvzf reproduce_publication_results.tar.gz
-```
+Estimated run time: Few minutes
 
-In order to train publication models, you must download and extract training datasets using
-```
-wget https://catpred.s3.amazonaws.com/publication_training_datasets.tar.gz
-tar -xvzf publication_training_datasets.tar.gz
-```
+Can be run using 
+`./reproduce_quick.sh`
 
-### Training
+For all results pertaining to CatPred, UniKP, DLKcat and Baseline models, this method only uses pre-trained predictions and analyses to reproduce results of the publications including all main and supplementary figures. 
 
-TODO: Will be made available upon publication
-```
-```
+### 2. Prediction method: 
+
+Estimated run time: Upto a day depending on your GPU
+
+Can be run using 
+`./reproduce_prediction.sh`
+
+For results pertaining to CatPred, this method uses pre-trained models to perform predictions on test sets. 
+For results pertaining to UniKP, DLKcat and Baseline, this method uses only uses pre-trained predictions and analyses to reproduce results of the publications including all main and supplementary figures. 
+
+### 3. Training method: 
+
+Estimated run time: Upto 12-14 days depending on your GPU
+
+Can be run using 
+`./reproduce_training.sh`
+
+For all results pertaining to CatPred, UniKP, DLKcat and Baseline models, this method trains everything from scratch. Then, uses the trained checkpoints to make predictions and then analyzes them to reproduce results of the publications including all main and supplementary figures. 
 
 ## Acknowledgements <a name="acknw"></a>
 
@@ -88,6 +90,8 @@ We thank the authors of following open-source repositories.
 [Chemprop](http://github.com/chemprop/)
 - The rotary positional embeddings functionality
 [Rotary PyTorch](https://github.com/lucidrains/rotary-embedding-torch)
+- Progres - Protein Graph Embedding Search using pre-trained EGNN models
+[Progres](https://github.com/greener-group/progres.git)
 
 ## License <a name="license"></a>
 

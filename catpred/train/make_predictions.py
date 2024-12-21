@@ -26,6 +26,10 @@ def load_model(args: PredictArgs, generator: bool = False):
     """
     print('Loading training args')
     train_args = load_args(args.checkpoint_paths[0])
+    if args.pretrained_egnn_feats_path: 
+        pretrained_egnn_feats_path = args.pretrained_egnn_feats_path
+    else:
+        pretrained_egnn_feats_path = train_args.pretrained_egnn_feats_path
     num_tasks, task_names = train_args.num_tasks, train_args.task_names
     update_prediction_args(predict_args=args, train_args=train_args)
     print('Loading models')
@@ -34,7 +38,7 @@ def load_model(args: PredictArgs, generator: bool = False):
     
     # Load model and scalers
     models = (
-        load_checkpoint(checkpoint_path, device=args.device) for checkpoint_path in args.checkpoint_paths
+        load_checkpoint(checkpoint_path, pretrained_egnn_feats_path = pretrained_egnn_feats_path, device=args.device) for checkpoint_path in args.checkpoint_paths
     )
     scalers = (
         load_scalers(checkpoint_path) for checkpoint_path in args.checkpoint_paths
@@ -175,7 +179,7 @@ def predict_and_save(
         spectra_phase_mask=getattr(train_args, "spectra_phase_mask", None),
     )
 
-    preds, unc, fps = estimator.calculate_uncertainty(
+    preds, unc = estimator.calculate_uncertainty(
         calibrator=calibrator
     )  # preds and unc are lists of shape(data,tasks)
 
@@ -324,24 +328,19 @@ def predict_and_save(
     if return_invalid_smiles:
         full_preds = []
         full_unc = []
-        full_fp = []
         for full_index in range(len(full_data)):
             valid_index = full_to_valid_indices.get(full_index, None)
             if valid_index is not None:
                 pred = preds[valid_index]
                 un = unc[valid_index]
-                f = fps[valid_index]
             else:
                 pred = ["Invalid SMILES"] * num_tasks
                 un = ["Invalid SMILES"] * num_unc_tasks
-                f = None
             full_preds.append(pred)
             full_unc.append(un)
-            full_fp.append(f)
-            
-        return full_preds, full_unc, full_fp
+        return full_preds, full_unc
     else:
-        return preds, unc, fps
+        return preds, unc
 
 
 @timeit()
@@ -360,7 +359,7 @@ def make_predictions(
     return_invalid_smiles: bool = True,
     return_index_dict: bool = False,
     return_uncertainty: bool = False,
-):
+) -> List[List[Optional[float]]]:
     """
     Loads data and a trained model and uses the model to make predictions on the data.
 
@@ -402,8 +401,6 @@ def make_predictions(
 
     num_models = len(args.checkpoint_paths)
 
-    # print(args, train_args)
-    
     set_features(args, train_args)
 
     # Note: to get the invalid SMILES for your data, use the get_invalid_smiles_from_file or get_invalid_smiles_from_list functions from data/utils.py
@@ -471,7 +468,7 @@ def make_predictions(
         preds = [None] * len(full_data)
         unc = [None] * len(full_data)
     else:
-        preds, unc, fps = predict_and_save(
+        preds, unc = predict_and_save(
             args=args,
             train_args=train_args,
             test_data=test_data,
@@ -490,28 +487,24 @@ def make_predictions(
     if return_index_dict:
         preds_dict = {}
         unc_dict = {}
-        fp_dict = {}
         for i in range(len(full_data)):
             if return_invalid_smiles:
                 preds_dict[i] = preds[i]
                 unc_dict[i] = unc[i]
-                fp_dict[i] = fps[i]
             else:
                 valid_index = full_to_valid_indices.get(i, None)
                 if valid_index is not None:
                     preds_dict[i] = preds[valid_index]
                     unc_dict[i] = unc[valid_index]
-                    fp_dict[i] = fps[valid_index]
-                    
         if return_uncertainty:
-            return preds_dict, unc_dict, fp_dict
+            return preds_dict, unc_dict
         else:
-            return preds_dict, fp_dict
+            return preds_dict
     else:
         if return_uncertainty:
-            return preds, unc, fps
+            return preds, unc
         else:
-            return preds, fps
+            return preds
 
 
 def catpred_predict() -> None:
@@ -520,12 +513,3 @@ def catpred_predict() -> None:
     This is the entry point for the command line command :code:`catpred_predict`.
     """
     make_predictions(args=PredictArgs().parse_args())
-
-def catpred_predict_and_fp():
-    """Parses catpred predicting arguments and runs prediction using a trained catpred model.
-
-    This is the entry point for the command line command :code:`catpred_predict`.
-    """
-    preds, unc, fps = make_predictions(args=PredictArgs().parse_args(),return_index_dict = True, return_uncertainty = True)
-    
-    return [preds, unc, fps]

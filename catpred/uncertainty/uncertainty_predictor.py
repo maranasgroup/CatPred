@@ -68,12 +68,6 @@ class UncertaintyPredictor(ABC):
         Calculate the uncalibrated predictions and store them as attributes
         """
 
-    def get_avg_fps(self):
-        """
-        Return average fps. 
-        """
-        return self.fps_avg
-        
     def get_uncal_preds(self):
         """
         Return the predicted values for the test data.
@@ -156,6 +150,13 @@ class NoUncertaintyPredictor(UncertaintyPredictor):
                 atom_bond_scaler=atom_bond_scaler,
                 return_unc_parameters=False,
             )
+            if self.dataset_type == "spectra":
+                preds = normalize_spectra(
+                    spectra=preds,
+                    phase_features=self.test_data.phase_features(),
+                    phase_mask=self.spectra_phase_mask,
+                    excluded_sub_value=float("nan"),
+                )
             if i == 0:
                 sum_preds = np.array(preds)
                 if self.individual_ensemble_predictions:
@@ -280,7 +281,13 @@ class RoundRobinSpectraPredictor(UncertaintyPredictor):
                 atom_bond_scaler=atom_bond_scaler,
                 return_unc_parameters=False,
             )
-            
+            if self.dataset_type == "spectra":
+                preds = normalize_spectra(
+                    spectra=preds,
+                    phase_features=self.test_data.phase_features(),
+                    phase_mask=self.spectra_phase_mask,
+                    excluded_sub_value=float("nan"),
+                )
             if i == 0:
                 sum_preds = np.array(preds)
                 individual_preds = np.expand_dims(np.array(preds), axis=-1)
@@ -344,17 +351,15 @@ class MVEPredictor(UncertaintyPredictor):
                         bond_descriptor_scaler, scale_bond_descriptors=True
                     )
 
-            preds, var, fps = predict(
+            preds, var = predict(
                 model=model,
                 data_loader=self.test_data_loader,
                 scaler=scaler,
                 atom_bond_scaler=atom_bond_scaler,
                 return_unc_parameters=True,
-                return_fp=True,
             )
             if i == 0:
                 sum_preds = np.array(preds)
-                sum_fps = fps
                 sum_squared = np.square(preds)
                 sum_vars = np.array(var)
                 individual_vars = [var]
@@ -378,7 +383,6 @@ class MVEPredictor(UncertaintyPredictor):
                     else:
                         individual_preds = np.expand_dims(np.array(preds), axis=-1)
             else:
-                sum_fps += np.array(fps)
                 sum_preds += np.array(preds)
                 sum_squared += np.square(preds)
                 sum_vars += np.array(var)
@@ -435,7 +439,6 @@ class MVEPredictor(UncertaintyPredictor):
                 uncal_preds.tolist(),
                 uncal_vars.tolist(),
             )
-            self.fps_avg = sum_fps / self.num_models
             self.individual_vars = individual_vars
             if self.individual_ensemble_predictions:
                 self.individual_preds = individual_preds.tolist()
@@ -933,7 +936,13 @@ class EnsemblePredictor(UncertaintyPredictor):
                 atom_bond_scaler=atom_bond_scaler,
                 return_unc_parameters=False,
             )
-            
+            if self.dataset_type == "spectra":
+                preds = normalize_spectra(
+                    spectra=preds,
+                    phase_features=self.test_data.phase_features(),
+                    phase_mask=self.spectra_phase_mask,
+                    excluded_sub_value=float("nan"),
+                )
             if i == 0:
                 sum_preds = np.array(preds)
                 sum_squared = np.square(preds)

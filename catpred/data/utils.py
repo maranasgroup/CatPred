@@ -9,6 +9,7 @@ from typing import List, Set, Tuple, Union
 import os
 import json
 import torch
+import gzip
 
 from rdkit import Chem
 import numpy as np
@@ -395,17 +396,13 @@ def get_data(path: str,
              with other info such as additional features when desired.
     """
     debug = logger.debug if logger is not None else print
-
+    
     if protein_records_path is None:
         protein_records = None
     else:
-        protein_records = json.load(open(protein_records_path))
-    
-    if args.include_embed_features:
-        vocabulary = json.load(open(vocabulary_path))
-    else:
-        vocabulary = None
-    
+        with gzip.open(protein_records_path, 'rt', encoding='utf-8') as f:
+            protein_records = json.load(f)
+        
     if args is not None:
         # Prefer explicit function arguments but default to args if not provided
         smiles_columns = smiles_columns if smiles_columns is not None else args.smiles_columns
@@ -421,12 +418,6 @@ def get_data(path: str,
         constraints_path = constraints_path if constraints_path is not None else args.constraints_path
         max_data_size = max_data_size if max_data_size is not None else args.max_data_size
         loss_function = loss_function if loss_function is not None else args.loss_function
-
-    if not vocabulary is None:
-        ec_words = ['ec1','ec2','ec3','ec']
-        tax_words = ['superkingdom','phylum','class','order','family','genus','species']
-        # get vocab sizes
-        args.embed_sizes = [len(vocabulary[word])+1 for word in ec_words+tax_words]
     
     if isinstance(smiles_columns, str) or smiles_columns is None:
         smiles_columns = preprocess_smiles_columns(path=path, smiles_columns=smiles_columns)
@@ -620,7 +611,7 @@ def get_data(path: str,
             MoleculeDatapoint(
                 smiles=smiles,
                 protein_record=all_protein_records[i],
-                vocabulary=vocabulary,
+                vocabulary=None,
                 targets=targets,
                 atom_targets=all_atom_targets[i] if atom_targets else None,
                 bond_targets=all_bond_targets[i] if bond_targets else None,

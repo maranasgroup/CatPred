@@ -57,9 +57,7 @@ class UncertaintyEstimator:
         else:
             uncal_preds = self.predictor.get_uncal_preds()
             uncal_output = self.predictor.get_uncal_output()
-            fps = self.predictor.get_avg_fps()
-            
-            return uncal_preds, uncal_output, fps
+            return uncal_preds, uncal_output
 
     def individual_predictions(self):
         """

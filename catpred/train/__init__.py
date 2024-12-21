@@ -4,7 +4,7 @@ from .loss_functions import get_loss_func, bounded_mse_loss, \
     mcc_class_loss, mcc_multiclass_loss, sid_loss, wasserstein_loss
 from .cross_validate import catpred_train, cross_validate, TRAIN_LOGGER_NAME
 from .evaluate import evaluate, evaluate_predictions
-from .make_predictions import catpred_predict, catpred_predict_and_fp, make_predictions, load_model, set_features, load_data, predict_and_save
+from .make_predictions import catpred_predict, make_predictions, load_model, set_features, load_data, predict_and_save
 from .molecule_fingerprint import catpred_fingerprint, model_fingerprint
 from .predict import predict
 from .run_training import run_training
@@ -17,7 +17,6 @@ __all__ = [
     'evaluate',
     'evaluate_predictions',
     'catpred_predict',
-    'catpred_predict_and_fp',
     'catpred_fingerprint',
     'make_predictions',
     'load_model',

@@ -29,5 +29,6 @@ dependencies:
     - transformers
     - descriptastorus
     - sentencepiece
+    - seaborn
     - rotary_embedding_torch==0.6.5
     - typed-argument-parser>=1.6.1

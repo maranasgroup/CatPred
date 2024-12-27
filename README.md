@@ -42,14 +42,16 @@ Then proceed to either option below to complete the installation. If installing 
 
 #### Installing and downloading pre-trained models (~5 mins)
 
-1. `mkdir catpred_pipeline;mkdir catpred_pipeline/results`
-2. `cd catpred_pipeline;wget https://catpred.s3.amazonaws.com/capsule_data.tar.gz -q`
-3. `tar -xzf capsule_data.tar.gz`
-4. `git clone https://github.com/maranasgroup/catpred.git`
-5. `cd CatPred`
-6. `conda env create -f environment.yml`
-7. `conda activate catpred`
-8. `pip install -e .`
+````
+mkdir catpred_pipeline catpred_pipeline/results`
+cd catpred_pipeline;wget https://catpred.s3.us-east-1.amazonaws.com/capsule_data.tar.gz
+tar -xzf capsule_data.tar.gz
+git clone https://github.com/maranasgroup/catpred.git
+cd catpred
+conda env create -f environment.yml
+conda activate catpred
+pip install -e .
+````
 
 ### Prediction <a name="predict"></a>
 

@@ -6,6 +6,7 @@
 ## 🚨 Announcements 
 
 - [x] 27th Dec 2024 - Updated repository with scripts to reproduce results from the manuscript
+- [ ] TODO - Add prediction codes for models using 3D-structural features
 
 ## Table of Contents
 

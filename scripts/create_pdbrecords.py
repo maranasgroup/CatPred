@@ -36,6 +36,7 @@ for ind, row in df.iterrows():
     dic['seq'] = row.sequence
     dic_full[row.pdbpath] = dic
 
-f = open(args.out_file,'w')
-f.write(json.dumps(dic_full))
-f.close()
+import gzip
+# Writing the dictionary to a gzipped file
+with gzip.open(out_file, 'wb') as f:
+    f.write(json.dumps(dic_full).encode('utf-8'))

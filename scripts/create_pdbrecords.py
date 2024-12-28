@@ -38,5 +38,5 @@ for ind, row in df.iterrows():
 
 import gzip
 # Writing the dictionary to a gzipped file
-with gzip.open(out_file, 'wb') as f:
+with gzip.open(args.out_file, 'wb') as f:
     f.write(json.dumps(dic_full).encode('utf-8'))

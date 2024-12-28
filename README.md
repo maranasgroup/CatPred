@@ -3,6 +3,10 @@
 [![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.biorxiv.org/content/10.1101/2024.03.10.584340v2)
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)
 
+## 🚨 Announcements 
+
+- [x] 27th Dec 2024 - Updated repository with scripts to reproduce results from the manuscript
+
 ## Table of Contents
 
 - [Google Colab Interface](#colab-interface)

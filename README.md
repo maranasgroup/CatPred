@@ -4,10 +4,14 @@
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
+---
+
 ## 🚨 Announcements 📢
 
 - ✅ **27th Dec 2024** - Updated repository with scripts to reproduce results from the manuscript.
 - 🚧 **TODO** - Add prediction codes for models using 3D-structural features.
+
+---
 
 ## 📚 Table of Contents
 
@@ -21,9 +25,13 @@
 - [License](#license)
 - [Citations](#citations)
 
+---
+
 ## 🌐 Google Colab Interface <a name="colab-interface"></a>
 
 For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred). It contains sample data, instructions, and installation all in the Colab notebook.
+
+---
 
 ## 💻 Local Installation <a name="local-installation"></a>
 
@@ -103,6 +111,8 @@ Run using:
 
 For all results pertaining to CatPred, UniKP, DLKcat, and Baseline models, this method trains everything from scratch. Then, it uses the trained checkpoints to make predictions and analyzes them to reproduce results of the publications, including all main and supplementary figures.
 
+---
+
 ## 🙏 Acknowledgements <a name="acknw"></a>
 
 We thank the authors of the following open-source repositories:
@@ -111,9 +121,13 @@ We thank the authors of the following open-source repositories:
 - **Rotary PyTorch** - The rotary positional embeddings functionality for Seq-Attn. is from [Rotary PyTorch](https://github.com/lucidrains/rotary-embedding-torch).
 - **Progres** - Protein Graph Embedding Search using pre-trained EGNN models from [Progres](https://github.com/greener-group/progres.git).
 
+---
+
 ## 📜 License <a name="license"></a>
 
 This source code is licensed under the MIT license found in the `LICENSE` file in the root directory of this source tree.
+
+---
 
 ## 📖 Citations <a name="citations"></a>
 

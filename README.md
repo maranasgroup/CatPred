@@ -1,4 +1,4 @@
-# CatPred: A Comprehensive Framework for Deep Learning In Vitro Enzyme Kinetic Parameters kcat, Km, and Ki 🧬
+# CatPred: A Comprehensive Framework for Deep Learning In Vitro Enzyme Kinetic Parameters
 
 [![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.nature.com/articles/s41467-025-57215-9)
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)

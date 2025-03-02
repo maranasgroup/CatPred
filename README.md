@@ -1,6 +1,6 @@
 # CatPred: A Comprehensive Framework for Deep Learning In Vitro Enzyme Kinetic Parameters kcat, Km, and Ki 🧬
 
-[![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.biorxiv.org/content/10.1101/2024.03.10.584340v2)
+[![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.nature.com/articles/s41467-025-57215-9)
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -8,6 +8,7 @@
 
 ## 🚨 Announcements 📢
 
+- ✅ **28th Feb 2025** - Published in _Nature Communications._
 - ✅ **27th Dec 2024** - Updated repository with scripts to reproduce results from the manuscript.
 - 🚧 **TODO** - Add prediction codes for models using 3D-structural features.
 

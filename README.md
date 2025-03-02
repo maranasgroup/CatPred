@@ -4,8 +4,6 @@
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-![Screenshot 2025-03-02 at 17 37 31](https://github.com/user-attachments/assets/860d73ae-1540-4419-b767-f9d34a93bf4f)
-
 ---
 
 ## 🚨 Announcements 📢

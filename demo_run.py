@@ -5,7 +5,7 @@ This script predicts enzyme kinetics parameters (kcat, Km, or Ki) using a pre-tr
 It processes input data, generates predictions, and saves the results.
 
 Usage:
-    python script_name.py --parameter <kcat|km|ki> --input_file <path_to_input_csv> [--use_gpu]
+    python demo_run.py --parameter <kcat|km|ki> --input_file <path_to_input_csv> --checkpoint_dir <path_to_pretrained_checkpoint_dir> [--use_gpu]
 
 Dependencies:
     pandas, numpy, rdkit, IPython, argparse
@@ -20,23 +20,12 @@ from rdkit import Chem
 from IPython.display import display, Latex, Math
 import argparse
 
-def create_csv_sh(parameter, input_file_path):
-    """
-    Process input data and create a shell script for prediction.
-
-    Args:
-        parameter (str): The kinetics parameter to predict.
-        input_file_path (str): Path to the input CSV file.
-
-    Returns:
-        str: Path to the output CSV file.
-    """
+def create_csv_sh(parameter, input_file_path, checkpoint_dir):
     df = pd.read_csv(input_file_path)
     smiles_list = df.SMILES
     seq_list = df.sequence
     smiles_list_new = []
 
-    # Process SMILES strings
     for i, smi in enumerate(smiles_list):
         try:
             mol = Chem.MolFromSmiles(smi)
@@ -49,7 +38,6 @@ def create_csv_sh(parameter, input_file_path):
             print('Correct your input! Exiting..')
             return None
 
-    # Validate enzyme sequences
     valid_aas = set('ACDEFGHIKLMNPQRSTVWY')
     for i, seq in enumerate(seq_list):
         if not set(seq).issubset(valid_aas):
@@ -57,17 +45,15 @@ def create_csv_sh(parameter, input_file_path):
             print('Correct your input! Exiting..')
             return None
 
-    # Save processed input
     input_file_new_path = f'{input_file_path[:-4]}_input.csv'
     df['SMILES'] = smiles_list_new
     df.to_csv(input_file_new_path)
 
-    # Create shell script for prediction
     with open('predict.sh', 'w') as f:
         f.write(f'''
         TEST_FILE_PREFIX={input_file_new_path[:-4]}
         RECORDS_FILE=${{TEST_FILE_PREFIX}}.json
-        CHECKPOINT_DIR=./production_models/{parameter}/
+        CHECKPOINT_DIR={checkpoint_dir}
         
         python ./scripts/create_pdbrecords.py --data_file ${{TEST_FILE_PREFIX}}.csv --out_file ${{RECORDS_FILE}}
         python predict.py --test_path ${{TEST_FILE_PREFIX}}.csv --preds_path ${{TEST_FILE_PREFIX}}_output.csv --checkpoint_dir $CHECKPOINT_DIR --uncertainty_method mve --smiles_column SMILES --individual_ensemble_predictions --protein_records_path $RECORDS_FILE
@@ -99,21 +85,21 @@ def get_predictions(parameter, outfile):
         target_col = 'log10ki_mean'
 
     unc_col = f'{target_col}_mve_uncal_var'
-    
+
     for _, row in df.iterrows():
         model_cols = [col for col in row.index if col.startswith(target_col) and 'model_' in col]
-        
+
         unc = row[unc_col]
         prediction = row[target_col]
         prediction_linear = np.power(10, prediction)
-        
+
         model_outs = np.array([row[col] for col in model_cols])
         epi_unc = np.var(model_outs)
         alea_unc = unc - epi_unc
         epi_unc = np.sqrt(epi_unc)
         alea_unc = np.sqrt(alea_unc)
         unc = np.sqrt(unc)
-        
+
         pred_col.append(prediction_linear)
         pred_logcol.append(prediction)
         pred_sd_totcol.append(unc)
@@ -129,19 +115,13 @@ def get_predictions(parameter, outfile):
     return df
 
 def main(args):
-    """
-    Main function to run the prediction process.
-
-    Args:
-        args (argparse.Namespace): Command-line arguments.
-    """
     print(os.getcwd())
 
-    outfile = create_csv_sh(args.parameter, args.input_file)
+    outfile = create_csv_sh(args.parameter, args.input_file, args.checkpoint_dir)
     if outfile is None:
         return
 
-    print('Predicting.. This will take a while..\n')
+    print('Predicting.. This will take a while..')
 
     if args.use_gpu:
         os.system("export PROTEIN_EMBED_USE_CPU=0;./predict.sh")
@@ -161,6 +141,8 @@ if __name__ == "__main__":
                         help="Path to the input CSV file")
     parser.add_argument("--use_gpu", action="store_true",
                         help="Use GPU for prediction (default is CPU)")
+    parser.add_argument("--checkpoint_dir", type=str, required=True,
+                        help="Path to the model checkpoint directory")
 
     args = parser.parse_args()
     args.parameter = args.parameter.lower()

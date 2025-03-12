@@ -1,4 +1,4 @@
-name: catpred_new
+name: catpred
 
 channels:
   - pytorch

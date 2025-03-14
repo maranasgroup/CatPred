@@ -30,7 +30,8 @@
 
 ## 🌐 Google Colab Interface <a name="colab-interface"></a>
 
-For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred). It contains sample data, instructions, and installation all in the Colab notebook.
+For ease of use without any hardware requirements, a Google Colab interface is available here: [tiny.cc/catpred](http://tiny.cc/catpred). 
+It contains sample data, instructions, and installation all in the Colab notebook.
 
 ---
 

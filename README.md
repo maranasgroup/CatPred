@@ -60,15 +60,6 @@ Then proceed to either option below to complete the installation. If installing 
 
 **Note for machines with GPUs:** You may need to manually install a GPU-enabled version of PyTorch by following the instructions [here](https://pytorch.org/get-started/locally/). If you're encountering issues with not using a GPU on your system after following the instructions below, check which version of PyTorch you have installed in your environment using `conda list | grep torch` or similar. If the PyTorch line includes `cpu`, please uninstall it using `conda remove pytorch` and reinstall a GPU-enabled version using the instructions at the link above.
 
-### Installation Using Docker <a name="docker-installation"></a>
-
-You can also install CatPred in a docker environment. 
-1. Make a local directory to store the docker image and fetch the Dockerfile.
-`mkdir docker_catpred && wget https://raw.githubusercontent.com/maranasgroup/CatPred/refs/heads/main/Dockerfile`
-2. Build the docker image.
-`
-```
-
 #### Installing and Downloading Pre-trained Models (~10 mins)
 
 ```bash

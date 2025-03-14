@@ -8,7 +8,8 @@
 
 ## 🚨 Announcements 📢
 
-- ✅ **28th Feb 2025** - Published in _Nature Communications._
+- ✅ **13th Mar 2025** - Added Dockerfile and instructions to install CatPred using a Docker image
+- ✅ **28th Feb 2025** - Published in [_Nature Communications_](https://www.nature.com/articles/s41467-025-57215-9)
 - ✅ **27th Dec 2024** - Updated repository with scripts to reproduce results from the manuscript.
 - 🚧 **TODO** - Add prediction codes for models using 3D-structural features.
 

@@ -66,7 +66,7 @@ Then proceed to either option below to complete the installation. If installing 
 mkdir catpred_pipeline catpred_pipeline/results
 cd catpred_pipeline
 wget https://catpred.s3.us-east-1.amazonaws.com/capsule_data_update.tar.gz
-tar -xzf capsule_data.tar.gz
+tar -xzf capsule_data_update.tar.gz
 git clone https://github.com/maranasgroup/catpred.git
 cd catpred
 conda env create -f environment.yml

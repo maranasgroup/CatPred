@@ -400,7 +400,7 @@ def get_data(path: str,
     if protein_records_path is None:
         protein_records = None
     else:
-        with gzip.open(protein_records_path, 'rt', encoding='utf-8') as f:
+        with gzip.open(protein_records_path, "rt", encoding="utf-8") as f:
             protein_records = json.load(f)
         
     if args is not None:

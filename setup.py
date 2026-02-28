@@ -29,6 +29,7 @@ setup(
             "catpred_train=catpred.train:catpred_train",
             "catpred_predict=catpred.train:catpred_predict",
             "catpred_fingerprint=catpred.train:catpred_fingerprint",
+            "catpred_web=catpred.web.run:main",
         ]
     },
     install_requires=[
@@ -46,6 +47,12 @@ setup(
         "scipy<1.11 ; python_version=='3.7'",
         "scipy>=1.9 ; python_version=='3.8'",
     ],
+    extras_require={
+        "web": [
+            "fastapi>=0.95,<1.0",
+            "uvicorn>=0.22,<1.0",
+        ]
+    },
     python_requires=">=3.7",
     classifiers=[
         "Programming Language :: Python :: 3",

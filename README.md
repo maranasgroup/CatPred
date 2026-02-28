@@ -23,6 +23,7 @@
    - [System Requirements](#requirements)
    - [Installation](#installing)
    - [Prediction](#predict)
+   - [Web API (Optional)](#web-api-optional)
    - [Reproducibility](#reproduce)
 - [Acknowledgements](#acknw)
 - [License](#license)
@@ -99,6 +100,51 @@ python ./scripts/create_pdbrecords.py --data_file <input.csv> --out_file <input.
 CatPred currently expects one sequence per row. Multi-protein complexes (e.g., heteromers/homodimers) are not explicitly modeled as separate chains in the default prediction workflow.
 
 For released benchmark datasets, the number of entries with 3D structure can be smaller than the total sequence/substrate pairs; 3D-derived artifacts are available only for the subset with valid structure mapping.
+
+### 🌍 Web API (Optional)
+
+CatPred also provides an optional FastAPI service for prediction workflows.
+
+Install web dependencies:
+
+```bash
+pip install -e ".[web]"
+```
+
+Run the API:
+
+```bash
+catpred_web --host 0.0.0.0 --port 8000
+```
+
+Endpoints:
+- `GET /health` — liveness check.
+- `GET /ready` — backend configuration/readiness.
+- `POST /predict` — run inference.
+
+Minimal `POST /predict` example for local inference:
+
+```bash
+curl -X POST http://127.0.0.1:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "parameter": "kcat",
+    "checkpoint_dir": "../data/pretrained/reproduce_checkpoints/kcat",
+    "input_file": "./demo/batch_kcat_pred.csv",
+    "backend": "local"
+  }'
+```
+
+You can keep local inference as default and optionally enable Modal as another backend:
+
+```bash
+export CATPRED_DEFAULT_BACKEND=local
+export CATPRED_MODAL_ENDPOINT="https://<your-modal-endpoint>"
+export CATPRED_MODAL_TOKEN="<optional-token>"
+export CATPRED_MODAL_FALLBACK_TO_LOCAL=1
+```
+
+Use `"backend": "modal"` in `/predict` requests to route through Modal. If fallback is enabled (env var above or request field `fallback_to_local`), failed modal requests can automatically reroute to local inference.
 
 ### 🧪 Fine-Tuning On Custom Data
 

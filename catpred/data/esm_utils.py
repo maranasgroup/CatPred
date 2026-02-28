@@ -22,7 +22,7 @@ def _env_flag(name: str, default: str = "0") -> bool:
     return str(raw).strip().lower() in {"1", "true", "yes", "on"}
 
 
-PROTEIN_EMBED_USE_CPU = _env_flag("PROTEIN_EMBED_USE_CPU", "0")
+PROTEIN_EMBED_USE_CPU = _env_flag("PROTEIN_EMBED_USE_CPU", "0") or not torch.cuda.is_available()
 
 if PROTEIN_EMBED_USE_CPU:
     print('calculating protein embed only on cpu')

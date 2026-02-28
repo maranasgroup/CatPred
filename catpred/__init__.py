@@ -3,6 +3,7 @@ import catpred.features
 import catpred.models
 import catpred.train
 import catpred.uncertainty
+import catpred.inference
 
 import catpred.args
 import catpred.constants

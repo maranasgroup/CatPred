@@ -134,7 +134,7 @@ def load_checkpoint(
 
     # Build model
     model = MoleculeModel(args)
-    print(model)
+    debug(model)
     model_state_dict = model.state_dict()
 
     # Skip missing parameters and parameters of mismatched size
@@ -172,9 +172,6 @@ def load_checkpoint(
     model = model.to(args.device)
 
     return model
-
-import ipdb
-
 def overwrite_state_dict(
     loaded_param_name: str,
     model_param_name: str,

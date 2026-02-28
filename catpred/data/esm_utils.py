@@ -1,12 +1,9 @@
 import torch
 import os
-import re
-from pathlib import Path
 from functools import partial
 import esm
 from torch.nn.utils.rnn import pad_sequence
-from .cache_utils import cache_fn, run_once, md5_hash_fn
-# import esm.inverse_folding as esm_if
+from .cache_utils import cache_fn, run_once
 
 def exists(val):
     return val is not None
@@ -20,7 +17,12 @@ def to_device(t, *, device):
 def cast_tuple(t):
     return (t,) if not isinstance(t, tuple) else t
 
-PROTEIN_EMBED_USE_CPU = os.getenv('PROTEIN_EMBED_USE_CPU', None) is not None
+def _env_flag(name: str, default: str = "0") -> bool:
+    raw = os.getenv(name, default)
+    return str(raw).strip().lower() in {"1", "true", "yes", "on"}
+
+
+PROTEIN_EMBED_USE_CPU = _env_flag("PROTEIN_EMBED_USE_CPU", "0")
 
 if PROTEIN_EMBED_USE_CPU:
     print('calculating protein embed only on cpu')
@@ -31,9 +33,6 @@ GLOBAL_VARIABLES = {
     'model': None,
     'tokenizer': None
 }
-
-# general helper functions
-import ipdb
 
 def calc_protein_representations_with_subunits(proteins, get_repr_fn, *, device):
     representations = []
@@ -102,8 +101,6 @@ INT_TO_AA_STR_MAP = {
 }
 AA_STR_TO_INT_MAP = {v:k for k,v in INT_TO_AA_STR_MAP.items()}
 
-import ipdb
-
 def tensor_to_aa_str(t):
     str_seqs = []
     #ipdb.set_trace()
@@ -116,6 +113,7 @@ def tensor_to_aa_str(t):
 def init_esm():
     model, alphabet = esm.pretrained.esm2_t33_650M_UR50D()
     batch_converter = alphabet.get_batch_converter()
+    model.eval()
 
     if not PROTEIN_EMBED_USE_CPU:
         model = model.cuda()
@@ -124,6 +122,8 @@ def init_esm():
 
 @run_once('init_esm_if')
 def init_esm_if():
+    import esm.inverse_folding as esm_if
+
     model, alphabet = esm.pretrained.esm_if1_gvp4_t16_142M_UR50()
     batch_converter = esm_if.util.CoordBatchConverter(alphabet, 2048)
 
@@ -145,7 +145,7 @@ def get_single_esm_repr(protein_str):
     batch_tokens = batch_tokens[:, :ESM_MAX_LENGTH]
 
     if not PROTEIN_EMBED_USE_CPU:
-        batch_tokens = batch_tokens.cuda()
+        batch_tokens = batch_tokens.to(next(model.parameters()).device)
 
     with torch.no_grad():
         results = model(batch_tokens, repr_layers=[33])
@@ -161,20 +161,30 @@ def get_esm_repr(proteins, name, device):
     # Cache by sequence content to avoid collisions when different proteins
     # are accidentally given the same pdb/name identifier.
     _ = name
-    get_protein_repr_fn = cache_fn(get_single_esm_repr, path = 'esm/proteins')
+    get_protein_repr_fn = cache_fn(get_single_esm_repr, path='esm/proteins')
 
-    return calc_protein_representations_with_subunits([proteins], get_protein_repr_fn, device = device)
+    return calc_protein_representations_with_subunits([proteins], get_protein_repr_fn, device=device)
 
-def get_coords(pdbpath):
-    #init_esm_if()
-    #model, batch_converter = GLOBAL_VARIABLES['esmif_model']
-    addpath = '/home/ubuntu/CatPred-DB/CatPred-DB/'
-    coords = esm_if.util.load_coords(addpath+pdbpath, 'A')
-    return coords
+def get_coords(pdbpath: str, chain_id: str = "A"):
+    try:
+        import esm.inverse_folding as esm_if
+    except ImportError as exc:
+        raise ImportError(
+            "ESM inverse folding is not installed. Install optional esm inverse-folding dependencies "
+            "to use get_coords()."
+        ) from exc
+
+    if not os.path.exists(pdbpath):
+        raise FileNotFoundError(f'PDB file not found: "{pdbpath}"')
+
+    return esm_if.util.load_coords(pdbpath, chain_id)
     
 def get_esm_tokens(protein_str, device):
     if isinstance(protein_str, torch.Tensor):
-        proteins = tensor_to_aa_str(proteins)
+        protein_str = tensor_to_aa_str(protein_str)
+        if len(protein_str) != 1:
+            raise ValueError("get_esm_tokens expects a single protein sequence.")
+        protein_str = protein_str[0]
     
     init_esm()
     model, batch_converter = GLOBAL_VARIABLES['model']
@@ -187,8 +197,8 @@ def get_esm_tokens(protein_str, device):
 
     batch_tokens = batch_tokens[:, :ESM_MAX_LENGTH]
 
-    if device!='cpu':
-        batch_tokens = batch_tokens.cuda()
+    if device != 'cpu':
+        batch_tokens = batch_tokens.to(device)
 
     return batch_tokens
 
@@ -204,7 +214,8 @@ PROTEIN_REPR_CONFIG = {
 
 def get_protein_embedder(name):
     allowed_protein_embedders = list(PROTEIN_REPR_CONFIG.keys())
-    assert name in allowed_protein_embedders, f"must be one of {', '.join(allowed_protein_embedders)}"
+    if name not in allowed_protein_embedders:
+        raise ValueError(f"Unsupported protein embedder '{name}'. Must be one of {', '.join(allowed_protein_embedders)}")
 
     config = PROTEIN_REPR_CONFIG[name]
     return config

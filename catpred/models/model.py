@@ -1,28 +1,18 @@
 from typing import List, Union, Tuple
-from rotary_embedding_torch import RotaryEmbedding
+import os
 
 import numpy as np
 from rdkit import Chem
 import torch
 import torch.nn as nn
+from rotary_embedding_torch import RotaryEmbedding
+from torch.nn.utils.rnn import pad_sequence
+
 from .mpn import MPN
 from .ffn import build_ffn, MultiReadout
 from catpred.args import TrainArgs
 from catpred.features import BatchMolGraph
 from catpred.nn_utils import initialize_weights
-from torch.nn.utils.rnn import pad_sequence
-
-from collections import OrderedDict
-import ipdb
-import os
-
-import torch
-import torch.nn as nn
-
-import ipdb
-import torch
-from torch import nn
-from torch import einsum
 
 
 def _torch_load_compat(path):
@@ -34,9 +24,6 @@ def _torch_load_compat(path):
 
 def exists(val):
     return val is not None
-
-def default(val, d):
-    return val if exists(val) else d
     
 class AttentivePooling(nn.Module):
     def __init__(self, input_size=1280, hidden_size=1280):
@@ -238,7 +225,10 @@ class MoleculeModel(nn.Module):
                     first_linear_dim_now += 1280
                 if args.add_pretrained_egnn_feats:
                     first_linear_dim_now+=128
-                    assert(os.path.exists(args.pretrained_egnn_feats_path))
+                    if not os.path.exists(args.pretrained_egnn_feats_path):
+                        raise FileNotFoundError(
+                            f'Pretrained EGNN features file not found: "{args.pretrained_egnn_feats_path}"'
+                        )
             
             self.readout = build_ffn(
                 first_linear_dim=first_linear_dim_now,

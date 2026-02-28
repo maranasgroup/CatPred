@@ -7,7 +7,7 @@ import numpy as np
 from catpred.args import PredictArgs, TrainArgs
 from catpred.data import get_data, get_data_from_smiles, MoleculeDataLoader, MoleculeDataset, StandardScaler, AtomBondScaler
 from catpred.utils import load_args, load_checkpoint, load_scalers, makedirs, timeit, update_prediction_args
-from catpred.features import set_extra_atom_fdim, set_extra_bond_fdim, set_reaction, set_explicit_h, set_adding_hs, set_keeping_atom_map, reset_featurization_parameters
+from catpred.features import set_extra_atom_fdim, set_extra_bond_fdim, set_reaction, set_explicit_h, set_adding_hs, set_keeping_atom_map, reset_featurization_parameters, featurization_session
 from catpred.models import MoleculeModel
 from catpred.uncertainty import UncertaintyCalibrator, build_uncertainty_calibrator, UncertaintyEstimator, build_uncertainty_evaluator
 from catpred.multitask_utils import reshape_values
@@ -240,8 +240,14 @@ def predict_and_save(
     # Save results
     if save_results:
         print(f"Saving predictions to {args.preds_path}")
-        assert len(test_data) == len(preds)
-        assert len(test_data) == len(unc)
+        if len(test_data) != len(preds):
+            raise RuntimeError(
+                f"Prediction count mismatch: expected {len(test_data)} rows, got {len(preds)} predictions."
+            )
+        if len(test_data) != len(unc):
+            raise RuntimeError(
+                f"Uncertainty count mismatch: expected {len(test_data)} rows, got {len(unc)} rows."
+            )
 
         makedirs(args.preds_path, isfile=True)
 
@@ -401,110 +407,108 @@ def make_predictions(
 
     num_models = len(args.checkpoint_paths)
 
-    set_features(args, train_args)
+    with featurization_session():
+        set_features(args, train_args)
 
-    # Note: to get the invalid SMILES for your data, use the get_invalid_smiles_from_file or get_invalid_smiles_from_list functions from data/utils.py
-    full_data, test_data, test_data_loader, full_to_valid_indices = load_data(
-        args, smiles
-    )
-
-    if args.uncertainty_method is None and (args.calibration_method is not None or args.evaluation_methods is not None):
-        if args.dataset_type in ['classification', 'multiclass']:
-            args.uncertainty_method = 'classification'
-        else:
-            raise ValueError('Cannot calibrate or evaluate uncertainty without selection of an uncertainty method.')
-
-
-    if calibrator is None and args.calibration_path is not None:
-
-        calibration_data = get_data(
-            protein_records_path=args.protein_records_path,
-            path=args.calibration_path,
-            smiles_columns=args.smiles_columns,
-            target_columns=task_names,
-            args=args,
-            features_path=args.calibration_features_path,
-            features_generator=args.features_generator,
-            phase_features_path=args.calibration_phase_features_path,
-            atom_descriptors_path=args.calibration_atom_descriptors_path,
-            bond_descriptors_path=args.calibration_bond_descriptors_path,
-            max_data_size=args.max_data_size,
-            loss_function=args.loss_function,
+        # Note: to get the invalid SMILES for your data, use get_invalid_smiles_from_file/get_invalid_smiles_from_list.
+        full_data, test_data, test_data_loader, full_to_valid_indices = load_data(
+            args, smiles
         )
 
-        calibration_data_loader = MoleculeDataLoader(
-            dataset=calibration_data,
-            batch_size=args.batch_size,
-            num_workers=args.num_workers,
-        )
-
-        if isinstance(models, List) and isinstance(scalers, List):
-            calibration_models = models
-            calibration_scalers = scalers
-        else:
-            calibration_model_objects = load_model(args, generator=True)
-            calibration_models = calibration_model_objects[2]
-            calibration_scalers = calibration_model_objects[3]
-
-        calibrator = build_uncertainty_calibrator(
-            calibration_method=args.calibration_method,
-            uncertainty_method=args.uncertainty_method,
-            interval_percentile=args.calibration_interval_percentile,
-            regression_calibrator_metric=args.regression_calibrator_metric,
-            calibration_data=calibration_data,
-            calibration_data_loader=calibration_data_loader,
-            models=calibration_models,
-            scalers=calibration_scalers,
-            num_models=num_models,
-            dataset_type=args.dataset_type,
-            loss_function=args.loss_function,
-            uncertainty_dropout_p=args.uncertainty_dropout_p,
-            dropout_sampling_size=args.dropout_sampling_size,
-            spectra_phase_mask=getattr(train_args, "spectra_phase_mask", None),
-        )
-
-    # Edge case if empty list of smiles is provided
-    if len(test_data) == 0:
-        preds = [None] * len(full_data)
-        unc = [None] * len(full_data)
-    else:
-        preds, unc = predict_and_save(
-            args=args,
-            train_args=train_args,
-            test_data=test_data,
-            task_names=task_names,
-            num_tasks=num_tasks,
-            test_data_loader=test_data_loader,
-            full_data=full_data,
-            full_to_valid_indices=full_to_valid_indices,
-            models=models,
-            scalers=scalers,
-            num_models=num_models,
-            calibrator=calibrator,
-            return_invalid_smiles=return_invalid_smiles,
-        )
-
-    if return_index_dict:
-        preds_dict = {}
-        unc_dict = {}
-        for i in range(len(full_data)):
-            if return_invalid_smiles:
-                preds_dict[i] = preds[i]
-                unc_dict[i] = unc[i]
+        if args.uncertainty_method is None and (args.calibration_method is not None or args.evaluation_methods is not None):
+            if args.dataset_type in ['classification', 'multiclass']:
+                args.uncertainty_method = 'classification'
             else:
-                valid_index = full_to_valid_indices.get(i, None)
-                if valid_index is not None:
-                    preds_dict[i] = preds[valid_index]
-                    unc_dict[i] = unc[valid_index]
-        if return_uncertainty:
-            return preds_dict, unc_dict
+                raise ValueError('Cannot calibrate or evaluate uncertainty without selection of an uncertainty method.')
+
+        if calibrator is None and args.calibration_path is not None:
+
+            calibration_data = get_data(
+                protein_records_path=args.protein_records_path,
+                path=args.calibration_path,
+                smiles_columns=args.smiles_columns,
+                target_columns=task_names,
+                args=args,
+                features_path=args.calibration_features_path,
+                features_generator=args.features_generator,
+                phase_features_path=args.calibration_phase_features_path,
+                atom_descriptors_path=args.calibration_atom_descriptors_path,
+                bond_descriptors_path=args.calibration_bond_descriptors_path,
+                max_data_size=args.max_data_size,
+                loss_function=args.loss_function,
+            )
+
+            calibration_data_loader = MoleculeDataLoader(
+                dataset=calibration_data,
+                batch_size=args.batch_size,
+                num_workers=args.num_workers,
+            )
+
+            if isinstance(models, list) and isinstance(scalers, list):
+                calibration_models = models
+                calibration_scalers = scalers
+            else:
+                calibration_model_objects = load_model(args, generator=True)
+                calibration_models = calibration_model_objects[2]
+                calibration_scalers = calibration_model_objects[3]
+
+            calibrator = build_uncertainty_calibrator(
+                calibration_method=args.calibration_method,
+                uncertainty_method=args.uncertainty_method,
+                interval_percentile=args.calibration_interval_percentile,
+                regression_calibrator_metric=args.regression_calibrator_metric,
+                calibration_data=calibration_data,
+                calibration_data_loader=calibration_data_loader,
+                models=calibration_models,
+                scalers=calibration_scalers,
+                num_models=num_models,
+                dataset_type=args.dataset_type,
+                loss_function=args.loss_function,
+                uncertainty_dropout_p=args.uncertainty_dropout_p,
+                dropout_sampling_size=args.dropout_sampling_size,
+                spectra_phase_mask=getattr(train_args, "spectra_phase_mask", None),
+            )
+
+        # Edge case if empty list of smiles is provided
+        if len(test_data) == 0:
+            preds = [None] * len(full_data)
+            unc = [None] * len(full_data)
         else:
+            preds, unc = predict_and_save(
+                args=args,
+                train_args=train_args,
+                test_data=test_data,
+                task_names=task_names,
+                num_tasks=num_tasks,
+                test_data_loader=test_data_loader,
+                full_data=full_data,
+                full_to_valid_indices=full_to_valid_indices,
+                models=models,
+                scalers=scalers,
+                num_models=num_models,
+                calibrator=calibrator,
+                return_invalid_smiles=return_invalid_smiles,
+            )
+
+        if return_index_dict:
+            preds_dict = {}
+            unc_dict = {}
+            for i in range(len(full_data)):
+                if return_invalid_smiles:
+                    preds_dict[i] = preds[i]
+                    unc_dict[i] = unc[i]
+                else:
+                    valid_index = full_to_valid_indices.get(i, None)
+                    if valid_index is not None:
+                        preds_dict[i] = preds[valid_index]
+                        unc_dict[i] = unc[valid_index]
+            if return_uncertainty:
+                return preds_dict, unc_dict
             return preds_dict
-    else:
+
         if return_uncertainty:
             return preds, unc
-        else:
-            return preds
+        return preds
 
 
 def catpred_predict() -> None:

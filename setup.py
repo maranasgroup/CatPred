@@ -28,6 +28,7 @@ setup(
         "console_scripts": [
             "catpred_train=catpred.train:catpred_train",
             "catpred_predict=catpred.train:catpred_predict",
+            "catpred_fingerprint=catpred.train:catpred_fingerprint",
         ]
     },
     install_requires=[

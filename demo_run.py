@@ -52,18 +52,20 @@ def prepare_prediction_inputs(parameter, input_file_path):
     for i, smi in enumerate(smiles_list):
         try:
             mol = Chem.MolFromSmiles(smi)
+            if mol is None:
+                raise ValueError("RDKit could not parse SMILES")
             smi = Chem.MolToSmiles(mol)
             if parameter == 'kcat' and '.' in smi:
                 smi = '.'.join(sorted(smi.split('.')))
             smiles_list_new.append(smi)
-        except:
-            print(f'Invalid SMILES input in input row {i}')
+        except Exception as exc:
+            print(f'Invalid SMILES input in input row {i}: {exc}')
             print('Correct your input! Exiting..')
             return None
 
     valid_aas = set('ACDEFGHIKLMNPQRSTVWY')
     for i, seq in enumerate(seq_list):
-        if not set(seq).issubset(valid_aas):
+        if not isinstance(seq, str) or not set(seq).issubset(valid_aas):
             print(f'Invalid Enzyme sequence input in row {i}!')
             print('Correct your input! Exiting..')
             return None

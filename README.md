@@ -126,6 +126,7 @@ By default, the API is hardened for service use:
 - `input_file` requests are disabled (use `input_rows` instead).
 - request-time overrides of `repo_root` / `python_executable` are disabled.
 - `results_dir` is constrained under `CATPRED_API_RESULTS_ROOT`.
+- for local backend (and modal requests with fallback enabled), `checkpoint_dir` must resolve under `CATPRED_API_CHECKPOINT_ROOT`.
 
 Minimal `POST /predict` example for local inference using `input_rows`:
 
@@ -134,7 +135,7 @@ curl -X POST http://127.0.0.1:8000/predict \
   -H "Content-Type: application/json" \
   -d '{
     "parameter": "kcat",
-    "checkpoint_dir": "../data/pretrained/reproduce_checkpoints/kcat",
+    "checkpoint_dir": "kcat",
     "input_rows": [
       {"SMILES": "CCO", "sequence": "ACDEFGHIK", "pdbpath": "seq_a"},
       {"SMILES": "CCN", "sequence": "LMNPQRSTV", "pdbpath": "seq_b"}
@@ -154,6 +155,7 @@ export CATPRED_MODAL_FALLBACK_TO_LOCAL=1
 ```
 
 Use `"backend": "modal"` in `/predict` requests to route through Modal. If fallback is enabled (env var above or request field `fallback_to_local`), failed modal requests can automatically reroute to local inference.
+For local backend requests, place local checkpoints under `CATPRED_API_CHECKPOINT_ROOT` and pass a path relative to that root (for example, `"checkpoint_dir": "kcat"`).
 
 Optional API environment variables:
 

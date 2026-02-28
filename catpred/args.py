@@ -1,7 +1,6 @@
 import json
 import os
 from tempfile import TemporaryDirectory
-import pickle
 from typing import List, Optional
 from typing_extensions import Literal
 from packaging import version
@@ -15,6 +14,7 @@ import numpy as np
 import catpred.data.utils
 from catpred.data import set_cache_mol, empty_cache
 from catpred.features import get_available_features_generators
+from catpred.security import load_index_artifact
 
 
 Metric = Literal['auc', 'prc-auc', 'rmse', 'mae', 'mse', 'r2', 'accuracy', 'cross_entropy', 'binary_cross_entropy', 'sid', 'wasserstein', 'f1', 'mcc', 'bounded_rmse', 'bounded_mae', 'bounded_mse']
@@ -815,8 +815,10 @@ class TrainArgs(CommonArgs):
             raise ValueError('When using crossval or index_predetermined split type, must provide crossval_index_file.')
 
         if self.split_type in ['crossval', 'index_predetermined']:
-            with open(self.crossval_index_file, 'rb') as rf:
-                self._crossval_index_sets = pickle.load(rf)
+            self._crossval_index_sets = load_index_artifact(
+                self.crossval_index_file,
+                purpose="cross-validation index file",
+            )
             self.num_folds = len(self.crossval_index_sets)
             self.seed = 0
 

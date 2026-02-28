@@ -1,6 +1,9 @@
 from typing import List, Tuple, Union
 from itertools import zip_longest
 import logging
+from contextlib import contextmanager
+from copy import deepcopy
+import threading
 
 from rdkit import Chem
 import torch
@@ -50,6 +53,31 @@ class Featurization_parameters:
 
 # Create a global parameter object for reference throughout this module
 PARAMS = Featurization_parameters()
+_FEATURIZATION_LOCK = threading.RLock()
+
+
+def _clone_featurization_parameters(params: Featurization_parameters) -> Featurization_parameters:
+    cloned = Featurization_parameters()
+    cloned.__dict__.update(deepcopy(params.__dict__))
+    return cloned
+
+
+@contextmanager
+def featurization_session():
+    """
+    Protects global featurization state for one train/predict transaction.
+
+    This is an interim safety mechanism for multi-request serving environments
+    where concurrent requests can otherwise mutate shared featurization globals.
+    """
+    global PARAMS
+
+    with _FEATURIZATION_LOCK:
+        snapshot = _clone_featurization_parameters(PARAMS)
+        try:
+            yield
+        finally:
+            PARAMS = snapshot
 
 
 def reset_featurization_parameters(logger: logging.Logger = None) -> None:

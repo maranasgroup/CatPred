@@ -237,7 +237,7 @@ def run_training(args: TrainArgs,
         makedirs(save_dir)
         try:
             writer = SummaryWriter(log_dir=save_dir)
-        except:
+        except TypeError:
             writer = SummaryWriter(logdir=save_dir)
 
         # Load/build model

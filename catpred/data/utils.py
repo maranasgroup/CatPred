@@ -3,7 +3,6 @@ import sys
 import csv
 import ctypes
 from logging import Logger
-import pickle
 from random import Random
 from typing import List, Set, Tuple, Union
 import os
@@ -15,7 +14,6 @@ from rdkit import Chem
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import ipdb
 
 from .esm_utils import get_protein_embedder, get_coords
 from .data import MoleculeDatapoint, MoleculeDataset, make_mols
@@ -23,9 +21,37 @@ from .scaffold import log_scaffold_stats, scaffold_split
 from catpred.args import PredictArgs, TrainArgs
 from catpred.features import load_features, load_valid_atom_or_bond_features, is_mol
 from catpred.rdkit import make_mol
+from catpred.security import load_index_artifact, load_pickle_artifact
 
 # Increase maximum size of field in the csv processing for the current architecture
 csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))
+
+
+def _load_protein_records(protein_records_path: str):
+    """
+    Load protein records JSON from gzip, plain JSON, or accidentally double-gzipped files.
+    """
+    try:
+        with gzip.open(protein_records_path, "rt", encoding="utf-8") as handle:
+            return json.load(handle)
+    except Exception:
+        try:
+            with gzip.open(protein_records_path, "rb") as handle:
+                payload = handle.read()
+            if payload[:2] == b"\x1f\x8b":
+                payload = gzip.decompress(payload)
+                return json.loads(payload.decode("utf-8"))
+        except Exception:
+            pass
+
+        try:
+            with open(protein_records_path, "rt", encoding="utf-8") as handle:
+                return json.load(handle)
+        except Exception as plain_err:
+            raise ValueError(
+                f'Failed to load protein records from "{protein_records_path}". '
+                "Expected a JSON mapping in .json or .json.gz format."
+            ) from plain_err
 
 def get_header(path: str) -> List[str]:
     """
@@ -400,8 +426,7 @@ def get_data(path: str,
     if protein_records_path is None:
         protein_records = None
     else:
-        with gzip.open(protein_records_path, "rt", encoding="utf-8") as f:
-            protein_records = json.load(f)
+        protein_records = _load_protein_records(protein_records_path)
         
     if args is not None:
         # Prefer explicit function arguments but default to args if not provided
@@ -498,16 +523,42 @@ def get_data(path: str,
             if args.smoke_test: 
                 if smoke_test_counter>100: break
             smiles = [row[c] for c in smiles_columns]
-            pdbpath = row['pdbpath']
-            pdbname = pdbpath.split("/")[-1]
-            protein_record = protein_records[pdbname]
-            if not protein_records is None: 
-                sequence_features, _ = sequence_feat_getter(protein_record['seq'], 
-                                                            name = pdbname, 
-                                                            device = 'cpu')
-                protein_record['esm2_feats'] = sequence_features[0] #batch dim
-            else:
-                protein_record = None
+            protein_record = None
+
+            if protein_records is not None:
+                if 'pdbpath' not in row:
+                    raise ValueError(
+                        f'Missing required "pdbpath" column in {path} at row {i + 2}.'
+                    )
+
+                pdbpath = (row['pdbpath'] or '').strip()
+                if pdbpath == '':
+                    raise ValueError(
+                        f'Empty pdbpath found in {path} at row {i + 2}.'
+                    )
+
+                pdbname = os.path.basename(pdbpath)
+                protein_record = protein_records.get(pdbname) or protein_records.get(pdbpath)
+                if protein_record is None:
+                    raise KeyError(
+                        f'No protein record found for pdbpath "{pdbpath}" (basename "{pdbname}") '
+                        f'in row {i + 2}. Ensure create_pdbrecords.py was run on the same input file.'
+                    )
+
+                row_sequence = row.get('sequence')
+                if row_sequence is not None and protein_record.get('seq') != row_sequence:
+                    raise ValueError(
+                        f'Sequence mismatch for pdbpath "{pdbpath}" in row {i + 2}. '
+                        'This usually means multiple sequences share the same pdbpath identifier.'
+                    )
+
+                if 'esm2_feats' not in protein_record:
+                    sequence_features, _ = sequence_feat_getter(
+                        protein_record['seq'],
+                        name=pdbname,
+                        device='cpu'
+                    )
+                    protein_record['esm2_feats'] = sequence_features[0]  # batch dim
                 
             targets, atom_targets, bond_targets = [], [], []
             for column in target_columns:
@@ -740,8 +791,12 @@ def split_data(data: MoleculeDataset,
         for split in range(3):
             split_indices = []
             for index in index_set[split]:
-                with open(os.path.join(args.crossval_index_dir, f'{index}.pkl'), 'rb') as rf:
-                    split_indices.extend(pickle.load(rf))
+                split_indices.extend(
+                    load_index_artifact(
+                        os.path.join(args.crossval_index_dir, f"{index}.pkl"),
+                        purpose="cross-validation fold index file",
+                    )
+                )
             data_split.append([data[i] for i in split_indices])
         train, val, test = tuple(data_split)
         return MoleculeDataset(train), MoleculeDataset(val), MoleculeDataset(test)
@@ -790,12 +845,10 @@ def split_data(data: MoleculeDataset,
         if test_fold_index is None:
             raise ValueError('arg "test_fold_index" can not be None!')
 
-        try:
-            with open(folds_file, 'rb') as f:
-                all_fold_indices = pickle.load(f)
-        except UnicodeDecodeError:
-            with open(folds_file, 'rb') as f:
-                all_fold_indices = pickle.load(f, encoding='latin1')  # in case we're loading indices from python2
+        all_fold_indices = load_pickle_artifact(
+            folds_file,
+            purpose="predetermined folds file",
+        )
 
         log_scaffold_stats(data, all_fold_indices, logger=logger)
 

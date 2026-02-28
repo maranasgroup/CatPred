@@ -4,6 +4,7 @@ import torch
 import hashlib
 from functools import wraps
 from pathlib import Path
+from catpred.security import load_torch_artifact
 
 def exists(val):
     return val is not None
@@ -92,7 +93,11 @@ def cache_fn(
 
         if entry_path.exists():
             log(f'cache hit: fetching {t} from {str(entry_path)}')
-            return torch.load(str(entry_path))
+            return load_torch_artifact(
+                str(entry_path),
+                purpose="esm cache entry",
+                roots=[CACHE_PATH],
+            )
 
         out = fn(t, *args, **kwargs)
 

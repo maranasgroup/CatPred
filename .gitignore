@@ -32,3 +32,16 @@ catpred/data/__pycache__/esm_utils.cpython-312.pyc
 catpred/data/__pycache__/data.cpython-312.pyc
 catpred/data/__pycache__/cache_utils.cpython-312.pyc
 catpred/data/__pycache__/__init__.cpython-312.pyc
+
+# Generic Python/OS artifacts
+__pycache__/
+*.pyo
+*.pyd
+.DS_Store
+*.egg-info/
+.venv/
+.ipynb_checkpoints/
+
+# Local validation artifacts
+.e2e-assets/
+.e2e-tests/

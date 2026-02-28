@@ -13,6 +13,7 @@ Dependencies:
 
 import time
 import os
+import subprocess
 import pandas as pd
 import numpy as np
 from IPython.display import Image, display
@@ -20,8 +21,30 @@ from rdkit import Chem
 from IPython.display import display, Latex, Math
 import argparse
 
-def create_csv_sh(parameter, input_file_path, checkpoint_dir):
+
+def prepare_prediction_inputs(parameter, input_file_path):
     df = pd.read_csv(input_file_path)
+    required_columns = {"SMILES", "sequence", "pdbpath"}
+    missing_columns = required_columns.difference(df.columns)
+    if missing_columns:
+        print(
+            f'Missing required column(s) in input file: {", ".join(sorted(missing_columns))}.'
+        )
+        return None
+
+    conflicting_pdbpaths = (
+        df.groupby("pdbpath")["sequence"]
+        .nunique(dropna=False)
+        .loc[lambda value: value > 1]
+    )
+    if len(conflicting_pdbpaths) > 0:
+        preview = ", ".join(conflicting_pdbpaths.index.astype(str).tolist()[:5])
+        print(
+            "Found pdbpath values mapped to multiple sequences. "
+            f"Each unique sequence must have a unique pdbpath. Examples: {preview}"
+        )
+        return None
+
     smiles_list = df.SMILES
     seq_list = df.sequence
     smiles_list_new = []
@@ -45,21 +68,17 @@ def create_csv_sh(parameter, input_file_path, checkpoint_dir):
             print('Correct your input! Exiting..')
             return None
 
-    input_file_new_path = f'{input_file_path[:-4]}_input.csv'
+    input_file_base, _ = os.path.splitext(input_file_path)
+    input_file_new_path = f'{input_file_base}_input.csv'
     df['SMILES'] = smiles_list_new
-    df.to_csv(input_file_new_path)
+    df.to_csv(input_file_new_path, index=False)
 
-    with open('predict.sh', 'w') as f:
-        f.write(f'''
-        TEST_FILE_PREFIX={input_file_new_path[:-4]}
-        RECORDS_FILE=${{TEST_FILE_PREFIX}}.json
-        CHECKPOINT_DIR={checkpoint_dir}
-        
-        python ./scripts/create_pdbrecords.py --data_file ${{TEST_FILE_PREFIX}}.csv --out_file ${{RECORDS_FILE}}
-        python predict.py --test_path ${{TEST_FILE_PREFIX}}.csv --preds_path ${{TEST_FILE_PREFIX}}_output.csv --checkpoint_dir $CHECKPOINT_DIR --uncertainty_method mve --smiles_column SMILES --individual_ensemble_predictions --protein_records_path $RECORDS_FILE
-        ''')
-
-    return input_file_new_path[:-4]+'_output.csv'
+    test_file_prefix = input_file_new_path[:-4]
+    return {
+        "input_csv": input_file_new_path,
+        "records_file": f"{test_file_prefix}.json.gz",
+        "output_csv": f"{test_file_prefix}_output.csv",
+    }
 
 def get_predictions(parameter, outfile):
     """
@@ -86,6 +105,12 @@ def get_predictions(parameter, outfile):
 
     unc_col = f'{target_col}_mve_uncal_var'
 
+    missing_cols = [col for col in [target_col, unc_col] if col not in df.columns]
+    if missing_cols:
+        raise ValueError(
+            f'Prediction output is missing required column(s): {", ".join(missing_cols)}'
+        )
+
     for _, row in df.iterrows():
         model_cols = [col for col in row.index if col.startswith(target_col) and 'model_' in col]
 
@@ -93,12 +118,15 @@ def get_predictions(parameter, outfile):
         prediction = row[target_col]
         prediction_linear = np.power(10, prediction)
 
-        model_outs = np.array([row[col] for col in model_cols])
-        epi_unc = np.var(model_outs)
-        alea_unc = unc - epi_unc
+        if model_cols:
+            model_outs = np.array([row[col] for col in model_cols])
+            epi_unc = np.var(model_outs)
+        else:
+            epi_unc = 0.0
+        alea_unc = max(unc - epi_unc, 0.0)
         epi_unc = np.sqrt(epi_unc)
         alea_unc = np.sqrt(alea_unc)
-        unc = np.sqrt(unc)
+        unc = np.sqrt(max(unc, 0.0))
 
         pred_col.append(prediction_linear)
         pred_logcol.append(prediction)
@@ -115,22 +143,62 @@ def get_predictions(parameter, outfile):
     return df
 
 def main(args):
-    print(os.getcwd())
-
-    outfile = create_csv_sh(args.parameter, args.input_file, args.checkpoint_dir)
-    if outfile is None:
+    run_paths = prepare_prediction_inputs(args.parameter, args.input_file)
+    if run_paths is None:
         return
 
+    outfile = run_paths["output_csv"]
     print('Predicting.. This will take a while..')
 
-    if args.use_gpu:
-        os.system("export PROTEIN_EMBED_USE_CPU=0;./predict.sh")
-    else:
-        os.system("export PROTEIN_EMBED_USE_CPU=1;./predict.sh")
+    env = os.environ.copy()
+    env["PROTEIN_EMBED_USE_CPU"] = "0" if args.use_gpu else "1"
+
+    create_records_cmd = [
+        "python",
+        "./scripts/create_pdbrecords.py",
+        "--data_file",
+        run_paths["input_csv"],
+        "--out_file",
+        run_paths["records_file"],
+    ]
+    predict_cmd = [
+        "python",
+        "predict.py",
+        "--test_path",
+        run_paths["input_csv"],
+        "--preds_path",
+        outfile,
+        "--checkpoint_dir",
+        args.checkpoint_dir,
+        "--uncertainty_method",
+        "mve",
+        "--smiles_column",
+        "SMILES",
+        "--individual_ensemble_predictions",
+        "--protein_records_path",
+        run_paths["records_file"],
+    ]
+
+    create_records_result = subprocess.run(create_records_cmd, env=env)
+    if create_records_result.returncode != 0:
+        print(
+            f"Protein record generation failed with exit code {create_records_result.returncode}."
+        )
+        return
+
+    predict_result = subprocess.run(predict_cmd, env=env)
+    if predict_result.returncode != 0:
+        print(f"Prediction command failed with exit code {predict_result.returncode}.")
+        return
+
+    if not os.path.exists(outfile):
+        print(f'Prediction output file was not generated: {outfile}')
+        return
 
     output_final = get_predictions(args.parameter, outfile)
     filename = outfile.split('/')[-1]
-    output_final.to_csv(f'../results/{filename}')
+    os.makedirs('../results', exist_ok=True)
+    output_final.to_csv(f'../results/{filename}', index=False)
     print('Output saved to results/', filename)
 
 if __name__ == "__main__":

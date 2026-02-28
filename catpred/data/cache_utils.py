@@ -27,6 +27,13 @@ def md5_hash_fn(s):
     encoded = s.encode('utf-8')
     return hashlib.md5(encoded).hexdigest()
 
+
+def _torch_load_compat(path):
+    try:
+        return torch.load(path, weights_only=False)
+    except TypeError:
+        return torch.load(path)
+
 # run once function
 
 GLOBAL_RUN_RECORDS = dict()
@@ -92,7 +99,7 @@ def cache_fn(
 
         if entry_path.exists():
             log(f'cache hit: fetching {t} from {str(entry_path)}')
-            return torch.load(str(entry_path))
+            return _torch_load_compat(str(entry_path))
 
         out = fn(t, *args, **kwargs)
 

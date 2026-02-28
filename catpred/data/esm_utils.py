@@ -157,8 +157,11 @@ def get_single_esm_repr(protein_str):
 def get_esm_repr(proteins, name, device):
     if isinstance(proteins, torch.Tensor):
         proteins = tensor_to_aa_str(proteins)
-    
-    get_protein_repr_fn = cache_fn(get_single_esm_repr, path = 'esm/proteins', name = name)
+
+    # Cache by sequence content to avoid collisions when different proteins
+    # are accidentally given the same pdb/name identifier.
+    _ = name
+    get_protein_repr_fn = cache_fn(get_single_esm_repr, path = 'esm/proteins')
 
     return calc_protein_representations_with_subunits([proteins], get_protein_repr_fn, device = device)
 

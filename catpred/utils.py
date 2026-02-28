@@ -25,6 +25,18 @@ from catpred.nn_utils import NoamLR
 from catpred.models.ffn import MultiReadout
 
 
+def _torch_load_compat(path, map_location=None):
+    """
+    Explicitly disable weights-only loading for backward compatibility with
+    CatPred checkpoints that store non-tensor objects (e.g., argparse.Namespace).
+    """
+    try:
+        return torch.load(path, map_location=map_location, weights_only=False)
+    except TypeError:
+        # For older torch versions that do not support weights_only.
+        return torch.load(path, map_location=map_location)
+
+
 def makedirs(path: str, isfile: bool = False) -> None:
     """
     Creates a directory given a path to either a directory or file.
@@ -110,7 +122,7 @@ def load_checkpoint(
         debug = info = print
 
     # Load model and args
-    state = torch.load(path, map_location=lambda storage, loc: storage)
+    state = _torch_load_compat(path, map_location=lambda storage, loc: storage)
     args = TrainArgs()
     args.from_dict(vars(state["args"]), skip_unsettable=True)
     if not pretrained_egnn_feats_path is None: 
@@ -221,7 +233,7 @@ def load_frzn_model(
     """
     debug = logger.debug if logger is not None else print
 
-    loaded_mpnn_model = torch.load(path, map_location=lambda storage, loc: storage)
+    loaded_mpnn_model = _torch_load_compat(path, map_location=lambda storage, loc: storage)
     loaded_state_dict = loaded_mpnn_model["state_dict"]
     loaded_args = loaded_mpnn_model["args"]
 
@@ -443,7 +455,7 @@ def load_scalers(
     :return: A tuple with the data :class:`~catpred.data.scaler.StandardScaler`
              and features :class:`~catpred.data.scaler.StandardScaler`.
     """
-    state = torch.load(path, map_location=lambda storage, loc: storage)
+    state = _torch_load_compat(path, map_location=lambda storage, loc: storage)
 
     if state["data_scaler"] is not None:
         scaler = StandardScaler(state["data_scaler"]["means"], state["data_scaler"]["stds"])
@@ -498,7 +510,7 @@ def load_args(path: str) -> TrainArgs:
     """
     args = TrainArgs()
     args.from_dict(
-        vars(torch.load(path, map_location=lambda storage, loc: storage)["args"]),
+        vars(_torch_load_compat(path, map_location=lambda storage, loc: storage)["args"]),
         skip_unsettable=True,
     )
 

@@ -24,6 +24,14 @@ import torch
 from torch import nn
 from torch import einsum
 
+
+def _torch_load_compat(path):
+    try:
+        return torch.load(path, weights_only=False)
+    except TypeError:
+        return torch.load(path)
+
+
 def exists(val):
     return val is not None
 
@@ -131,7 +139,7 @@ class MoleculeModel(nn.Module):
         self.seq_embedder = nn.Embedding(21, args.seq_embed_dim, padding_idx=20) #last index is for padding
 
         if self.args.add_pretrained_egnn_feats:
-            self.pretrained_egnn_feats_dict = torch.load(self.args.pretrained_egnn_feats_path)
+            self.pretrained_egnn_feats_dict = _torch_load_compat(self.args.pretrained_egnn_feats_path)
             x = list(self.pretrained_egnn_feats_dict.values())
             self.pretrained_egnn_feats_avg = torch.stack(x).mean(dim=0)
             
@@ -417,8 +425,10 @@ class MoleculeModel(nn.Module):
                     esm_feature_arr = [each['esm2_feats'] for each in protein_records]
                     esm_feature_arr = pad_sequence(esm_feature_arr,
                                                    batch_first=True).to(self.device)
-                    if seq_arr.shape[1]!=esm_feature_arr.shape[1]: 
-                        seq_arr = seq_arr[:,:esm_feature_arr.shape[1]:]
+                    if seq_arr.shape[1] != esm_feature_arr.shape[1]:
+                        common_len = min(seq_arr.shape[1], esm_feature_arr.shape[1])
+                        seq_arr = seq_arr[:, :common_len]
+                        esm_feature_arr = esm_feature_arr[:, :common_len]
 
                 # project sequence to embed dim
                 seq_outs = self.seq_embedder(seq_arr)                    

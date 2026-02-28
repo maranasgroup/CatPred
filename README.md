@@ -65,7 +65,8 @@ Then proceed to either option below to complete the installation. If installing 
 ```bash
 mkdir catpred_pipeline catpred_pipeline/results
 cd catpred_pipeline
-wget https://catpred.s3.us-east-1.amazonaws.com/capsule_data_update.tar.gz
+wget -c --tries=5 --timeout=30 https://catpred.s3.us-east-1.amazonaws.com/capsule_data_update.tar.gz || \
+wget -c --tries=5 --timeout=30 https://catpred.s3.amazonaws.com/capsule_data_update.tar.gz
 tar -xzf capsule_data_update.tar.gz
 git clone https://github.com/maranasgroup/catpred.git
 cd catpred
@@ -74,9 +75,64 @@ conda activate catpred
 pip install -e .
 ````
 
+`stride` is Linux-only and optional for the default demos. If needed for your workflow, install it separately on Linux:
+
+```bash
+conda install -c kimlab stride
+```
+
 ### 🔮 Prediction <a name="predict"></a>
 
 The Jupyter Notebook `batch_demo.ipynb` and the Python script `demo_run.py` show the usage of pre-trained models for prediction.
+
+Input CSV requirements for `demo_run.py` and batch prediction:
+- Required columns: `SMILES`, `sequence`, `pdbpath`.
+- `pdbpath` must be unique per unique sequence. Reusing the same `pdbpath` for different sequences can produce incorrect cached embeddings.
+- Reusing the same `pdbpath` for repeated measurements of the same sequence is supported.
+
+The helper script used to build protein records is:
+
+```bash
+python ./scripts/create_pdbrecords.py --data_file <input.csv> --out_file <input.json.gz>
+```
+
+CatPred currently expects one sequence per row. Multi-protein complexes (e.g., heteromers/homodimers) are not explicitly modeled as separate chains in the default prediction workflow.
+
+For released benchmark datasets, the number of entries with 3D structure can be smaller than the total sequence/substrate pairs; 3D-derived artifacts are available only for the subset with valid structure mapping.
+
+### 🧪 Fine-Tuning On Custom Data
+
+You can fine-tune CatPred on your own regression targets using `train.py`.
+
+1. Prepare train/val/test CSVs with at least:
+- `SMILES`
+- `sequence`
+- `pdbpath` (unique per unique sequence)
+- one numeric target column (for example: `log10kcat_max`)
+
+2. Build a protein-records file that covers all `pdbpath` values in your splits:
+
+```bash
+python ./scripts/create_pdbrecords.py --data_file <combined_or_train_csv> --out_file <protein_records.json.gz>
+```
+
+3. Train:
+
+```bash
+python train.py \
+  --protein_records_path <protein_records.json.gz> \
+  --data_path <train.csv> \
+  --separate_val_path <val.csv> \
+  --separate_test_path <test.csv> \
+  --dataset_type regression \
+  --smiles_columns SMILES \
+  --target_columns <target_column_name> \
+  --add_esm_feats \
+  --loss_function mve \
+  --save_dir <output_checkpoint_dir>
+```
+
+For working end-to-end examples, see the training commands in scripts such as `scripts/reproduce_figS10_catpred.sh`.
 
 ### 🔄 Reproducing Publication Results <a name="reproduce"></a>
 

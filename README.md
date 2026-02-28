@@ -122,7 +122,12 @@ Endpoints:
 - `GET /ready` — backend configuration/readiness.
 - `POST /predict` — run inference.
 
-Minimal `POST /predict` example for local inference:
+By default, the API is hardened for service use:
+- `input_file` requests are disabled (use `input_rows` instead).
+- request-time overrides of `repo_root` / `python_executable` are disabled.
+- `results_dir` is constrained under `CATPRED_API_RESULTS_ROOT`.
+
+Minimal `POST /predict` example for local inference using `input_rows`:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/predict \
@@ -130,7 +135,11 @@ curl -X POST http://127.0.0.1:8000/predict \
   -d '{
     "parameter": "kcat",
     "checkpoint_dir": "../data/pretrained/reproduce_checkpoints/kcat",
-    "input_file": "./demo/batch_kcat_pred.csv",
+    "input_rows": [
+      {"SMILES": "CCO", "sequence": "ACDEFGHIK", "pdbpath": "seq_a"},
+      {"SMILES": "CCN", "sequence": "LMNPQRSTV", "pdbpath": "seq_b"}
+    ],
+    "results_dir": "batch1",
     "backend": "local"
   }'
 ```
@@ -145,6 +154,22 @@ export CATPRED_MODAL_FALLBACK_TO_LOCAL=1
 ```
 
 Use `"backend": "modal"` in `/predict` requests to route through Modal. If fallback is enabled (env var above or request field `fallback_to_local`), failed modal requests can automatically reroute to local inference.
+
+Optional API environment variables:
+
+```bash
+# Root directories used by API path constraints
+export CATPRED_API_INPUT_ROOT="/absolute/path/for/input-csvs"
+export CATPRED_API_RESULTS_ROOT="/absolute/path/for/results"
+
+# Enable only for trusted local workflows (not recommended for public deployments)
+export CATPRED_API_ALLOW_INPUT_FILE=1
+export CATPRED_API_ALLOW_UNSAFE_OVERRIDES=1
+
+# Request limits
+export CATPRED_API_MAX_INPUT_ROWS=1000
+export CATPRED_API_MAX_INPUT_FILE_BYTES=5000000
+```
 
 ### 🧪 Fine-Tuning On Custom Data
 

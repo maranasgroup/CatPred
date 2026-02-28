@@ -13,13 +13,7 @@ from .ffn import build_ffn, MultiReadout
 from catpred.args import TrainArgs
 from catpred.features import BatchMolGraph
 from catpred.nn_utils import initialize_weights
-
-
-def _torch_load_compat(path):
-    try:
-        return torch.load(path, weights_only=False)
-    except TypeError:
-        return torch.load(path)
+from catpred.security import load_torch_artifact
 
 
 def exists(val):
@@ -126,7 +120,10 @@ class MoleculeModel(nn.Module):
         self.seq_embedder = nn.Embedding(21, args.seq_embed_dim, padding_idx=20) #last index is for padding
 
         if self.args.add_pretrained_egnn_feats:
-            self.pretrained_egnn_feats_dict = _torch_load_compat(self.args.pretrained_egnn_feats_path)
+            self.pretrained_egnn_feats_dict = load_torch_artifact(
+                self.args.pretrained_egnn_feats_path,
+                purpose="pretrained EGNN features",
+            )
             x = list(self.pretrained_egnn_feats_dict.values())
             self.pretrained_egnn_feats_avg = torch.stack(x).mean(dim=0)
             

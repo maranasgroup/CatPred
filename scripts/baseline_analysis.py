@@ -1,6 +1,5 @@
 import os
 import sys
-import pickle
 import pandas as pd
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
@@ -8,14 +7,17 @@ from collections import defaultdict
 from sklearn.metrics import r2_score, mean_absolute_error
 import ipdb
 import csv
+from catpred.security import load_pickle_artifact
 
 OUTPUT_DIR="../results/reproduce_results"
 DATA_DIR = "../data/external/Baseline/"
 
 def load_identity_data(parameter):
     """Load pre-calculated identity dictionary and mappings."""
-    with open(f'{DATA_DIR}/{parameter}/{parameter}_test_train_identities_updated.pkl', 'rb') as f:
-        data = pickle.load(f)
+    data = load_pickle_artifact(
+        f"{DATA_DIR}/{parameter}/{parameter}_test_train_identities_updated.pkl",
+        purpose="baseline identity pickle",
+    )
     train_seqs_dict = {val: key for key, val in data['train_seq_mapping'].items()}
     test_seqs_dict = {val: key for key, val in data['test_seq_mapping'].items()}
     return data, train_seqs_dict, test_seqs_dict

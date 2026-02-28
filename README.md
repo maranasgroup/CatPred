@@ -161,6 +161,7 @@ Optional API environment variables:
 # Root directories used by API path constraints
 export CATPRED_API_INPUT_ROOT="/absolute/path/for/input-csvs"
 export CATPRED_API_RESULTS_ROOT="/absolute/path/for/results"
+export CATPRED_API_CHECKPOINT_ROOT="/absolute/path/for/checkpoints"
 
 # Enable only for trusted local workflows (not recommended for public deployments)
 export CATPRED_API_ALLOW_INPUT_FILE=1
@@ -169,6 +170,17 @@ export CATPRED_API_ALLOW_UNSAFE_OVERRIDES=1
 # Request limits
 export CATPRED_API_MAX_INPUT_ROWS=1000
 export CATPRED_API_MAX_INPUT_FILE_BYTES=5000000
+```
+
+Deserialization hardening controls:
+
+```bash
+# Trusted roots used by secure loaders (colon-separated list on Unix)
+export CATPRED_TRUSTED_DESERIALIZATION_ROOTS="/srv/catpred:/srv/catpred-data"
+
+# Backward-compatible default is enabled (1). Set to 0 to block unsafe pickle-based loading.
+# Use 0 only after validating your artifacts are safe-load compatible.
+export CATPRED_ALLOW_UNSAFE_DESERIALIZATION=1
 ```
 
 ### 🧪 Fine-Tuning On Custom Data

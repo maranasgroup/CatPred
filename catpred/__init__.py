@@ -13,6 +13,7 @@ _LAZY_SUBMODULES = {
     "models",
     "nn_utils",
     "rdkit",
+    "security",
     "train",
     "uncertainty",
     "utils",

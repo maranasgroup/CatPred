@@ -38,6 +38,7 @@ class APISettings:
     python_executable: str
     input_root: str
     results_root: str
+    checkpoint_root: str
     allow_input_file: bool = False
     allow_unsafe_request_overrides: bool = False
     max_input_rows: int = 1000
@@ -50,12 +51,18 @@ class APISettings:
         repo_root = str(Path(env_repo_root).resolve()) if env_repo_root else str(Path.cwd().resolve())
         input_root = os.environ.get("CATPRED_API_INPUT_ROOT")
         results_root = os.environ.get("CATPRED_API_RESULTS_ROOT")
+        checkpoint_root = os.environ.get("CATPRED_API_CHECKPOINT_ROOT")
 
         return cls(
             repo_root=repo_root,
             python_executable=os.environ.get("CATPRED_PYTHON_EXECUTABLE", sys.executable or "python"),
             input_root=str(Path(input_root).resolve()) if input_root else str((Path(repo_root) / "inputs").resolve()),
             results_root=str(Path(results_root).resolve()) if results_root else str((Path(repo_root) / "results").resolve()),
+            checkpoint_root=(
+                str(Path(checkpoint_root).resolve())
+                if checkpoint_root
+                else str((Path(repo_root) / "checkpoints").resolve())
+            ),
             allow_input_file=_env_flag("CATPRED_API_ALLOW_INPUT_FILE", default=False),
             allow_unsafe_request_overrides=_env_flag("CATPRED_API_ALLOW_UNSAFE_OVERRIDES", default=False),
             max_input_rows=max(int(os.environ.get("CATPRED_API_MAX_INPUT_ROWS", "1000")), 1),
@@ -155,6 +162,21 @@ def _resolve_results_dir(raw_results_dir: str, settings: APISettings) -> str:
     return str(resolved)
 
 
+def _resolve_checkpoint_dir(raw_checkpoint_dir: str, settings: APISettings) -> str:
+    checkpoint_root = Path(settings.checkpoint_root).resolve()
+    checkpoint_root.mkdir(parents=True, exist_ok=True)
+    resolved = _resolve_and_validate_path_under_root(
+        raw_path=raw_checkpoint_dir,
+        root=checkpoint_root,
+        purpose="checkpoint_dir",
+    )
+    if not resolved.exists():
+        raise FileNotFoundError(f'Checkpoint directory not found: "{resolved}"')
+    if not resolved.is_dir():
+        raise ValueError(f'checkpoint_dir must be a directory: "{resolved}"')
+    return str(resolved)
+
+
 def _resolve_input_file_path(input_file: str, settings: APISettings) -> Path:
     if not settings.allow_input_file:
         raise ValueError(
@@ -242,6 +264,7 @@ def create_app(
             "max_input_file_bytes": api_settings.max_input_file_bytes,
             "input_root": str(Path(api_settings.input_root).resolve()),
             "results_root": str(Path(api_settings.results_root).resolve()),
+            "checkpoint_root": str(Path(api_settings.checkpoint_root).resolve()),
         }
         return readiness
 
@@ -253,19 +276,21 @@ def create_app(
             python_executable = _resolve_python_executable(payload.python_executable, api_settings)
             input_file, temp_file = _resolve_input_file(payload, settings=api_settings, repo_root=repo_root)
             safe_results_dir = _resolve_results_dir(payload.results_dir, api_settings)
-
+            fallback = payload.fallback_to_local
+            if fallback is None:
+                fallback = default_fallback
+            selected_backend = (payload.backend or backend_router.settings.default_backend).lower()
+            checkpoint_dir = payload.checkpoint_dir
+            if selected_backend == "local" or fallback:
+                checkpoint_dir = _resolve_checkpoint_dir(payload.checkpoint_dir, api_settings)
             request_obj = PredictionRequest(
                 parameter=payload.parameter.lower(),
                 input_file=input_file,
-                checkpoint_dir=payload.checkpoint_dir,
+                checkpoint_dir=checkpoint_dir,
                 use_gpu=payload.use_gpu,
                 repo_root=str(repo_root),
                 python_executable=python_executable,
             )
-
-            fallback = payload.fallback_to_local
-            if fallback is None:
-                fallback = default_fallback
 
             result = backend_router.predict(
                 request_obj=request_obj,

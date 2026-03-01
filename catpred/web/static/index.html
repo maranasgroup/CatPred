@@ -14,14 +14,15 @@
       href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Outfit:wght@200;300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/static/catpred.css?v=20260301a" />
+    <link rel="icon" href="/static/catpred-favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/catpred.css?v=20260301b" />
   </head>
   <body>
     <div class="texture" aria-hidden="true"></div>
 
     <header class="top-nav">
       <div class="container nav-content">
-        <a class="brand" href="#hero" aria-label="CatPred home">
+        <a class="brand" href="#predictor" aria-label="CatPred home">
           <span class="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 32 32" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M6 24C8 16 11 9 16 6C21 9 24 16 26 24" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.7" />
@@ -33,7 +34,6 @@
 
         <nav class="desktop-nav" aria-label="Main navigation">
           <a href="#predictor">Predict</a>
-          <a href="#guide">Guide</a>
         </nav>
 
         <a class="btn btn-outline nav-cta" href="#predictor">Start prediction</a>
@@ -41,89 +41,47 @@
     </header>
 
     <main>
-      <section id="hero" class="hero container reveal snap-section">
+      <section id="predictor" class="hero container reveal snap-section">
         <div class="hero-copy">
           <p class="eyebrow">AI for Enzyme Kinetics</p>
           <h1>
-            Get kinetic estimates in minutes,
-            <em>not days</em>.
+            Predict <em>kcat</em>, <em>Km</em>, and <em>Ki</em>
+            for production enzyme workflows.
           </h1>
           <p class="lead">
-            CatPred predicts <code>kcat</code>, <code>Km</code>, and <code>Ki</code> from substrate
-            <code>SMILES</code> and enzyme <code>sequence</code> inputs, including uncertainty for
-            confidence-aware decisions.
+            Enter substrate <code>SMILES</code> and enzyme <code>sequence</code>, then run a single
+            prediction or a small batch with uncertainty-aware output.
           </p>
 
           <div class="hero-actions">
-            <a class="btn btn-dark" href="#predictor">Run prediction</a>
-            <a class="btn btn-ghost" href="#guide">Quick guide</a>
+            <a class="btn btn-dark" href="#predictForm">Go to form</a>
           </div>
-
-          <ul class="hero-stats" aria-label="Key highlights">
-            <li>
-              <strong>3 parameters</strong>
-              <span>kcat / Km / Ki</span>
-            </li>
-            <li>
-              <strong>Batch ready</strong>
-              <span>Run one or multiple rows</span>
-            </li>
-          </ul>
-        </div>
-
-        <div class="hero-visual-wrap" aria-hidden="true">
-          <div class="hero-visual">
-            <svg class="protein-structure" viewBox="0 0 440 440" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="helixRose" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#c4897a" stop-opacity="0.65" />
-                  <stop offset="100%" stop-color="#b89b7a" stop-opacity="0.2" />
-                </linearGradient>
-                <linearGradient id="helixSage" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#7a9e8e" stop-opacity="0.65" />
-                  <stop offset="100%" stop-color="#7a8a9e" stop-opacity="0.22" />
-                </linearGradient>
-              </defs>
-
-              <circle cx="220" cy="220" r="170" fill="rgba(122,158,142,0.06)" />
-              <circle cx="220" cy="220" r="140" fill="rgba(196,137,122,0.05)" />
-
-              <path d="M80 280C110 210 145 150 198 120C255 140 285 180 332 232" stroke="url(#helixRose)" stroke-width="14" stroke-linecap="round" fill="none" />
-              <path d="M120 300C165 320 220 330 265 312C308 294 325 255 345 220" stroke="url(#helixSage)" stroke-width="14" stroke-linecap="round" fill="none" />
-
-              <path d="M180 175L230 175L244 166L230 157L180 157Z" fill="rgba(122,158,142,0.30)" />
-              <path d="M185 196L236 196L250 186L236 177L185 177Z" fill="rgba(122,138,158,0.28)" />
-              <path d="M190 217L240 217L254 207L240 198L190 198Z" fill="rgba(154,138,174,0.22)" />
-
-              <path d="M254 210Q300 230 312 268Q292 294 262 296" stroke="rgba(154,138,174,0.35)" stroke-width="2" stroke-dasharray="5 8" fill="none" />
-              <path d="M140 255Q165 282 190 292" stroke="rgba(122,158,142,0.32)" stroke-width="2" stroke-dasharray="4 7" fill="none" />
-
-              <circle cx="238" cy="173" r="30" fill="none" stroke="rgba(122,158,142,0.35)" stroke-width="1" stroke-dasharray="2 6" />
-              <circle cx="86" cy="278" r="4" fill="rgba(196,137,122,0.35)" />
-              <circle cx="344" cy="220" r="4" fill="rgba(122,138,158,0.32)" />
-            </svg>
-          </div>
-        </div>
-      </section>
-
-      <section id="predictor" class="section container reveal snap-section">
-        <div class="section-head">
-          <p class="eyebrow">Prediction Studio</p>
-          <h2>Enter inputs and run</h2>
-          <p class="muted">
-            Choose a target, submit one or many rows, and review predictions with uncertainty.
-          </p>
 
           <div class="service-strip" aria-live="polite">
             <span class="service-label">Service status</span>
             <strong id="serviceBadge" class="badge">Checking...</strong>
             <span id="serviceHint" class="service-hint"></span>
           </div>
+
+          <ul class="hero-stats" aria-label="Key highlights">
+            <li>
+              <strong>3 targets</strong>
+              <span>kcat / Km / Ki</span>
+            </li>
+            <li>
+              <strong>Batch ready</strong>
+              <span>Add and run multiple rows</span>
+            </li>
+            <li>
+              <strong>Uncertainty</strong>
+              <span>Total and epistemic SD reported</span>
+            </li>
+          </ul>
         </div>
 
-        <div class="predict-layout">
+        <div class="hero-studio">
           <form id="predictForm" class="card input-card" novalidate>
-            <h3>Inputs</h3>
+            <h3>Prediction Studio</h3>
 
             <div class="preset-row" aria-label="Target parameter">
               <button class="preset-btn" type="button" data-param="kcat">kcat</button>
@@ -146,65 +104,27 @@
               For CSV/API usage, this field maps to <code>pdbpath</code>.
             </p>
           </form>
+        </div>
 
-          <section class="card output-card" aria-live="polite">
-            <h3>Results</h3>
-            <div id="statusBox" class="status-box" role="status">Ready when you are.</div>
+        <section class="card output-card" aria-live="polite">
+          <h3>Results</h3>
+          <div id="statusBox" class="status-box" role="status">Ready when you are.</div>
 
-            <div id="resultCards" class="result-cards">
-              <article class="empty-result">
-                <p>Run a prediction to see kinetic estimates here.</p>
-              </article>
+          <div id="resultCards" class="result-cards">
+            <article class="empty-result">
+              <p>Run a prediction to see kinetic estimates here.</p>
+            </article>
+          </div>
+
+          <details class="details-output">
+            <summary>View detailed output table</summary>
+            <div class="rows-wrap">
+              <table id="previewTable" class="input-table preview-table"></table>
             </div>
-
-            <details class="details-output">
-              <summary>View detailed output table</summary>
-              <div class="rows-wrap">
-                <table id="previewTable" class="input-table preview-table"></table>
-              </div>
-            </details>
-          </section>
-        </div>
+          </details>
+        </section>
       </section>
 
-      <section id="guide" class="section section-alt reveal snap-section">
-        <div class="container">
-          <div class="section-head centered">
-            <p class="eyebrow">Quick Guide</p>
-            <h2>Three rules for reliable runs</h2>
-          </div>
-
-          <div class="steps guide-grid">
-            <article>
-              <span>01</span>
-              <h3>Use clean inputs</h3>
-              <p>
-                Each row needs valid <code>SMILES</code>, uppercase amino acid <code>sequence</code>,
-                and a <code>Sequence ID</code> (auto-filled, internal field: <code>pdbpath</code>).
-              </p>
-            </article>
-            <article>
-              <span>02</span>
-              <h3>Keep sequence IDs consistent</h3>
-              <p>
-                Reuse the same Sequence ID only for the same sequence. Different sequences should
-                use different IDs.
-              </p>
-            </article>
-            <article>
-              <span>03</span>
-              <h3>Read uncertainty first</h3>
-              <p>
-                Prioritize results with lower uncertainty before selecting candidates for experiments.
-              </p>
-            </article>
-          </div>
-          <p class="guide-note">
-            Tip: use <strong>Load sample</strong> in the predictor to test your environment end-to-end before
-            running larger batches.
-          </p>
-        </div>
-      </section>
     </main>
 
     <a class="mobile-stick" href="#predictor">Run prediction</a>

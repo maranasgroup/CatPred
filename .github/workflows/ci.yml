@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install minimal runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compile Python sources
+        run: |
+          git ls-files '*.py' | xargs -r python -m py_compile
+
+      - name: Smoke test API entrypoints
+        run: |
+          python - <<'PY'
+          from catpred.web.app import create_app
+          from api.index import app as vercel_app
+
+          api_app = create_app()
+          assert api_app.title == "CatPred API"
+          assert vercel_app is not None
+          print("API smoke checks passed.")
+          PY

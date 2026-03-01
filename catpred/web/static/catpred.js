@@ -31,7 +31,14 @@
 
   const supportedParameters = ["kcat", "km", "ki"];
   let availableCheckpointParams = new Set(supportedParameters);
+  let localCheckpointParams = new Set(supportedParameters);
   let selectedParameter = "kcat";
+  const runtimeState = {
+    defaultBackend: "local",
+    modalReady: false,
+    localReady: false,
+    fallbackToLocalEnabled: false,
+  };
   const runningPhaseMessages = [
     "validating input",
     "building protein records",
@@ -204,16 +211,19 @@
     return null;
   }
 
-  function setParameterAvailability(availableCheckpoints) {
+  function parseAvailableCheckpointParams(availableCheckpoints) {
     if (availableCheckpoints && typeof availableCheckpoints === "object") {
-      availableCheckpointParams = new Set(
+      return new Set(
         Object.keys(availableCheckpoints)
           .map((key) => String(key).toLowerCase())
           .filter((key) => supportedParameters.includes(key))
       );
-    } else {
-      availableCheckpointParams = new Set(supportedParameters);
     }
+    return new Set(supportedParameters);
+  }
+
+  function setParameterAvailability(availableCheckpoints) {
+    availableCheckpointParams = parseAvailableCheckpointParams(availableCheckpoints);
 
     if (presetButtons && presetButtons.length) {
       presetButtons.forEach((btn) => {
@@ -233,6 +243,35 @@
 
   function isParameterAvailable(paramValue) {
     return availableCheckpointParams.has(String(paramValue || "").toLowerCase());
+  }
+
+  function chooseRequestBackend() {
+    if (runtimeState.defaultBackend === "modal" && runtimeState.modalReady) {
+      return "modal";
+    }
+    if (runtimeState.defaultBackend === "local" && localCheckpointParams.size > 0) {
+      return "local";
+    }
+    if (runtimeState.modalReady) {
+      return "modal";
+    }
+    if (runtimeState.localReady) {
+      return "local";
+    }
+    return runtimeState.defaultBackend || "local";
+  }
+
+  function shouldFallbackToLocal(requestBackend, targetParam) {
+    if (requestBackend !== "modal") {
+      return false;
+    }
+    if (!runtimeState.fallbackToLocalEnabled) {
+      return false;
+    }
+    if (!runtimeState.localReady) {
+      return false;
+    }
+    return localCheckpointParams.has(String(targetParam || "").toLowerCase());
   }
 
   function formatSequenceId(index) {
@@ -393,6 +432,7 @@
 
   function buildPayload(rows) {
     const target = getSelectedParameter();
+    const requestBackend = chooseRequestBackend();
 
     return {
       parameter: target,
@@ -400,7 +440,8 @@
       input_rows: rows,
       use_gpu: false,
       results_dir: "web-app",
-      fallback_to_local: true,
+      backend: requestBackend,
+      fallback_to_local: shouldFallbackToLocal(requestBackend, target),
     };
   }
 
@@ -533,18 +574,41 @@
         return;
       }
 
-      setParameterAvailability(data && data.api ? data.api.available_checkpoints : null);
+      const backends = data && data.backends ? data.backends : {};
+      runtimeState.defaultBackend = data && data.default_backend ? String(data.default_backend) : "local";
+      runtimeState.modalReady = Boolean(backends.modal && backends.modal.ready);
+      runtimeState.localReady = Boolean(backends.local && backends.local.ready);
+      runtimeState.fallbackToLocalEnabled = Boolean(data && data.fallback_to_local_enabled);
+
+      localCheckpointParams = parseAvailableCheckpointParams(
+        data && data.api ? data.api.available_checkpoints : null
+      );
+
+      if (localCheckpointParams.size > 0) {
+        setParameterAvailability(Object.fromEntries(Array.from(localCheckpointParams).map((key) => [key, key])));
+      } else if (runtimeState.modalReady) {
+        setParameterAvailability({ kcat: "kcat", km: "km", ki: "ki" });
+      } else {
+        setParameterAvailability({});
+      }
+
       const availableParams = Array.from(availableCheckpointParams.values());
+      const localParams = Array.from(localCheckpointParams.values());
 
       if (data && data.ready) {
         const backend = data.default_backend ? String(data.default_backend) : "default";
-        const hint = availableParams.length
-          ? "Backend: " + backend + " | Checkpoints: " + availableParams.join(", ")
-          : "Backend: " + backend + " | No local checkpoints found";
+        let hint = "";
+        if (localParams.length) {
+          hint = "Backend: " + backend + " | Checkpoints: " + localParams.join(", ");
+        } else if (runtimeState.modalReady) {
+          hint = "Backend: " + backend + " | Remote checkpoints: " + availableParams.join(", ");
+        } else {
+          hint = "Backend: " + backend + " | No local checkpoints found";
+        }
         setServiceState("Online", hint, "ok");
       } else {
-        const hint = availableParams.length
-          ? "Backend configuration needed"
+        const hint = runtimeState.modalReady
+          ? "Backend available in limited mode"
           : "Backend configuration needed | No local checkpoints found";
         setServiceState("Limited", hint, "error");
       }

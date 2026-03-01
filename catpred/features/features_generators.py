@@ -85,7 +85,6 @@ def morgan_binary_features_generator(mol: Molecule,
 
 #     return features
 
-import ipdb
 @register_features_generator('morgan_diff_fp')
 def morgan_difference_features_generator(rxn: Reaction) -> np.ndarray:
     """

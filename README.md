@@ -24,6 +24,7 @@
    - [Installation](#installing)
    - [Prediction](#predict)
    - [Web API (Optional)](#web-api-optional)
+   - [Vercel Deployment (Optional)](#vercel-deployment-optional)
    - [Reproducibility](#reproduce)
 - [Acknowledgements](#acknw)
 - [License](#license)
@@ -184,6 +185,27 @@ export CATPRED_TRUSTED_DESERIALIZATION_ROOTS="/srv/catpred:/srv/catpred-data"
 # Use 0 only after validating your artifacts are safe-load compatible.
 export CATPRED_ALLOW_UNSAFE_DESERIALIZATION=1
 ```
+
+### ▲ Vercel Deployment (Optional) <a name="vercel-deployment-optional"></a>
+
+This repository includes a Vercel-ready ASGI entrypoint at `api/index.py` and a `vercel.json` route config.
+
+1. Push this repository to GitHub.
+2. In Vercel, create a new project from that repo.
+3. Set Environment Variables in Vercel Project Settings:
+
+```bash
+# Use remote inference backend in serverless deployments
+CATPRED_DEFAULT_BACKEND=modal
+CATPRED_MODAL_ENDPOINT=https://<your-modal-endpoint>
+CATPRED_MODAL_TOKEN=<optional-token>
+CATPRED_MODAL_FALLBACK_TO_LOCAL=0
+```
+
+Notes:
+- Serverless filesystems are ephemeral/read-only except `/tmp`; this app auto-uses `/tmp/catpred` on Vercel.
+- Local checkpoint-based inference is not recommended on Vercel serverless due runtime/dependency limits.
+- If `CATPRED_MODAL_ENDPOINT` is not configured, the UI still loads but prediction requests will be limited by backend readiness.
 
 ### 🧪 Fine-Tuning On Custom Data
 

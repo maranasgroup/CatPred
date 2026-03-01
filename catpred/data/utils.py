@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from collections import OrderedDict, defaultdict
 import sys
 import csv
 import ctypes
 from logging import Logger
 from random import Random
-from typing import List, Set, Tuple, Union
+from typing import List, Set, Tuple, Union, TYPE_CHECKING
 import os
 import json
 import torch
@@ -18,10 +20,12 @@ from tqdm import tqdm
 from .esm_utils import get_protein_embedder, get_coords
 from .data import MoleculeDatapoint, MoleculeDataset, make_mols
 from .scaffold import log_scaffold_stats, scaffold_split
-from catpred.args import PredictArgs, TrainArgs
 from catpred.features import load_features, load_valid_atom_or_bond_features, is_mol
 from catpred.rdkit import make_mol
 from catpred.security import load_index_artifact, load_pickle_artifact
+
+if TYPE_CHECKING:
+    from catpred.args import PredictArgs, TrainArgs
 
 # Increase maximum size of field in the csv processing for the current architecture
 csv.field_size_limit(int(ctypes.c_ulong(-1).value // 2))

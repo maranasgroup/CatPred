@@ -15,6 +15,7 @@
   const serviceHint = document.getElementById("serviceHint");
 
   const presetButtons = document.querySelectorAll(".preset-btn");
+  const predictionTimeoutMs = 120000;
 
   const sampleRows = [
     {
@@ -637,6 +638,11 @@
     startRunningFeedback(payload);
     await new Promise((resolve) => window.requestAnimationFrame(resolve));
 
+    const requestController = new AbortController();
+    const requestTimeout = window.setTimeout(() => {
+      requestController.abort();
+    }, predictionTimeoutMs);
+
     try {
       const response = await fetch("/predict", {
         method: "POST",
@@ -644,6 +650,7 @@
           "Content-Type": "application/json",
           Accept: "application/json",
         },
+        signal: requestController.signal,
         body: JSON.stringify(payload),
       });
 
@@ -667,12 +674,25 @@
       renderPreviewTable(data.preview_rows || []);
       const elapsedLabel = formatElapsed(getElapsedSeconds());
       setStatus("Prediction complete • " + elapsedLabel, "ok");
-    } catch (_err) {
+    } catch (err) {
       renderResultCards([], payload.parameter);
       renderPreviewTable([]);
       const elapsedLabel = formatElapsed(getElapsedSeconds());
-      setStatus("Network error while running prediction. (" + elapsedLabel + ")", "error");
+      if (err && err.name === "AbortError") {
+        const timeoutLabel = formatElapsed(Math.floor(predictionTimeoutMs / 1000));
+        setStatus(
+          "Prediction timed out after " +
+            timeoutLabel +
+            ". This is often a cold-start delay; retry once or check backend logs. (" +
+            elapsedLabel +
+            ")",
+          "error"
+        );
+      } else {
+        setStatus("Network error while running prediction. (" + elapsedLabel + ")", "error");
+      }
     } finally {
+      window.clearTimeout(requestTimeout);
       stopRunningFeedback();
       runStartedAtMs = null;
     }

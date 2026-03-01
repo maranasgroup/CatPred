@@ -207,6 +207,47 @@ Notes:
 - Local checkpoint-based inference is not recommended on Vercel serverless due runtime/dependency limits.
 - If `CATPRED_MODAL_ENDPOINT` is not configured, the UI still loads but prediction requests will be limited by backend readiness.
 
+#### Deploy a Modal endpoint for Vercel
+
+This repo includes `modal_app.py`, a Modal `POST` endpoint compatible with CatPred's `/predict` modal backend contract.
+
+1. Install and authenticate Modal CLI:
+
+```bash
+pip install modal
+modal setup
+```
+
+2. Create/upload checkpoints into a Modal Volume (one-time):
+
+```bash
+modal volume create catpred-checkpoints
+modal volume put catpred-checkpoints ./checkpoints/kcat kcat
+modal volume put catpred-checkpoints ./checkpoints/km km
+modal volume put catpred-checkpoints ./checkpoints/ki ki
+```
+
+3. (Recommended) create a secret token for endpoint auth:
+
+```bash
+modal secret create catpred-modal-auth CATPRED_MODAL_AUTH_TOKEN="<your-token>"
+```
+
+4. Deploy:
+
+```bash
+modal deploy modal_app.py
+```
+
+After deploy, copy the printed endpoint URL (for function `predict`) and set Vercel variables:
+
+```bash
+CATPRED_DEFAULT_BACKEND=modal
+CATPRED_MODAL_ENDPOINT=https://<your-modal-endpoint>
+CATPRED_MODAL_TOKEN=<your-token>
+CATPRED_MODAL_FALLBACK_TO_LOCAL=0
+```
+
 ### 🧪 Fine-Tuning On Custom Data
 
 You can fine-tune CatPred on your own regression targets using `train.py`.

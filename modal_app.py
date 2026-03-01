@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 import os
 import tempfile
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import Header, HTTPException
 import modal
@@ -12,6 +12,11 @@ from pydantic import BaseModel, Field
 
 image = (
     modal.Image.debian_slim(python_version="3.10")
+    .apt_install(
+        "libxrender1",
+        "libxext6",
+        "libsm6",
+    )
     .pip_install(
         "fastapi[standard]>=0.115,<1.0",
         "pydantic>=1.10,<2.0",
@@ -46,7 +51,7 @@ class PredictPayload(BaseModel):
     checkpoint_dir: str = Field(..., description="Checkpoint subdirectory inside /checkpoints")
     use_gpu: bool = Field(default=False)
     input_rows: list[dict[str, Any]] = Field(default_factory=list)
-    input_filename: str | None = Field(default=None)
+    input_filename: Optional[str] = Field(default=None)
 
 
 def _safe_checkpoint_path(raw_checkpoint_dir: str) -> Path:
@@ -70,7 +75,7 @@ def _safe_checkpoint_path(raw_checkpoint_dir: str) -> Path:
 @modal.fastapi_endpoint(method="POST", docs=True)
 def predict(
     payload: PredictPayload,
-    authorization: str | None = Header(default=None),
+    authorization: Optional[str] = Header(default=None),
 ) -> dict[str, Any]:
     import pandas as pd
 

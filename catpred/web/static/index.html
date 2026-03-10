@@ -15,7 +15,7 @@
       rel="stylesheet"
     />
     <link rel="icon" href="/static/catpred-favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/static/catpred.css?v=20260301b" />
+    <link rel="stylesheet" href="/static/catpred.css?v=20260309a" />
   </head>
   <body>
     <div class="texture" aria-hidden="true"></div>
@@ -33,53 +33,49 @@
         </a>
 
         <nav class="desktop-nav" aria-label="Main navigation">
-          <a href="#predictor">Predict</a>
+          <a href="https://www.nature.com/articles/s41467-025-57215-9" target="_blank" rel="noreferrer">Nat. Commun.</a>
+          <a href="https://github.com/maranasgroup/catpred/" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
-
-        <a class="btn btn-outline nav-cta" href="#predictor">Start prediction</a>
       </div>
     </header>
 
     <main>
-      <section id="predictor" class="hero container reveal snap-section">
-        <div class="hero-copy">
-          <p class="eyebrow">AI for Enzyme Kinetics</p>
-          <h1>
-            Predict <em>kcat</em>, <em>Km</em>, and <em>Ki</em>
-            for production enzyme workflows.
-          </h1>
-          <p class="lead">
-            Enter substrate <code>SMILES</code> and enzyme <code>sequence</code>, then run a single
-            prediction or a small batch with uncertainty-aware output.
-          </p>
-
-          <div class="hero-actions">
-            <a class="btn btn-dark" href="#predictForm">Go to form</a>
+      <section id="predictor" class="studio container reveal snap-section">
+        <div class="studio-head">
+          <div>
+            <p class="eyebrow">Prediction Studio</p>
+            <h1>Prediction Studio</h1>
           </div>
 
+          <div class="studio-meta">
           <div class="service-strip" aria-live="polite">
             <span class="service-label">Service status</span>
             <strong id="serviceBadge" class="badge">Checking...</strong>
             <span id="serviceHint" class="service-hint"></span>
           </div>
 
-          <ul class="hero-stats" aria-label="Key highlights">
-            <li>
-              <strong>3 targets</strong>
-              <span>kcat / Km / Ki</span>
-            </li>
-            <li>
-              <strong>Batch ready</strong>
-              <span>Add and run multiple rows</span>
-            </li>
-            <li>
-              <strong>Uncertainty</strong>
-              <span>Total and epistemic SD reported</span>
-            </li>
-          </ul>
+            <div class="resource-links" aria-label="Project resources">
+              <a
+                class="resource-link"
+                href="https://www.nature.com/articles/s41467-025-57215-9"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Nat. Commun. paper
+              </a>
+              <a
+                class="resource-link"
+                href="https://github.com/maranasgroup/catpred/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                GitHub repository
+              </a>
+            </div>
+          </div>
         </div>
 
-        <div class="hero-studio">
+        <div class="workspace-grid">
           <form id="predictForm" class="card input-card" novalidate>
             <h3>Prediction Studio</h3>
 
@@ -104,25 +100,25 @@
               For CSV/API usage, this field maps to <code>pdbpath</code>.
             </p>
           </form>
-        </div>
 
-        <section class="card output-card" aria-live="polite">
-          <h3>Results</h3>
-          <div id="statusBox" class="status-box" role="status">Ready when you are.</div>
+          <section class="card output-card" aria-live="polite">
+            <h3>Results</h3>
+            <div id="statusBox" class="status-box" role="status">Ready when you are.</div>
 
-          <div id="resultCards" class="result-cards">
-            <article class="empty-result">
-              <p>Run a prediction to see kinetic estimates here.</p>
-            </article>
-          </div>
-
-          <details class="details-output">
-            <summary>View detailed output table</summary>
-            <div class="rows-wrap">
-              <table id="previewTable" class="input-table preview-table"></table>
+            <div id="resultCards" class="result-cards">
+              <article class="empty-result">
+                <p>Run a prediction to see kinetic estimates here.</p>
+              </article>
             </div>
-          </details>
-        </section>
+
+            <details class="details-output">
+              <summary>View detailed output table</summary>
+              <div class="rows-wrap">
+                <table id="previewTable" class="input-table preview-table"></table>
+              </div>
+            </details>
+          </section>
+        </div>
       </section>
 
     </main>

@@ -144,28 +144,39 @@ body {
   color: var(--text);
 }
 
-.hero {
-  min-height: auto;
+.studio {
+  padding-block: clamp(1.2rem, 4vw, 2.4rem);
+}
+
+.studio-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.studio-head h1 {
+  font-family: "Newsreader", serif;
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.studio-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.workspace-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  gap: 1rem clamp(1rem, 3.2vw, 2.2rem);
+  grid-template-columns: minmax(0, 0.98fr) minmax(0, 1.02fr);
+  gap: 1rem;
   align-items: start;
-  padding-block: clamp(1.6rem, 5.2vw, 3.4rem);
-}
-
-.hero-copy {
-  position: relative;
-  z-index: 1;
-  padding-top: 0.3rem;
-}
-
-.hero-studio {
-  align-self: start;
-}
-
-.hero > .output-card {
-  grid-column: 1 / -1;
-  margin-top: 0.45rem;
 }
 
 .eyebrow {
@@ -176,28 +187,6 @@ body {
   text-transform: uppercase;
   color: var(--text-tertiary);
   margin-bottom: 1.2rem;
-}
-
-.hero h1 {
-  font-family: "Newsreader", serif;
-  font-size: clamp(1.78rem, 3.3vw, 2.75rem);
-  font-weight: 300;
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-  margin-bottom: 1.25rem;
-}
-
-.hero h1 em {
-  font-style: italic;
-  color: var(--protein-sage);
-}
-
-.lead {
-  max-width: 60ch;
-  font-size: clamp(0.98rem, 1.9vw, 1.07rem);
-  color: var(--text-secondary);
-  line-height: 1.75;
-  margin-bottom: 1.1rem;
 }
 
 .lead code,
@@ -211,13 +200,6 @@ body {
   border-radius: 6px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.66);
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-bottom: 1.1rem;
 }
 
 .btn {
@@ -293,41 +275,6 @@ body {
   background: var(--text);
   color: var(--bg);
   border-color: var(--text);
-}
-
-.nav-cta {
-  padding-inline: 1.1rem;
-}
-
-.hero-stats {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.7rem;
-  margin-top: 0.86rem;
-  max-width: 880px;
-}
-
-.hero-stats li {
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.68);
-  border-radius: var(--radius-md);
-  padding: 0.76rem 0.78rem;
-}
-
-.hero-stats strong {
-  display: block;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.94rem;
-  font-weight: 400;
-  color: var(--text);
-}
-
-.hero-stats span {
-  display: block;
-  margin-top: 0.25rem;
-  font-size: 0.84rem;
-  color: var(--text-secondary);
 }
 
 .section {
@@ -416,6 +363,34 @@ body {
 .service-hint {
   color: var(--text-secondary);
   font-size: 0.82rem;
+}
+
+.resource-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.resource-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.3rem 0.62rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.67rem;
+  letter-spacing: 0.03em;
+  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+}
+
+.resource-link:hover {
+  color: var(--text);
+  border-color: rgba(122, 158, 142, 0.32);
+  background: rgba(122, 158, 142, 0.08);
 }
 
 .card {
@@ -817,127 +792,6 @@ button:focus-visible {
   text-transform: uppercase;
 }
 
-.steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.guide-grid {
-  margin-top: 0.35rem;
-}
-
-.steps article {
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.72);
-  padding: 1rem;
-}
-
-.steps span {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.67rem;
-  color: var(--text-tertiary);
-  letter-spacing: 0.1em;
-}
-
-.steps h3 {
-  margin-top: 0.38rem;
-  margin-bottom: 0.4rem;
-  font-family: "Newsreader", serif;
-  font-size: 1.3rem;
-  font-weight: 400;
-}
-
-.steps p {
-  color: var(--text-secondary);
-  font-size: 0.93rem;
-  line-height: 1.68;
-}
-
-.guide-note {
-  margin-top: 0.88rem;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
-  padding: 0.72rem 0.82rem;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.guide-note strong {
-  color: var(--text);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.82em;
-  letter-spacing: 0.03em;
-}
-
-.faq-list {
-  border-top: 1px solid var(--border);
-}
-
-.faq-item {
-  border-bottom: 1px solid var(--border);
-  padding-block: 0.86rem;
-}
-
-.faq-item button {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  color: var(--text);
-  font-family: "Newsreader", serif;
-  font-size: 1.24rem;
-  font-weight: 400;
-}
-
-.faq-item button::after {
-  content: "+";
-  color: var(--text-tertiary);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.95rem;
-}
-
-.faq-item button[aria-expanded="true"]::after {
-  content: "−";
-}
-
-.faq-item p {
-  max-height: 0;
-  overflow: hidden;
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.67;
-  transition: max-height 0.24s ease, margin-top 0.24s ease;
-}
-
-.faq-item.open p {
-  max-height: 12rem;
-  margin-top: 0.4rem;
-}
-
-.footer {
-  padding: 1.2rem 0 2.4rem;
-}
-
-.footer-inner {
-  border-top: 1px solid var(--border);
-  padding-top: 0.95rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  color: var(--text-tertiary);
-  font-size: 0.84rem;
-}
-
 .mobile-stick {
   position: fixed;
   left: 1rem;
@@ -981,22 +835,18 @@ button:focus-visible {
 }
 
 @media (max-width: 1120px) {
-  .hero {
+  .studio-head,
+  .workspace-grid {
     grid-template-columns: 1fr;
-    min-height: auto;
   }
 
-  .hero > .output-card {
-    margin-top: 0;
+  .studio-head {
+    display: grid;
+    align-items: start;
   }
 
-  .steps,
   .metric-grid {
     grid-template-columns: 1fr;
-  }
-
-  .hero-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1009,12 +859,12 @@ button:focus-visible {
     width: min(1280px, calc(100% - 1.5rem));
   }
 
-  .hero {
-    padding-top: 1.5rem;
+  .studio {
+    padding-top: 1rem;
   }
 
-  .hero-stats {
-    grid-template-columns: 1fr;
+  .studio-head h1 {
+    font-size: 1.5rem;
   }
 
   .service-strip {
@@ -1029,9 +879,5 @@ button:focus-visible {
 
   .mobile-stick {
     display: block;
-  }
-
-  .footer {
-    padding-bottom: 5rem;
   }
 }

@@ -42,21 +42,21 @@
     <main>
       <section id="predictor" class="studio container reveal snap-section">
         <div class="studio-head">
-          <div>
-            <p class="eyebrow">Prediction Studio</p>
-            <h1>Prediction Studio</h1>
+          <div class="studio-titleblock">
+            <h1>Enzyme Kinetics Prediction</h1>
+            <p class="studio-subtitle">kcat, Km, and Ki with uncertainty estimates</p>
           </div>
 
-          <div class="studio-meta">
-          <div class="service-strip" aria-live="polite">
-            <span class="service-label">Service status</span>
-            <strong id="serviceBadge" class="badge">Checking...</strong>
-            <span id="serviceHint" class="service-hint"></span>
-          </div>
+          <div class="studio-tools">
+            <div class="service-strip" aria-live="polite">
+              <span class="service-label">Service status</span>
+              <strong id="serviceBadge" class="badge">Checking...</strong>
+              <span id="serviceHint" class="service-hint"></span>
+            </div>
 
             <div class="resource-links" aria-label="Project resources">
               <a
-                class="resource-link"
+                class="resource-link resource-link-paper"
                 href="https://www.nature.com/articles/s41467-025-57215-9"
                 target="_blank"
                 rel="noreferrer"
@@ -64,7 +64,7 @@
                 Nat. Commun. paper
               </a>
               <a
-                class="resource-link"
+                class="resource-link resource-link-code"
                 href="https://github.com/maranasgroup/catpred/"
                 target="_blank"
                 rel="noreferrer"
@@ -77,7 +77,7 @@
 
         <div class="workspace-grid">
           <form id="predictForm" class="card input-card" novalidate>
-            <h3>Prediction Studio</h3>
+            <h3>Inputs</h3>
 
             <div class="preset-row" aria-label="Target parameter">
               <button class="preset-btn" type="button" data-param="kcat">kcat</button>

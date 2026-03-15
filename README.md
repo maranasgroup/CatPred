@@ -149,7 +149,7 @@ By default, the API is hardened for service use:
 - `results_dir` is constrained under `CATPRED_API_RESULTS_ROOT`.
 - for local backend (and modal requests with fallback enabled), `checkpoint_dir` must resolve under `CATPRED_API_CHECKPOINT_ROOT`.
 
-Minimal `POST /predict` example for local inference using `input_rows`:
+Minimal `POST /predict` example for local inference using `input_rows` (human glucokinase + D-glucose):
 
 ```bash
 curl -X POST http://127.0.0.1:8000/predict \
@@ -158,8 +158,11 @@ curl -X POST http://127.0.0.1:8000/predict \
     "parameter": "kcat",
     "checkpoint_dir": "kcat",
     "input_rows": [
-      {"SMILES": "CCO", "sequence": "ACDEFGHIK", "pdbpath": "seq_a"},
-      {"SMILES": "CCN", "sequence": "LMNPQRSTV", "pdbpath": "seq_b"}
+      {
+        "SMILES": "C(C1C(C(C(C(O1)O)O)O)O)O",
+        "sequence": "MLDDRARMEAAKKEKVEQILAEFQLQEEDLKKVMRRMQKEMDRGLRLETHEEASVKMLPTYVRSTPEGSEVGDFLSLDLGGTNFRVMLVKVGEGEEGQWSVKTKHQMYSIPEDAMTGTAEMLFDYISECISDFLDKHQMKHKKLPLGFTFSFPVRHEDIDKGILLNWTKGFKASGAEGNNVVGLLRDAIKRRGDFEMDVVAMVNDTVATMISCYYEDHQCEVGMIVGTGCNACYMEEMQNVELVEGDEGRMCVNTEWGAFGDSGELDEFLLEYDRLVDESSANPGQQLYEKLIGGKYMGELVRLVLLRLVDENLLFHGEASEQLRTRGAFETRFVSQVESDTGDRKQIYNILSTLGLRPSTTDCDIVRRACESVSTRAAHMCSAGLAGVINRMRESRSEDVMRITVGVDGSVYKLHPSFKERFHASVRRLTPSCEITFIESEEGSGRGAALVSAVACKKACMLGQ",
+        "pdbpath": "GCK_HUMAN"
+      }
     ],
     "results_dir": "batch1",
     "backend": "local"

@@ -1,6 +1,7 @@
 # CatPred: A Comprehensive Framework for Deep Learning In Vitro Enzyme Kinetic Parameters
 
-[![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.nature.com/articles/s41467-025-57215-9)
+[![Web App](https://img.shields.io/badge/Web_App-www.catpred.com-059669)](https://www.catpred.com)
+[![DOI](https://img.shields.io/badge/DOI-10.1038/s41467--025--57215--9-blue)](https://www.nature.com/articles/s41467-025-57215-9)
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -18,6 +19,7 @@
 
 ## 📚 Table of Contents
 
+- [Web App](#web-app)
 - [Google Colab Interface](#colab-interface)
 - [Local Installation](#local-installation)
    - [System Requirements](#requirements)
@@ -29,6 +31,17 @@
 - [Acknowledgements](#acknw)
 - [License](#license)
 - [Citations](#citations)
+
+---
+
+## 🌐 Web App <a name="web-app"></a>
+
+CatPred is live at **[www.catpred.com](https://www.catpred.com)** — no installation needed.
+
+- **Two prediction modes:** Substrate kinetics (kcat/Km) and Inhibition (Ki)
+- **Multi-substrate input** with primary substrate marker
+- **CSV import/export** for batch workflows
+- Powered by a [Modal](https://modal.com) serverless backend
 
 ---
 
@@ -104,7 +117,7 @@ For released benchmark datasets, the number of entries with 3D structure can be 
 
 ### 🌍 Web API (Optional)
 
-CatPred also provides an optional FastAPI service for prediction workflows.
+CatPred also provides an optional FastAPI service for prediction workflows. The Vue 3 frontend lives in `catpred/web/frontend/` and is served by the API at `/`.
 
 Install web dependencies:
 
@@ -112,10 +125,19 @@ Install web dependencies:
 pip install -e ".[web]"
 ```
 
-Run the API:
+Run the API (serves the built frontend at `/`):
 
 ```bash
 catpred_web --host 0.0.0.0 --port 8000
+```
+
+To develop the frontend:
+
+```bash
+cd catpred/web/frontend
+npm install
+npm run dev          # Vite dev server with HMR
+npm run build        # Production build (vue-tsc + vite)
 ```
 
 Endpoints:
@@ -367,15 +389,14 @@ This source code is licensed under the MIT license found in the `LICENSE` file i
 If you find the models useful in your research, we ask that you cite the relevant paper:
 
 ```bibtex
-@article {Boorla2024.03.10.584340,
-	author = {Veda Sheersh Boorla and Costas D. Maranas},
-	title = {CatPred: A comprehensive framework for deep learning in vitro enzyme kinetic parameters kcat, Km and Ki},
-	elocation-id = {2024.03.10.584340},
-	year = {2024},
-	doi = {10.1101/2024.03.10.584340},
-	publisher = {Cold Spring Harbor Laboratory},
-	URL = {https://www.biorxiv.org/content/early/2024/03/26/2024.03.10.584340},
-	eprint = {https://www.biorxiv.org/content/early/2024/03/26/2024.03.10.584340.full.pdf},
-	journal = {bioRxiv}
+@article{Boorla2025CatPred,
+	author = {Boorla, Veda Sheersh and Maranas, Costas D.},
+	title = {CatPred: a comprehensive framework for deep learning in vitro enzyme kinetic parameters},
+	journal = {Nature Communications},
+	year = {2025},
+	volume = {16},
+	number = {2072},
+	doi = {10.1038/s41467-025-57215-9},
+	URL = {https://www.nature.com/articles/s41467-025-57215-9}
 }
 ```

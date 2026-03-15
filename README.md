@@ -26,6 +26,8 @@
    - [Web API (Optional)](#web-api-optional)
    - [Vercel Deployment (Optional)](#vercel-deployment-optional)
    - [Reproducibility](#reproduce)
+   - [Fine-Tuning On Custom Data](#-fine-tuning-on-custom-data)
+   - [Docker](#-docker)
 - [Acknowledgements](#acknw)
 - [License](#license)
 - [Citations](#citations)
@@ -81,17 +83,26 @@ cd catpred_pipeline
 wget -c --tries=5 --timeout=30 https://catpred.s3.us-east-1.amazonaws.com/capsule_data_update.tar.gz || \
 wget -c --tries=5 --timeout=30 https://catpred.s3.amazonaws.com/capsule_data_update.tar.gz
 tar -xzf capsule_data_update.tar.gz
-git clone https://github.com/maranasgroup/catpred.git
+git clone https://github.com/maranasgroup/CatPred.git
 cd catpred
 conda env create -f environment.yml
 conda activate catpred
 pip install -e .
-````
+```
 
 `stride` is Linux-only and optional for the default demos. If needed for your workflow, install it separately on Linux:
 
 ```bash
 conda install -c kimlab stride
+```
+
+### 🐳 Docker
+
+A `Dockerfile` is included for containerized usage (PyTorch 2.4, CUDA 12.4, Python 3.12.4 via Mambaforge).
+
+```bash
+docker build -t catpred .
+docker run --gpus all -it catpred
 ```
 
 ### 🔮 Prediction <a name="predict"></a>

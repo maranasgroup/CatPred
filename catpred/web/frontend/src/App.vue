@@ -94,15 +94,6 @@ function onImportCsv(text: string) {
         <div class="page-header-left">
           <h1 class="page-title">CatPred</h1>
           <nav class="page-links" aria-label="Project links">
-            <span class="developed-in">Developed in
-              <a
-                href="https://www.maranasgroup.com/"
-                target="_blank"
-                rel="noreferrer"
-                class="page-link"
-              >Maranas Group<span class="link-arrow" aria-hidden="true">&nearr;</span></a>
-            </span>
-            <span class="link-sep">&middot;</span>
             <a
               href="https://www.nature.com/articles/s41467-025-57215-9"
               target="_blank"
@@ -228,11 +219,6 @@ function onImportCsv(text: string) {
 
 .page-link:hover .link-arrow {
   opacity: 1;
-}
-
-.developed-in {
-  font-size: 0.875rem;
-  color: var(--text-tertiary);
 }
 
 .link-sep {

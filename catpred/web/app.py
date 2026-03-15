@@ -321,10 +321,13 @@ def create_app(
 
     @app.get("/", include_in_schema=False)
     def root() -> FileResponse:
-        index_path = static_root / "index.html"
-        if not index_path.exists():
-            raise HTTPException(status_code=404, detail="Landing page not found.")
-        return FileResponse(index_path)
+        dist_index = static_root / "dist" / "index.html"
+        if not dist_index.exists():
+            raise HTTPException(
+                status_code=404,
+                detail="Frontend build not found. Run `npm run build` in catpred/web/frontend/.",
+            )
+        return FileResponse(dist_index)
 
     @app.get("/health")
     def health() -> dict[str, str]:

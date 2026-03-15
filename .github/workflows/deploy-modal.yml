@@ -1,0 +1,49 @@
+name: Deploy Modal
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/deploy-modal.yml"
+      - "modal_app.py"
+      - "predict.py"
+      - "scripts/create_pdbrecords.py"
+      - "catpred/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    concurrency:
+      group: modal-production-deploy
+      cancel-in-progress: true
+    env:
+      MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+      MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+    steps:
+      - name: Skip when Modal credentials are not configured
+        if: ${{ env.MODAL_TOKEN_ID == '' || env.MODAL_TOKEN_SECRET == '' }}
+        run: echo "Skipping Modal deploy because MODAL_TOKEN_ID / MODAL_TOKEN_SECRET are not configured."
+
+      - name: Checkout
+        if: ${{ env.MODAL_TOKEN_ID != '' && env.MODAL_TOKEN_SECRET != '' }}
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: ${{ env.MODAL_TOKEN_ID != '' && env.MODAL_TOKEN_SECRET != '' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Modal CLI
+        if: ${{ env.MODAL_TOKEN_ID != '' && env.MODAL_TOKEN_SECRET != '' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install "modal>=0.73"
+
+      - name: Deploy modal_app.py
+        if: ${{ env.MODAL_TOKEN_ID != '' && env.MODAL_TOKEN_SECRET != '' }}
+        run: modal deploy modal_app.py

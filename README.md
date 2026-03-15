@@ -24,6 +24,7 @@
    - [Installation](#installing)
    - [Prediction](#predict)
    - [Web API (Optional)](#web-api-optional)
+   - [Vercel Deployment (Optional)](#vercel-deployment-optional)
    - [Reproducibility](#reproduce)
 - [Acknowledgements](#acknw)
 - [License](#license)
@@ -126,6 +127,7 @@ By default, the API is hardened for service use:
 - `input_file` requests are disabled (use `input_rows` instead).
 - request-time overrides of `repo_root` / `python_executable` are disabled.
 - `results_dir` is constrained under `CATPRED_API_RESULTS_ROOT`.
+- for local backend (and modal requests with fallback enabled), `checkpoint_dir` must resolve under `CATPRED_API_CHECKPOINT_ROOT`.
 
 Minimal `POST /predict` example for local inference using `input_rows`:
 
@@ -134,7 +136,7 @@ curl -X POST http://127.0.0.1:8000/predict \
   -H "Content-Type: application/json" \
   -d '{
     "parameter": "kcat",
-    "checkpoint_dir": "../data/pretrained/reproduce_checkpoints/kcat",
+    "checkpoint_dir": "kcat",
     "input_rows": [
       {"SMILES": "CCO", "sequence": "ACDEFGHIK", "pdbpath": "seq_a"},
       {"SMILES": "CCN", "sequence": "LMNPQRSTV", "pdbpath": "seq_b"}
@@ -154,6 +156,7 @@ export CATPRED_MODAL_FALLBACK_TO_LOCAL=1
 ```
 
 Use `"backend": "modal"` in `/predict` requests to route through Modal. If fallback is enabled (env var above or request field `fallback_to_local`), failed modal requests can automatically reroute to local inference.
+For local backend requests, place local checkpoints under `CATPRED_API_CHECKPOINT_ROOT` and pass a path relative to that root (for example, `"checkpoint_dir": "kcat"`).
 
 Optional API environment variables:
 
@@ -182,6 +185,93 @@ export CATPRED_TRUSTED_DESERIALIZATION_ROOTS="/srv/catpred:/srv/catpred-data"
 # Use 0 only after validating your artifacts are safe-load compatible.
 export CATPRED_ALLOW_UNSAFE_DESERIALIZATION=1
 ```
+
+### ▲ Vercel Deployment (Optional) <a name="vercel-deployment-optional"></a>
+
+This repository includes a Vercel-ready ASGI entrypoint at `api/index.py` and a `vercel.json` route config.
+
+1. Push this repository to GitHub.
+2. In Vercel, create a new project from that repo.
+3. Set Environment Variables in Vercel Project Settings:
+
+```bash
+# Use remote inference backend in serverless deployments
+CATPRED_DEFAULT_BACKEND=modal
+CATPRED_MODAL_ENDPOINT=https://<your-modal-endpoint>
+CATPRED_MODAL_TOKEN=<optional-token>
+CATPRED_MODAL_FALLBACK_TO_LOCAL=0
+```
+
+Notes:
+- Serverless filesystems are ephemeral/read-only except `/tmp`; this app auto-uses `/tmp/catpred` on Vercel.
+- Local checkpoint-based inference is not recommended on Vercel serverless due runtime/dependency limits.
+- If `CATPRED_MODAL_ENDPOINT` is not configured, the UI still loads but prediction requests will be limited by backend readiness.
+
+#### Deploy a Modal endpoint for Vercel
+
+This repo includes `modal_app.py`, a Modal `POST` endpoint compatible with CatPred's `/predict` modal backend contract.
+
+1. Install and authenticate Modal CLI:
+
+```bash
+pip install modal
+modal setup
+```
+
+2. Create/upload checkpoints into a Modal Volume (one-time):
+
+```bash
+modal volume create catpred-checkpoints
+modal volume put catpred-checkpoints ./checkpoints/kcat kcat
+modal volume put catpred-checkpoints ./checkpoints/km km
+modal volume put catpred-checkpoints ./checkpoints/ki ki
+```
+
+3. (Recommended) create a secret token for endpoint auth:
+
+```bash
+modal secret create catpred-modal-auth CATPRED_MODAL_AUTH_TOKEN="<your-token>"
+```
+
+4. Deploy:
+
+```bash
+modal deploy modal_app.py
+```
+
+After deploy, copy the printed endpoint URL (for function `predict`) and set Vercel variables:
+
+```bash
+CATPRED_DEFAULT_BACKEND=modal
+CATPRED_MODAL_ENDPOINT=https://<your-modal-endpoint>
+CATPRED_MODAL_TOKEN=<your-token>
+CATPRED_MODAL_FALLBACK_TO_LOCAL=0
+```
+
+#### CI/CD (GitHub Actions + Vercel + Modal)
+
+This repo includes two GitHub Actions workflows:
+
+- `.github/workflows/ci.yml`
+  - Runs on every PR and push to `main`.
+  - Installs minimal API dependencies, compiles all Python files, and smoke-tests API entrypoints.
+- `.github/workflows/deploy-modal.yml`
+  - Runs on push to `main` when backend files change (and manually via `workflow_dispatch`).
+  - Deploys `modal_app.py` automatically.
+
+To enable automatic Modal deploys from GitHub Actions, add repository secrets:
+
+- `MODAL_TOKEN_ID`
+- `MODAL_TOKEN_SECRET`
+
+Create these from Modal:
+
+1. Go to [https://modal.com/settings/tokens](https://modal.com/settings/tokens).
+2. Create a token with deploy permissions for your workspace.
+3. Copy token ID and secret into GitHub repo settings:
+   `Settings -> Secrets and variables -> Actions -> New repository secret`.
+
+Vercel deployment remains automatic from the connected GitHub branch (`main`).
 
 ### 🧪 Fine-Tuning On Custom Data
 

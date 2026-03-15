@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CatPred | Enzyme Kinetics Prediction</title>
+    <meta
+      name="description"
+      content="Predict enzyme kinetic parameters (kcat, Km, Ki) from substrate and enzyme inputs with CatPred."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Outfit:wght@200;300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="/static/catpred-favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/catpred.css?v=20260309a" />
+  </head>
+  <body>
+    <div class="texture" aria-hidden="true"></div>
+
+    <header class="top-nav">
+      <div class="container nav-content">
+        <a class="brand" href="#predictor" aria-label="CatPred home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 24C8 16 11 9 16 6C21 9 24 16 26 24" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.7" />
+              <path d="M10 23C12 17 14 12 16 10C18 12 20 17 22 23" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.45" />
+            </svg>
+          </span>
+          <span class="brand-word">CatPred</span>
+        </a>
+
+        <nav class="desktop-nav" aria-label="Main navigation">
+          <a href="https://www.nature.com/articles/s41467-025-57215-9" target="_blank" rel="noreferrer">Nat. Commun.</a>
+          <a href="https://github.com/maranasgroup/catpred/" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section id="predictor" class="studio container reveal snap-section">
+        <div class="studio-head">
+          <div class="studio-titleblock">
+            <h1>Enzyme Kinetics Prediction</h1>
+            <p class="studio-subtitle">kcat, Km, and Ki with uncertainty estimates</p>
+          </div>
+
+          <div class="studio-tools">
+            <div class="service-strip" aria-live="polite">
+              <span class="service-label">Service status</span>
+              <strong id="serviceBadge" class="badge">Checking...</strong>
+              <span id="serviceHint" class="service-hint"></span>
+            </div>
+
+            <div class="resource-links" aria-label="Project resources">
+              <a
+                class="resource-link resource-link-paper"
+                href="https://www.nature.com/articles/s41467-025-57215-9"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Nat. Commun. paper
+              </a>
+              <a
+                class="resource-link resource-link-code"
+                href="https://github.com/maranasgroup/catpred/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                GitHub repository
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="workspace-grid">
+          <form id="predictForm" class="card input-card" novalidate>
+            <h3>Inputs</h3>
+
+            <div class="preset-row" aria-label="Target parameter">
+              <button class="preset-btn" type="button" data-param="kcat">kcat</button>
+              <button class="preset-btn" type="button" data-param="km">Km</button>
+              <button class="preset-btn" type="button" data-param="ki">Ki</button>
+            </div>
+
+            <div id="rowContainer" class="row-container"></div>
+
+            <div class="form-actions">
+              <button id="addRowBtn" class="btn btn-ghost" type="button">Add another row</button>
+              <button id="loadSampleBtn" class="btn btn-ghost" type="button">Load sample</button>
+              <button id="runBtn" class="btn btn-dark" type="submit">Run prediction</button>
+            </div>
+
+            <p class="helper">
+              Each row needs: <code>SMILES</code>, <code>sequence</code>, and a <code>Sequence ID</code>.
+              Sequence IDs auto-fill as <code>seq_001</code>, <code>seq_002</code>, etc. (editable).
+              Use one Sequence ID per unique sequence. No structure file upload is required.
+              For CSV/API usage, this field maps to <code>pdbpath</code>.
+            </p>
+          </form>
+
+          <section class="card output-card" aria-live="polite">
+            <h3>Results</h3>
+            <div id="statusBox" class="status-box" role="status">Ready when you are.</div>
+
+            <div id="resultCards" class="result-cards">
+              <article class="empty-result">
+                <p>Run a prediction to see kinetic estimates here.</p>
+              </article>
+            </div>
+
+            <details class="details-output">
+              <summary>View detailed output table</summary>
+              <div class="rows-wrap">
+                <table id="previewTable" class="input-table preview-table"></table>
+              </div>
+            </details>
+          </section>
+        </div>
+      </section>
+
+    </main>
+
+    <a class="mobile-stick" href="#predictor">Run prediction</a>
+
+    <script src="/static/catpred.js?v=20260301a"></script>
+  </body>
+</html>

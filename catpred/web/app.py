@@ -12,6 +12,8 @@ import pandas as pd
 
 try:
     from fastapi import FastAPI, HTTPException
+    from fastapi.responses import FileResponse
+    from fastapi.staticfiles import StaticFiles
     from pydantic import BaseModel, Field, root_validator
 except ImportError as exc:  # pragma: no cover - import guard for optional dependency
     raise ImportError(
@@ -32,12 +34,56 @@ def _env_flag(name: str, default: bool = False) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
+_SUPPORTED_PARAMETERS = ("kcat", "km", "ki")
+
+
+def _contains_model_checkpoints(path: Path) -> bool:
+    if not path.exists() or not path.is_dir():
+        return False
+    return any(path.rglob("model.pt"))
+
+
+def _discover_default_checkpoint_root(repo_root: Path) -> Path:
+    default_root = (repo_root / "checkpoints").resolve()
+    production_root = (repo_root / ".e2e-assets" / "pretrained" / "production").resolve()
+    candidates = [default_root, production_root]
+
+    best_root: Optional[Path] = None
+    best_score = -1
+    for candidate in candidates:
+        if not candidate.exists() or not candidate.is_dir():
+            continue
+        score = sum(int((candidate / parameter).is_dir()) for parameter in _SUPPORTED_PARAMETERS)
+        if score > best_score:
+            best_score = score
+            best_root = candidate
+
+    if best_root and best_score > 0:
+        return best_root
+
+    for candidate in candidates:
+        if _contains_model_checkpoints(candidate):
+            return candidate
+
+    return default_root
+
+
+def _discover_available_checkpoints(checkpoint_root: Path) -> dict[str, str]:
+    available: dict[str, str] = {}
+    for parameter in _SUPPORTED_PARAMETERS:
+        param_dir = (checkpoint_root / parameter).resolve()
+        if param_dir.is_dir() and _contains_model_checkpoints(param_dir):
+            available[parameter] = parameter
+    return available
+
+
 @dataclass(frozen=True)
 class APISettings:
     repo_root: str
     python_executable: str
     input_root: str
     results_root: str
+    temp_root: str
     checkpoint_root: str
     allow_input_file: bool = False
     allow_unsafe_request_overrides: bool = False
@@ -49,19 +95,41 @@ class APISettings:
     def from_env(cls) -> "APISettings":
         env_repo_root = os.environ.get("CATPRED_REPO_ROOT")
         repo_root = str(Path(env_repo_root).resolve()) if env_repo_root else str(Path.cwd().resolve())
+        repo_root_path = Path(repo_root).resolve()
+        env_runtime_root = os.environ.get("CATPRED_API_RUNTIME_ROOT")
+        if env_runtime_root:
+            default_runtime_root = Path(env_runtime_root).resolve()
+        elif os.environ.get("VERCEL"):
+            default_runtime_root = Path("/tmp/catpred").resolve()
+        else:
+            default_runtime_root = repo_root_path
         input_root = os.environ.get("CATPRED_API_INPUT_ROOT")
         results_root = os.environ.get("CATPRED_API_RESULTS_ROOT")
+        temp_root = os.environ.get("CATPRED_API_TEMP_ROOT")
         checkpoint_root = os.environ.get("CATPRED_API_CHECKPOINT_ROOT")
 
         return cls(
             repo_root=repo_root,
             python_executable=os.environ.get("CATPRED_PYTHON_EXECUTABLE", sys.executable or "python"),
-            input_root=str(Path(input_root).resolve()) if input_root else str((Path(repo_root) / "inputs").resolve()),
-            results_root=str(Path(results_root).resolve()) if results_root else str((Path(repo_root) / "results").resolve()),
+            input_root=(
+                str(Path(input_root).resolve())
+                if input_root
+                else str((default_runtime_root / "inputs").resolve())
+            ),
+            results_root=(
+                str(Path(results_root).resolve())
+                if results_root
+                else str((default_runtime_root / "results").resolve())
+            ),
+            temp_root=(
+                str(Path(temp_root).resolve())
+                if temp_root
+                else str((default_runtime_root / "tmp").resolve())
+            ),
             checkpoint_root=(
                 str(Path(checkpoint_root).resolve())
                 if checkpoint_root
-                else str((Path(repo_root) / "checkpoints").resolve())
+                else str(_discover_default_checkpoint_root(repo_root_path))
             ),
             allow_input_file=_env_flag("CATPRED_API_ALLOW_INPUT_FILE", default=False),
             allow_unsafe_request_overrides=_env_flag("CATPRED_API_ALLOW_UNSAFE_OVERRIDES", default=False),
@@ -164,7 +232,6 @@ def _resolve_results_dir(raw_results_dir: str, settings: APISettings) -> str:
 
 def _resolve_checkpoint_dir(raw_checkpoint_dir: str, settings: APISettings) -> str:
     checkpoint_root = Path(settings.checkpoint_root).resolve()
-    checkpoint_root.mkdir(parents=True, exist_ok=True)
     resolved = _resolve_and_validate_path_under_root(
         raw_path=raw_checkpoint_dir,
         root=checkpoint_root,
@@ -207,7 +274,6 @@ def _resolve_input_file_path(input_file: str, settings: APISettings) -> Path:
 def _write_rows_to_temp_csv(
     rows: list[dict[str, Any]],
     settings: APISettings,
-    repo_root: Path,
 ) -> tuple[str, str]:
     if len(rows) == 0:
         raise ValueError("`input_rows` cannot be empty.")
@@ -216,7 +282,7 @@ def _write_rows_to_temp_csv(
             f"`input_rows` exceeds CATPRED_API_MAX_INPUT_ROWS ({settings.max_input_rows})."
         )
 
-    tmp_dir = (repo_root.resolve() / ".e2e-tests" / "api_tmp").resolve()
+    tmp_dir = Path(settings.temp_root).resolve()
     tmp_dir.mkdir(parents=True, exist_ok=True)
     fd, tmp_path = tempfile.mkstemp(prefix="api_input_", suffix=".csv", dir=str(tmp_dir))
     os.close(fd)
@@ -227,13 +293,12 @@ def _write_rows_to_temp_csv(
 def _resolve_input_file(
     payload: PredictRequest,
     settings: APISettings,
-    repo_root: Path,
 ) -> tuple[str, Optional[str]]:
     if payload.input_file:
         resolved = _resolve_input_file_path(payload.input_file, settings)
         return str(resolved), None
 
-    return _write_rows_to_temp_csv(payload.input_rows or [], settings=settings, repo_root=repo_root)
+    return _write_rows_to_temp_csv(payload.input_rows or [], settings=settings)
 
 
 def _preview_output(output_file: str, preview_limit: int) -> tuple[int, list[dict[str, Any]]]:
@@ -249,6 +314,20 @@ def create_app(
     app = FastAPI(title="CatPred API", version="0.2.0")
     backend_router = router or InferenceBackendRouter()
     default_fallback = _env_flag("CATPRED_MODAL_FALLBACK_TO_LOCAL", default=False)
+    static_root = (Path(__file__).resolve().parent / "static").resolve()
+
+    if static_root.exists():
+        app.mount("/static", StaticFiles(directory=str(static_root)), name="static")
+
+    @app.get("/", include_in_schema=False)
+    def root() -> FileResponse:
+        dist_index = static_root / "dist" / "index.html"
+        if not dist_index.exists():
+            raise HTTPException(
+                status_code=404,
+                detail="Frontend build not found. Run `npm run build` in catpred/web/frontend/.",
+            )
+        return FileResponse(dist_index)
 
     @app.get("/health")
     def health() -> dict[str, str]:
@@ -257,6 +336,8 @@ def create_app(
     @app.get("/ready")
     def ready() -> dict[str, Any]:
         readiness = backend_router.readiness()
+        checkpoint_root = Path(api_settings.checkpoint_root).resolve()
+        available_checkpoints = _discover_available_checkpoints(checkpoint_root)
         readiness["api"] = {
             "allow_input_file": api_settings.allow_input_file,
             "allow_unsafe_request_overrides": api_settings.allow_unsafe_request_overrides,
@@ -264,7 +345,12 @@ def create_app(
             "max_input_file_bytes": api_settings.max_input_file_bytes,
             "input_root": str(Path(api_settings.input_root).resolve()),
             "results_root": str(Path(api_settings.results_root).resolve()),
-            "checkpoint_root": str(Path(api_settings.checkpoint_root).resolve()),
+            "temp_root": str(Path(api_settings.temp_root).resolve()),
+            "checkpoint_root": str(checkpoint_root),
+            "available_checkpoints": available_checkpoints,
+            "missing_checkpoints": [
+                parameter for parameter in _SUPPORTED_PARAMETERS if parameter not in available_checkpoints
+            ],
         }
         return readiness
 
@@ -274,7 +360,7 @@ def create_app(
         try:
             repo_root = _resolve_repo_root(payload.repo_root, api_settings)
             python_executable = _resolve_python_executable(payload.python_executable, api_settings)
-            input_file, temp_file = _resolve_input_file(payload, settings=api_settings, repo_root=repo_root)
+            input_file, temp_file = _resolve_input_file(payload, settings=api_settings)
             safe_results_dir = _resolve_results_dir(payload.results_dir, api_settings)
             fallback = payload.fallback_to_local
             if fallback is None:

@@ -127,8 +127,11 @@ class MoleculeModel(nn.Module):
             x = list(self.pretrained_egnn_feats_dict.values())
             self.pretrained_egnn_feats_avg = torch.stack(x).mean(dim=0)
             
-        # For rotary positional embeddings
-        self.rotary_embedder = RotaryEmbedding(dim=args.seq_embed_dim//4)
+        # Rotary embeddings require an even feature dimension.
+        rotary_dim = max(2, args.seq_embed_dim // 4)
+        if rotary_dim % 2 != 0:
+            rotary_dim -= 1
+        self.rotary_embedder = RotaryEmbedding(dim=rotary_dim)
         
         # For self-attention
         self.multihead_attn = nn.MultiheadAttention(args.seq_embed_dim, 

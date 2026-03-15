@@ -1,6 +1,7 @@
 # CatPred: A Comprehensive Framework for Deep Learning In Vitro Enzyme Kinetic Parameters
 
-[![DOI](https://img.shields.io/badge/DOI-10.1101/2024.03.10.584340-blue)](https://www.nature.com/articles/s41467-025-57215-9)
+[![Web App](https://img.shields.io/badge/Web_App-www.catpred.com-059669)](https://www.catpred.com)
+[![DOI](https://img.shields.io/badge/DOI-10.1038/s41467--025--57215--9-blue)](https://www.nature.com/articles/s41467-025-57215-9)
 [![Colab](https://img.shields.io/badge/GoogleColab-tiny.cc/catpred-red)](https://tiny.cc/catpred)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
@@ -8,16 +9,15 @@
 
 ## 🚨 Announcements 📢
 
+- ✅ **14th Mar 2026** - Web app live at [www.catpred.com](https://www.catpred.com) — predict kcat, Km, and Ki directly in your browser!
 - ✅ **28th Feb 2025** - Published in [_Nature Communications_](https://www.nature.com/articles/s41467-025-57215-9)
 - ✅ **27th Dec 2024** - Updated repository with scripts to reproduce results from the manuscript.
-- 🚧 **TODO**
-  - Add prediction codes for models using 3D-structural features.
-  - Add instructions to install CatPred using a Docker image.
 
 ---
 
 ## 📚 Table of Contents
 
+- [Web App](#web-app)
 - [Google Colab Interface](#colab-interface)
 - [Local Installation](#local-installation)
    - [System Requirements](#requirements)
@@ -26,9 +26,22 @@
    - [Web API (Optional)](#web-api-optional)
    - [Vercel Deployment (Optional)](#vercel-deployment-optional)
    - [Reproducibility](#reproduce)
+   - [Fine-Tuning On Custom Data](#-fine-tuning-on-custom-data)
+   - [Docker](#-docker)
 - [Acknowledgements](#acknw)
 - [License](#license)
 - [Citations](#citations)
+
+---
+
+## 🌐 Web App <a name="web-app"></a>
+
+CatPred is live at **[www.catpred.com](https://www.catpred.com)** — no installation needed.
+
+- **Two prediction modes:** Substrate kinetics (kcat/Km) and Inhibition (Ki)
+- **Multi-substrate input** with primary substrate marker
+- **CSV import/export** for batch workflows
+- Powered by a [Modal](https://modal.com) serverless backend
 
 ---
 
@@ -70,17 +83,26 @@ cd catpred_pipeline
 wget -c --tries=5 --timeout=30 https://catpred.s3.us-east-1.amazonaws.com/capsule_data_update.tar.gz || \
 wget -c --tries=5 --timeout=30 https://catpred.s3.amazonaws.com/capsule_data_update.tar.gz
 tar -xzf capsule_data_update.tar.gz
-git clone https://github.com/maranasgroup/catpred.git
+git clone https://github.com/maranasgroup/CatPred.git
 cd catpred
 conda env create -f environment.yml
 conda activate catpred
 pip install -e .
-````
+```
 
 `stride` is Linux-only and optional for the default demos. If needed for your workflow, install it separately on Linux:
 
 ```bash
 conda install -c kimlab stride
+```
+
+### 🐳 Docker
+
+A `Dockerfile` is included for containerized usage (PyTorch 2.4, CUDA 12.4, Python 3.12.4 via Mambaforge).
+
+```bash
+docker build -t catpred .
+docker run --gpus all -it catpred
 ```
 
 ### 🔮 Prediction <a name="predict"></a>
@@ -104,7 +126,7 @@ For released benchmark datasets, the number of entries with 3D structure can be 
 
 ### 🌍 Web API (Optional)
 
-CatPred also provides an optional FastAPI service for prediction workflows.
+CatPred also provides an optional FastAPI service for prediction workflows. The Vue 3 frontend lives in `catpred/web/frontend/` and is served by the API at `/`.
 
 Install web dependencies:
 
@@ -112,10 +134,19 @@ Install web dependencies:
 pip install -e ".[web]"
 ```
 
-Run the API:
+Run the API (serves the built frontend at `/`):
 
 ```bash
 catpred_web --host 0.0.0.0 --port 8000
+```
+
+To develop the frontend:
+
+```bash
+cd catpred/web/frontend
+npm install
+npm run dev          # Vite dev server with HMR
+npm run build        # Production build (vue-tsc + vite)
 ```
 
 Endpoints:
@@ -129,7 +160,7 @@ By default, the API is hardened for service use:
 - `results_dir` is constrained under `CATPRED_API_RESULTS_ROOT`.
 - for local backend (and modal requests with fallback enabled), `checkpoint_dir` must resolve under `CATPRED_API_CHECKPOINT_ROOT`.
 
-Minimal `POST /predict` example for local inference using `input_rows`:
+Minimal `POST /predict` example for local inference using `input_rows` (human glucokinase + D-glucose):
 
 ```bash
 curl -X POST http://127.0.0.1:8000/predict \
@@ -138,8 +169,11 @@ curl -X POST http://127.0.0.1:8000/predict \
     "parameter": "kcat",
     "checkpoint_dir": "kcat",
     "input_rows": [
-      {"SMILES": "CCO", "sequence": "ACDEFGHIK", "pdbpath": "seq_a"},
-      {"SMILES": "CCN", "sequence": "LMNPQRSTV", "pdbpath": "seq_b"}
+      {
+        "SMILES": "C(C1C(C(C(C(O1)O)O)O)O)O",
+        "sequence": "MLDDRARMEAAKKEKVEQILAEFQLQEEDLKKVMRRMQKEMDRGLRLETHEEASVKMLPTYVRSTPEGSEVGDFLSLDLGGTNFRVMLVKVGEGEEGQWSVKTKHQMYSIPEDAMTGTAEMLFDYISECISDFLDKHQMKHKKLPLGFTFSFPVRHEDIDKGILLNWTKGFKASGAEGNNVVGLLRDAIKRRGDFEMDVVAMVNDTVATMISCYYEDHQCEVGMIVGTGCNACYMEEMQNVELVEGDEGRMCVNTEWGAFGDSGELDEFLLEYDRLVDESSANPGQQLYEKLIGGKYMGELVRLVLLRLVDENLLFHGEASEQLRTRGAFETRFVSQVESDTGDRKQIYNILSTLGLRPSTTDCDIVRRACESVSTRAAHMCSAGLAGVINRMRESRSEDVMRITVGVDGSVYKLHPSFKERFHASVRRLTPSCEITFIESEEGSGRGAALVSAVACKKACMLGQ",
+        "pdbpath": "GCK_HUMAN"
+      }
     ],
     "results_dir": "batch1",
     "backend": "local"
@@ -367,15 +401,14 @@ This source code is licensed under the MIT license found in the `LICENSE` file i
 If you find the models useful in your research, we ask that you cite the relevant paper:
 
 ```bibtex
-@article {Boorla2024.03.10.584340,
-	author = {Veda Sheersh Boorla and Costas D. Maranas},
-	title = {CatPred: A comprehensive framework for deep learning in vitro enzyme kinetic parameters kcat, Km and Ki},
-	elocation-id = {2024.03.10.584340},
-	year = {2024},
-	doi = {10.1101/2024.03.10.584340},
-	publisher = {Cold Spring Harbor Laboratory},
-	URL = {https://www.biorxiv.org/content/early/2024/03/26/2024.03.10.584340},
-	eprint = {https://www.biorxiv.org/content/early/2024/03/26/2024.03.10.584340.full.pdf},
-	journal = {bioRxiv}
+@article{Boorla2025CatPred,
+	author = {Boorla, Veda Sheersh and Maranas, Costas D.},
+	title = {CatPred: a comprehensive framework for deep learning in vitro enzyme kinetic parameters},
+	journal = {Nature Communications},
+	year = {2025},
+	volume = {16},
+	number = {2072},
+	doi = {10.1038/s41467-025-57215-9},
+	URL = {https://www.nature.com/articles/s41467-025-57215-9}
 }
 ```

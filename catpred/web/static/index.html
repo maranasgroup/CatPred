@@ -14,8 +14,8 @@
       href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Outfit:wght@200;300;400;500&family=IBM+Plex+Mono:wght@300;400&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" href="/static/catpred-favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/static/catpred.css?v=20260309a" />
+
+    <link rel="stylesheet" href="/static/catpred.css?v=20260314a" />
   </head>
   <body>
     <div class="texture" aria-hidden="true"></div>
@@ -40,10 +40,19 @@
     </header>
 
     <main>
-      <section id="predictor" class="studio container reveal snap-section">
+      <section class="hero reveal show">
+        <div class="container hero-content">
+          <span class="hero-badge">Published in Nature Communications</span>
+          <h1>Predict Enzyme<br><em>Kinetic Parameters</em></h1>
+          <p class="hero-lead">Deep learning ensemble predictions for kcat, Km, and Ki with built-in uncertainty quantification.</p>
+          <a href="#predictor" class="btn btn-dark hero-cta">Start predicting →</a>
+        </div>
+      </section>
+
+      <section id="predictor" class="studio container reveal show snap-section">
         <div class="studio-head">
           <div class="studio-titleblock">
-            <h1>Enzyme Kinetics Prediction</h1>
+            <h2>Enzyme Kinetics Prediction</h2>
             <p class="studio-subtitle">kcat, Km, and Ki with uncertainty estimates</p>
           </div>
 
@@ -107,7 +116,14 @@
 
             <div id="resultCards" class="result-cards">
               <article class="empty-result">
-                <p>Run a prediction to see kinetic estimates here.</p>
+                <div class="empty-result-icon" aria-hidden="true">
+                  <svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3" opacity="0.4"/>
+                    <path d="M17 30c2-4.5 4-8 7-10 3 2 5 5.5 7 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.35"/>
+                    <circle cx="24" cy="18" r="2.5" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+                  </svg>
+                </div>
+                <p>Run a prediction to see kinetic<br>estimates here.</p>
               </article>
             </div>
 
@@ -121,7 +137,70 @@
         </div>
       </section>
 
+      <section class="section how-it-works reveal">
+        <div class="container">
+          <div class="section-head centered">
+            <h2>How It Works</h2>
+            <p class="muted">Three steps to enzyme kinetics predictions</p>
+          </div>
+          <div class="step-cards">
+            <article class="step-card">
+              <span class="step-number">01</span>
+              <h3>Enter Data</h3>
+              <p>Provide substrate SMILES notation and enzyme amino acid sequence for each entry.</p>
+            </article>
+            <article class="step-card">
+              <span class="step-number">02</span>
+              <h3>Run Prediction</h3>
+              <p>Our deep learning ensemble processes inputs through multiple model checkpoints.</p>
+            </article>
+            <article class="step-card">
+              <span class="step-number">03</span>
+              <h3>Get Results</h3>
+              <p>Receive predicted kinetic parameters with uncertainty estimates and detailed metrics.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-alt citation-section reveal">
+        <div class="container">
+          <div class="section-head centered">
+            <h2>Peer-Reviewed Research</h2>
+            <p class="muted">CatPred is backed by rigorous scientific methodology</p>
+          </div>
+          <div class="citation-card">
+            <div class="citation-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+              </svg>
+            </div>
+            <div class="citation-body">
+              <h3>CatPred: A comprehensive framework for deep learning in vitro enzyme kinetic parameters kcat, Km and Ki</h3>
+              <p>Nature Communications, 2025 &mdash; Veda Sheersh Boorla, Costas D. Maranas</p>
+              <a class="citation-link" href="https://www.nature.com/articles/s41467-025-57215-9" target="_blank" rel="noreferrer">Read the paper →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <span class="brand-word">CatPred</span>
+            <p>Maranas Group &middot; Penn State University</p>
+          </div>
+          <nav class="footer-nav" aria-label="Footer navigation">
+            <a href="https://www.nature.com/articles/s41467-025-57215-9" target="_blank" rel="noreferrer">Paper</a>
+            <a href="https://github.com/maranasgroup/catpred/" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+        </div>
+        <p class="footer-copy">&copy; 2025 Maranas Group, Penn State University. All rights reserved.</p>
+      </div>
+    </footer>
 
     <a class="mobile-stick" href="#predictor">Run prediction</a>
 

@@ -282,65 +282,6 @@ CATPRED_MODAL_TOKEN=<your-token>
 CATPRED_MODAL_FALLBACK_TO_LOCAL=0
 ```
 
-#### CI/CD (GitHub Actions + Vercel + Modal)
-
-This repo includes two GitHub Actions workflows:
-
-- `.github/workflows/ci.yml`
-  - Runs on every PR and push to `main`.
-  - Installs minimal API dependencies, compiles all Python files, and smoke-tests API entrypoints.
-- `.github/workflows/deploy-modal.yml`
-  - Runs on push to `main` when backend files change (and manually via `workflow_dispatch`).
-  - Deploys `modal_app.py` automatically.
-
-To enable automatic Modal deploys from GitHub Actions, add repository secrets:
-
-- `MODAL_TOKEN_ID`
-- `MODAL_TOKEN_SECRET`
-
-Create these from Modal:
-
-1. Go to [https://modal.com/settings/tokens](https://modal.com/settings/tokens).
-2. Create a token with deploy permissions for your workspace.
-3. Copy token ID and secret into GitHub repo settings:
-   `Settings -> Secrets and variables -> Actions -> New repository secret`.
-
-Vercel deployment remains automatic from the connected GitHub branch (`main`).
-
-### 🧪 Fine-Tuning On Custom Data
-
-You can fine-tune CatPred on your own regression targets using `train.py`.
-
-1. Prepare train/val/test CSVs with at least:
-- `SMILES`
-- `sequence`
-- `pdbpath` (unique per unique sequence)
-- one numeric target column (for example: `log10kcat_max`)
-
-2. Build a protein-records file that covers all `pdbpath` values in your splits:
-
-```bash
-python ./scripts/create_pdbrecords.py --data_file <combined_or_train_csv> --out_file <protein_records.json.gz>
-```
-
-3. Train:
-
-```bash
-python train.py \
-  --protein_records_path <protein_records.json.gz> \
-  --data_path <train.csv> \
-  --separate_val_path <val.csv> \
-  --separate_test_path <test.csv> \
-  --dataset_type regression \
-  --smiles_columns SMILES \
-  --target_columns <target_column_name> \
-  --add_esm_feats \
-  --loss_function mve \
-  --save_dir <output_checkpoint_dir>
-```
-
-For working end-to-end examples, see the training commands in scripts such as `scripts/reproduce_figS10_catpred.sh`.
-
 ### 🔄 Reproducing Publication Results <a name="reproduce"></a>
 
 We provide three separate ways for reproducing the results of the publication.

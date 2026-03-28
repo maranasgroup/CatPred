@@ -11,6 +11,7 @@ class PredictionRequest:
     use_gpu: bool = False
     repo_root: str | None = None
     python_executable: str = "python"
+    protein_records_file: str | None = None
 
 
 @dataclass(frozen=True)

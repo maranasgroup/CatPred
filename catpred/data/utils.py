@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import OrderedDict, defaultdict
+from pathlib import Path
 import sys
 import csv
 import ctypes
@@ -22,7 +23,7 @@ from .data import MoleculeDatapoint, MoleculeDataset, make_mols
 from .scaffold import log_scaffold_stats, scaffold_split
 from catpred.features import load_features, load_valid_atom_or_bond_features, is_mol
 from catpred.rdkit import make_mol
-from catpred.security import load_index_artifact, load_pickle_artifact
+from catpred.security import load_index_artifact, load_pickle_artifact, load_torch_artifact
 
 if TYPE_CHECKING:
     from catpred.args import PredictArgs, TrainArgs
@@ -556,13 +557,26 @@ def get_data(path: str,
                         'This usually means multiple sequences share the same pdbpath identifier.'
                     )
 
+                if 'esm2_feats' in protein_record and not isinstance(protein_record['esm2_feats'], torch.Tensor):
+                    protein_record['esm2_feats'] = torch.as_tensor(protein_record['esm2_feats'])
+
                 if 'esm2_feats' not in protein_record:
-                    sequence_features, _ = sequence_feat_getter(
-                        protein_record['seq'],
-                        name=pdbname,
-                        device='cpu'
-                    )
-                    protein_record['esm2_feats'] = sequence_features[0]  # batch dim
+                    esm2_feats_path = protein_record.get('esm2_feats_path')
+                    if esm2_feats_path:
+                        esm2_feats_path = Path(esm2_feats_path).resolve()
+                        protein_record['esm2_feats'] = load_torch_artifact(
+                            esm2_feats_path,
+                            purpose="protein ESM2 features",
+                            map_location='cpu',
+                            roots=[esm2_feats_path.parent],
+                        )
+                    else:
+                        sequence_features, _ = sequence_feat_getter(
+                            protein_record['seq'],
+                            name=pdbname,
+                            device='cpu'
+                        )
+                        protein_record['esm2_feats'] = sequence_features[0]  # batch dim
                 
             targets, atom_targets, bond_targets = [], [], []
             for column in target_columns:

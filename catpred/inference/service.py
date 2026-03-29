@@ -44,6 +44,15 @@ def _resolve_input_path(input_file: str, repo_root: Path) -> Path:
     return path
 
 
+def _resolve_existing_path(path_str: str, repo_root: Path, purpose: str) -> Path:
+    path = Path(path_str)
+    if not path.is_absolute():
+        path = (repo_root / path).resolve()
+    if not path.exists():
+        raise FileNotFoundError(f'{purpose} not found: "{path}"')
+    return path
+
+
 def _validate_and_prepare_dataframe(parameter: str, df: pd.DataFrame, input_csv: Path) -> pd.DataFrame:
     required_columns = {"SMILES", "sequence", "pdbpath"}
     missing = required_columns.difference(df.columns)
@@ -152,7 +161,19 @@ def run_raw_prediction(request: PredictionRequest, paths: PreparedInputPaths) ->
     env = os.environ.copy()
     env["PROTEIN_EMBED_USE_CPU"] = "0" if request.use_gpu else "1"
 
-    subprocess.run(create_records_cmd, cwd=str(root), env=env, check=True)
+    protein_records_path = paths.records_file
+    if request.protein_records_file:
+        protein_records_path = str(
+            _resolve_existing_path(
+                request.protein_records_file,
+                repo_root=root,
+                purpose="Protein records file",
+            )
+        )
+    else:
+        subprocess.run(create_records_cmd, cwd=str(root), env=env, check=True)
+
+    predict_cmd[-1] = protein_records_path
     subprocess.run(predict_cmd, cwd=str(root), env=env, check=True)
 
     if not os.path.exists(paths.output_csv):

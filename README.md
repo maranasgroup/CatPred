@@ -9,7 +9,7 @@
 
 ## 🚨 Announcements 📢
 
-- ✅ **30th Mar 2026** - Web app live at [predictor.openkinetics.org](http://predictor.openkinetics.org/) — predict kcat, Km, and Ki directly in your browser!
+- ✅ **30th Mar 2026** - Batch prediction  live at [predictor.openkinetics.org](http://predictor.openkinetics.org/) — batch predict kcat, Km, and Ki directly in your browser!
 - ✅ **14th Mar 2026** - Web app live at [www.catpred.com](https://www.catpred.com) — predict kcat, Km, and Ki directly in your browser!
 - ✅ **28th Feb 2025** - Published in [_Nature Communications_](https://www.nature.com/articles/s41467-025-57215-9)
 - ✅ **27th Dec 2024** - Updated repository with scripts to reproduce results from the manuscript.

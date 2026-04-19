@@ -97,6 +97,8 @@ pip install -e .
 conda install -c kimlab stride
 ```
 
+Use the explicit `-c kimlab` form above. The `kimlab::stride` shorthand can fail on some conda setups.
+
 ### 🐳 Docker
 
 A `Dockerfile` is included for containerized usage (PyTorch 2.4, CUDA 12.4, Python 3.12.4 via Mambaforge).

@@ -3,7 +3,7 @@ import os
 from functools import partial
 import esm
 from torch.nn.utils.rnn import pad_sequence
-from .cache_utils import cache_fn, run_once
+from .cache_utils import cache_fn, load_cache_value, run_once, save_cache_value
 
 def exists(val):
     return val is not None
@@ -63,6 +63,11 @@ def calc_protein_representations_with_subunits(proteins, get_repr_fn, *, device)
 
 ESM_MAX_LENGTH = 2048
 ESM_EMBED_DIM = 1280
+ESM_CACHE_PATH = 'esm/proteins'
+DEFAULT_ESM_BATCH_SIZE = max(
+    int(os.getenv("CATPRED_ESM_BATCH_SIZE", "1" if PROTEIN_EMBED_USE_CPU else "4")),
+    1,
+)
 
 INT_TO_AA_STR_MAP = {
     0: '<cls>',
@@ -154,6 +159,86 @@ def get_single_esm_repr(protein_str):
     representation = token_representations[0][1 : len(protein_str) + 1]
     return representation
 
+
+def _run_esm_batch(protein_strs):
+    init_esm()
+    model, batch_converter = GLOBAL_VARIABLES['model']
+
+    data = [(f'protein_{index}', protein_str) for index, protein_str in enumerate(protein_strs)]
+    batch_labels, batch_strs, batch_tokens = batch_converter(data)
+
+    if batch_tokens.shape[1] > ESM_MAX_LENGTH:
+        print(f'warning max length protein esm')
+
+    batch_tokens = batch_tokens[:, :ESM_MAX_LENGTH]
+
+    if not PROTEIN_EMBED_USE_CPU:
+        batch_tokens = batch_tokens.to(next(model.parameters()).device)
+
+    with torch.no_grad():
+        results = model(batch_tokens, repr_layers=[33])
+
+    token_representations = results['representations'][33]
+    representations = []
+    max_residue_tokens = ESM_MAX_LENGTH - 1
+    for index, protein_str in enumerate(protein_strs):
+        representation_length = min(len(protein_str), max_residue_tokens)
+        representations.append(
+            token_representations[index][1 : representation_length + 1].detach()
+        )
+    return representations
+
+
+def _run_esm_batch_with_fallback(protein_strs):
+    try:
+        return _run_esm_batch(protein_strs)
+    except RuntimeError as e:
+        if 'out of memory' not in str(e) or len(protein_strs) == 1:
+            raise e
+        print('| WARNING: ran out of memory, retrying smaller ESM batches')
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        midpoint = len(protein_strs) // 2
+        return (
+            _run_esm_batch_with_fallback(protein_strs[:midpoint])
+            + _run_esm_batch_with_fallback(protein_strs[midpoint:])
+        )
+
+
+def get_many_esm_reprs(proteins, device='cpu', batch_size=None):
+    if isinstance(proteins, torch.Tensor):
+        proteins = tensor_to_aa_str(proteins)
+
+    batch_size = max(int(batch_size or DEFAULT_ESM_BATCH_SIZE), 1)
+    ordered_unique_proteins = list(dict.fromkeys(proteins))
+    representations_by_sequence = {}
+    uncached_proteins = []
+
+    for protein_str in ordered_unique_proteins:
+        cached = load_cache_value(
+            path=ESM_CACHE_PATH,
+            cache_key=protein_str,
+            purpose="esm cache entry",
+            map_location='cpu',
+        )
+        if cached is None:
+            uncached_proteins.append(protein_str)
+        else:
+            representations_by_sequence[protein_str] = cached
+
+    for start in range(0, len(uncached_proteins), batch_size):
+        batch = uncached_proteins[start : start + batch_size]
+        batch_representations = _run_esm_batch_with_fallback(batch)
+        for protein_str, representation in zip(batch, batch_representations):
+            save_cache_value(representation, path=ESM_CACHE_PATH, cache_key=protein_str)
+            representations_by_sequence[protein_str] = representation
+
+    return {
+        protein_str: representations_by_sequence[protein_str].to(device)
+        for protein_str in ordered_unique_proteins
+    }
+
+
 def get_esm_repr(proteins, name, device):
     if isinstance(proteins, torch.Tensor):
         proteins = tensor_to_aa_str(proteins)
@@ -161,7 +246,7 @@ def get_esm_repr(proteins, name, device):
     # Cache by sequence content to avoid collisions when different proteins
     # are accidentally given the same pdb/name identifier.
     _ = name
-    get_protein_repr_fn = cache_fn(get_single_esm_repr, path='esm/proteins')
+    get_protein_repr_fn = cache_fn(get_single_esm_repr, path=ESM_CACHE_PATH)
 
     return calc_protein_representations_with_subunits([proteins], get_protein_repr_fn, device=device)
 
@@ -208,6 +293,7 @@ PROTEIN_REPR_CONFIG = {
     'esm': {
         'dim': ESM_EMBED_DIM,
         'fn': get_esm_repr,
+        'batch_fn': get_many_esm_reprs,
         'tokenizer': get_esm_tokens,
     }
 }

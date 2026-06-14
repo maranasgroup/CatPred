@@ -28,6 +28,37 @@ def md5_hash_fn(s):
     encoded = s.encode('utf-8')
     return hashlib.md5(encoded).hexdigest()
 
+
+def cache_entry_path(path='', cache_key=None, hash_fn=md5_hash_fn, name=None):
+    (CACHE_PATH / path).mkdir(parents=True, exist_ok=True)
+    if name is None:
+        key = hash_fn(cache_key)
+    else:
+        key = name
+    return CACHE_PATH / path / f'{key}.pt'
+
+
+def load_cache_value(path='', cache_key=None, *, purpose="cache entry", hash_fn=md5_hash_fn, name=None, map_location=None):
+    entry_path = cache_entry_path(path=path, cache_key=cache_key, hash_fn=hash_fn, name=name)
+    if not entry_path.exists():
+        return None
+
+    log(f'cache hit: fetching {cache_key} from {str(entry_path)}')
+    return load_torch_artifact(
+        str(entry_path),
+        purpose=purpose,
+        map_location=map_location,
+        roots=[CACHE_PATH],
+    )
+
+
+def save_cache_value(value, path='', cache_key=None, *, hash_fn=md5_hash_fn, name=None):
+    entry_path = cache_entry_path(path=path, cache_key=cache_key, hash_fn=hash_fn, name=name)
+    log(f'saving: {cache_key} to {str(entry_path)}')
+    cache_value = value.detach().cpu() if isinstance(value, torch.Tensor) else value
+    torch.save(cache_value, str(entry_path))
+    return entry_path
+
 # run once function
 
 GLOBAL_RUN_RECORDS = dict()
@@ -83,27 +114,20 @@ def cache_fn(
         if clear:
             clear_cache_folder_()
 
-        if name is None: 
-            cache_str = __cache_key if exists(__cache_key) else t
-            key = hash_fn(cache_str)
-        else:
-            key = name
-
-        entry_path = CACHE_PATH / path / f'{key}.pt'
-
-        if entry_path.exists():
-            log(f'cache hit: fetching {t} from {str(entry_path)}')
-            return load_torch_artifact(
-                str(entry_path),
-                purpose="esm cache entry",
-                roots=[CACHE_PATH],
-            )
+        cache_str = __cache_key if exists(__cache_key) else t
+        cached = load_cache_value(
+            path=path,
+            cache_key=cache_str,
+            purpose="esm cache entry",
+            hash_fn=hash_fn,
+            name=name,
+        )
+        if cached is not None:
+            return cached
 
         out = fn(t, *args, **kwargs)
 
-        log(f'saving: {t} to {str(entry_path)}')
-        cache_out = out.detach().cpu() if isinstance(out, torch.Tensor) else out
-        torch.save(cache_out, str(entry_path))
+        save_cache_value(out, path=path, cache_key=cache_str, hash_fn=hash_fn, name=name)
         return out
         
     return inner

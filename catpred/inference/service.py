@@ -234,6 +234,57 @@ def _checkpoint_fingerprint(checkpoint_paths: tuple[str, ...]) -> tuple[tuple[st
     return tuple(fingerprint)
 
 
+def _deduplicate_prediction_input(paths: PreparedInputPaths) -> tuple[PreparedInputPaths, bool]:
+    input_df = pd.read_csv(paths.input_csv)
+    key_columns = ["SMILES", "sequence"]
+    if any(column not in input_df.columns for column in key_columns):
+        return paths, False
+
+    unique_df = input_df.drop_duplicates(subset=key_columns, keep="first")
+    if len(unique_df) == len(input_df):
+        return paths, False
+
+    input_path = Path(paths.input_csv)
+    unique_input_csv = input_path.with_name(f"{input_path.stem}_unique{input_path.suffix}")
+    unique_output_csv = unique_input_csv.with_name(f"{unique_input_csv.with_suffix('').name}_output.csv")
+    unique_df.to_csv(unique_input_csv, index=False)
+    return (
+        PreparedInputPaths(
+            input_csv=str(unique_input_csv),
+            records_file=paths.records_file,
+            output_csv=str(unique_output_csv),
+        ),
+        True,
+    )
+
+
+def _expand_deduplicated_prediction_output(
+    original_paths: PreparedInputPaths,
+    deduplicated_paths: PreparedInputPaths,
+) -> None:
+    full_df = pd.read_csv(original_paths.input_csv)
+    unique_input_df = pd.read_csv(deduplicated_paths.input_csv)
+    unique_output_df = pd.read_csv(deduplicated_paths.output_csv)
+    key_columns = ["SMILES", "sequence"]
+    prediction_columns = [
+        column for column in unique_output_df.columns if column not in unique_input_df.columns
+    ]
+
+    if not prediction_columns:
+        raise ValueError("Deduplicated prediction output did not contain prediction columns.")
+
+    prediction_lookup = unique_output_df[key_columns + prediction_columns].drop_duplicates(
+        subset=key_columns,
+        keep="first",
+    )
+    expanded_df = full_df.merge(prediction_lookup, on=key_columns, how="left", sort=False)
+
+    if expanded_df[prediction_columns].isnull().any().any():
+        raise ValueError("Failed to expand deduplicated predictions to all input rows.")
+
+    expanded_df.to_csv(original_paths.output_csv, index=False)
+
+
 @lru_cache(maxsize=_MODEL_CACHE_SIZE)
 def _load_cached_model_objects(
     checkpoint_paths: tuple[str, ...],
@@ -390,7 +441,13 @@ def run_inprocess_prediction_pipeline(
 ) -> str:
     parameter = _validate_parameter(request.parameter)
     paths = prepare_prediction_inputs(parameter, request.input_file, request.repo_root)
-    run_inprocess_prediction(request, paths)
+    if request.protein_records_file:
+        prediction_paths, was_deduplicated = paths, False
+    else:
+        prediction_paths, was_deduplicated = _deduplicate_prediction_input(paths)
+    run_inprocess_prediction(request, prediction_paths)
+    if was_deduplicated:
+        _expand_deduplicated_prediction_output(paths, prediction_paths)
     return _write_postprocessed_predictions(parameter, paths, request.repo_root, results_dir)
 
 

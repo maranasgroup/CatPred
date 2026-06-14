@@ -1,3 +1,4 @@
+import importlib.util
 import sys
 import types
 import unittest
@@ -8,12 +9,14 @@ from unittest.mock import patch
 
 
 def install_import_stubs() -> None:
-    pandas = types.ModuleType("pandas")
-    pandas.DataFrame = object
-    sys.modules.setdefault("pandas", pandas)
+    if importlib.util.find_spec("pandas") is None:
+        pandas = types.ModuleType("pandas")
+        pandas.DataFrame = object
+        sys.modules.setdefault("pandas", pandas)
 
-    numpy = types.ModuleType("numpy")
-    sys.modules.setdefault("numpy", numpy)
+    if importlib.util.find_spec("numpy") is None:
+        numpy = types.ModuleType("numpy")
+        sys.modules.setdefault("numpy", numpy)
 
     rdkit = types.ModuleType("rdkit")
     chem = types.ModuleType("rdkit.Chem")
@@ -136,6 +139,59 @@ class ModelCacheTests(unittest.TestCase):
         self.assertEqual(second[2], ["model"])
         self.assertEqual(first_args.updated_from, "train_args")
         self.assertEqual(second_args.updated_from, "train_args")
+
+
+class PredictionInputDeduplicationTests(unittest.TestCase):
+    def test_duplicate_inputs_are_expanded_back_to_original_rows(self) -> None:
+        if not hasattr(service.pd, "read_csv"):
+            self.skipTest("pandas is stubbed in this test environment")
+
+        with TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            input_csv = tmp_path / "input.csv"
+            records_file = tmp_path / "input.json.gz"
+            output_csv = tmp_path / "input_output.csv"
+            input_csv.write_text(
+                "\n".join(
+                    [
+                        "Substrate,SMILES,sequence,pdbpath",
+                        "first,C,AAAA,seq1.pdb",
+                        "second,C,AAAA,seq1-copy.pdb",
+                        "third,O,BBBB,seq2.pdb",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            paths = service.PreparedInputPaths(
+                input_csv=str(input_csv),
+                records_file=str(records_file),
+                output_csv=str(output_csv),
+            )
+
+            deduplicated_paths, was_deduplicated = service._deduplicate_prediction_input(paths)
+            self.assertTrue(was_deduplicated)
+
+            unique_output = Path(deduplicated_paths.output_csv)
+            unique_output.write_text(
+                "\n".join(
+                    [
+                        "Substrate,SMILES,sequence,pdbpath,log10kcat_max,log10kcat_max_mve_uncal_var",
+                        "first,C,AAAA,seq1.pdb,1.0,0.1",
+                        "third,O,BBBB,seq2.pdb,2.0,0.2",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            service._expand_deduplicated_prediction_output(paths, deduplicated_paths)
+            expanded_lines = output_csv.read_text(encoding="utf-8").splitlines()
+
+        self.assertEqual(len(expanded_lines), 4)
+        self.assertIn("first,C,AAAA,seq1.pdb,1.0,0.1", expanded_lines)
+        self.assertIn("second,C,AAAA,seq1-copy.pdb,1.0,0.1", expanded_lines)
+        self.assertIn("third,O,BBBB,seq2.pdb,2.0,0.2", expanded_lines)
 
 
 class FastPredictArgsTests(unittest.TestCase):

@@ -19,6 +19,8 @@ HAS_PANDAS_NUMPY = _has_module("pandas") and _has_module("numpy")
 @unittest.skipUnless(HAS_PANDAS_NUMPY, "pandas and numpy are required")
 class PostprocessPredictionTests(unittest.TestCase):
     def setUp(self) -> None:
+        if _has_module("rdkit"):
+            return
         rdkit = types.ModuleType("rdkit")
         chem = types.ModuleType("rdkit.Chem")
         rdkit.Chem = chem

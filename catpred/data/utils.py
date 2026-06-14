@@ -58,6 +58,30 @@ def _load_protein_records(protein_records_path: str):
                 "Expected a JSON mapping in .json or .json.gz format."
             ) from plain_err
 
+
+def _populate_missing_esm2_features(
+        protein_records,
+        sequence_feat_getter,
+        sequence_batch_getter=None):
+    if not protein_records:
+        return
+
+    unique_sequences = list(dict.fromkeys(record['seq'] for record in protein_records))
+    if sequence_batch_getter is not None:
+        features_by_sequence = sequence_batch_getter(unique_sequences, device='cpu')
+        for record in protein_records:
+            record['esm2_feats'] = features_by_sequence[record['seq']]
+        return
+
+    features_by_sequence = {}
+    for record in protein_records:
+        sequence = record['seq']
+        if sequence not in features_by_sequence:
+            sequence_features, _ = sequence_feat_getter(sequence, name=record['name'], device='cpu')
+            features_by_sequence[sequence] = sequence_features[0]  # batch dim
+        record['esm2_feats'] = features_by_sequence[sequence]
+
+
 def get_header(path: str) -> List[str]:
     """
     Returns the header of a data CSV file.
@@ -509,7 +533,9 @@ def get_data(path: str,
 
     # Load sequence features
     if not protein_records is None:
-        sequence_feat_getter = get_protein_embedder('esm')['fn']
+        protein_embedder = get_protein_embedder('esm')
+        sequence_feat_getter = protein_embedder['fn']
+        sequence_batch_getter = protein_embedder.get('batch_fn')
                  
     # Load data
     smoke_test_counter = 0
@@ -523,6 +549,7 @@ def get_data(path: str,
 
         all_smiles, all_sequences, all_targets, all_atom_targets, all_bond_targets, all_rows, all_features, all_phase_features, all_constraints_data, all_raw_constraints_data, all_weights, all_gt, all_lt = [], [], [], [], [], [], [], [], [], [], [], [], []
         all_protein_records = []
+        missing_esm2_records = []
         for i, row in enumerate(tqdm(reader)):
             smoke_test_counter+=1
             if args.smoke_test: 
@@ -571,12 +598,7 @@ def get_data(path: str,
                             roots=[esm2_feats_path.parent],
                         )
                     else:
-                        sequence_features, _ = sequence_feat_getter(
-                            protein_record['seq'],
-                            name=pdbname,
-                            device='cpu'
-                        )
-                        protein_record['esm2_feats'] = sequence_features[0]  # batch dim
+                        missing_esm2_records.append(protein_record)
                 
             targets, atom_targets, bond_targets = [], [], []
             for column in target_columns:
@@ -649,6 +671,13 @@ def get_data(path: str,
 
             if len(all_smiles) >= max_data_size:
                 break
+
+        if protein_records is not None:
+            _populate_missing_esm2_features(
+                missing_esm2_records,
+                sequence_feat_getter=sequence_feat_getter,
+                sequence_batch_getter=sequence_batch_getter,
+            )
 
         atom_features = None
         atom_descriptors = None

@@ -64,3 +64,13 @@ class UncertaintyEstimator:
         Return separate predictions made by each individual model in an ensemble of models.
         """
         return np.asarray(self.predictor.get_individual_preds())
+
+    def uncertainty_components(self):
+        """
+        Return aleatoric and epistemic variance components when the predictor exposes them.
+        """
+        aleatoric_vars = self.predictor.get_uncal_aleatoric_vars()
+        epistemic_vars = self.predictor.get_uncal_epistemic_vars()
+        if aleatoric_vars is None or epistemic_vars is None:
+            return None
+        return aleatoric_vars, epistemic_vars

@@ -80,6 +80,18 @@ class UncertaintyPredictor(ABC):
         """
         return self.uncal_vars
 
+    def get_uncal_aleatoric_vars(self):
+        """
+        Return the uncalibrated aleatoric variance component when available.
+        """
+        return getattr(self, "uncal_aleatoric_vars", None)
+
+    def get_uncal_epistemic_vars(self):
+        """
+        Return the uncalibrated epistemic variance component when available.
+        """
+        return getattr(self, "uncal_epistemic_vars", None)
+
     def get_uncal_confidence(self):
         """
         Return the uncalibrated confidences for the test data
@@ -398,14 +410,16 @@ class MVEPredictor(UncertaintyPredictor):
 
         if model.is_atom_bond_targets:
             num_tasks = len(sum_preds)
-            uncal_preds, uncal_vars = [], []
+            uncal_preds, uncal_vars, aleatoric_vars, epistemic_vars = [], [], [], []
             for pred, squared, var in zip(sum_preds, sum_squared, sum_vars):
                 uncal_pred = pred / self.num_models
-                uncal_var = (var + squared) / self.num_models - np.square(
-                    pred / self.num_models
-                )
+                aleatoric_var = var / self.num_models
+                epistemic_var = squared / self.num_models - np.square(uncal_pred)
+                uncal_var = aleatoric_var + epistemic_var
                 uncal_preds.append(uncal_pred)
                 uncal_vars.append(uncal_var)
+                aleatoric_vars.append(aleatoric_var)
+                epistemic_vars.append(epistemic_var)
             self.uncal_preds = reshape_values(
                 uncal_preds,
                 self.test_data,
@@ -415,6 +429,20 @@ class MVEPredictor(UncertaintyPredictor):
             )
             self.uncal_vars = reshape_values(
                 uncal_vars,
+                self.test_data,
+                len(model.atom_targets),
+                len(model.bond_targets),
+                num_tasks,
+            )
+            self.uncal_aleatoric_vars = reshape_values(
+                aleatoric_vars,
+                self.test_data,
+                len(model.atom_targets),
+                len(model.bond_targets),
+                num_tasks,
+            )
+            self.uncal_epistemic_vars = reshape_values(
+                epistemic_vars,
                 self.test_data,
                 len(model.atom_targets),
                 len(model.bond_targets),
@@ -432,13 +460,15 @@ class MVEPredictor(UncertaintyPredictor):
                 )
         else:
             uncal_preds = sum_preds / self.num_models
-            uncal_vars = (sum_vars + sum_squared) / self.num_models - np.square(
-                sum_preds / self.num_models
-            )
+            aleatoric_vars = sum_vars / self.num_models
+            epistemic_vars = sum_squared / self.num_models - np.square(uncal_preds)
+            uncal_vars = aleatoric_vars + epistemic_vars
             self.uncal_preds, self.uncal_vars = (
                 uncal_preds.tolist(),
                 uncal_vars.tolist(),
             )
+            self.uncal_aleatoric_vars = aleatoric_vars.tolist()
+            self.uncal_epistemic_vars = epistemic_vars.tolist()
             self.individual_vars = individual_vars
             if self.individual_ensemble_predictions:
                 self.individual_preds = individual_preds.tolist()

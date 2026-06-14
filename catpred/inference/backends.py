@@ -37,8 +37,17 @@ class InferenceBackend:
 class LocalInferenceBackend(InferenceBackend):
     name = "local"
 
-    def __init__(self, repo_root: str | None = None) -> None:
+    def __init__(
+        self,
+        repo_root: str | None = None,
+        use_subprocess: bool | None = None,
+    ) -> None:
         self._repo_root = repo_root
+        self._use_subprocess = (
+            _env_flag("CATPRED_LOCAL_SUBPROCESS", default=False)
+            if use_subprocess is None
+            else use_subprocess
+        )
 
     def readiness(self) -> dict[str, Any]:
         root = Path(self._repo_root) if self._repo_root else Path.cwd()
@@ -53,17 +62,27 @@ class LocalInferenceBackend(InferenceBackend):
             "ready": len(missing) == 0,
             "missing_files": missing,
             "repo_root": str(root),
+            "mode": "subprocess" if self._use_subprocess else "in_process",
         }
 
     def predict(self, request_obj: PredictionRequest, results_dir: str) -> BackendPredictionResult:
-        from .service import run_prediction_pipeline
+        from .service import run_inprocess_prediction_pipeline, run_prediction_pipeline
 
         effective_request = request_obj
         if not request_obj.repo_root and self._repo_root:
             effective_request = replace(request_obj, repo_root=self._repo_root)
 
-        output_file = run_prediction_pipeline(effective_request, results_dir=results_dir)
-        return BackendPredictionResult(backend_name=self.name, output_file=output_file)
+        if self._use_subprocess:
+            output_file = run_prediction_pipeline(effective_request, results_dir=results_dir)
+            mode = "subprocess"
+        else:
+            output_file = run_inprocess_prediction_pipeline(effective_request, results_dir=results_dir)
+            mode = "in_process"
+        return BackendPredictionResult(
+            backend_name=self.name,
+            output_file=output_file,
+            metadata={"mode": mode},
+        )
 
 
 class ModalHTTPInferenceBackend(InferenceBackend):

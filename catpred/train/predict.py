@@ -8,6 +8,8 @@ from catpred.data import MoleculeDataLoader, MoleculeDataset, StandardScaler, At
 from catpred.models import MoleculeModel
 from catpred.nn_utils import activate_dropout
 
+_inference_context = getattr(torch, "inference_mode", torch.no_grad)
+
 
 def predict(
     model: MoleculeModel,
@@ -104,7 +106,7 @@ def predict(
             bond_types_batch = None
 
         # Make predictions
-        with torch.no_grad():
+        with _inference_context():
             batch_preds = model(
                 mol_batch,
                 features_batch,

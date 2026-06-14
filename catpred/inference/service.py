@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
+from functools import lru_cache
+import gzip
+import json
 import os
 import subprocess
 from typing import Tuple
@@ -18,6 +21,7 @@ _TARGET_COLUMNS = {
     "ki": ("log10ki_mean", "mM"),
 }
 _VALID_AAS = set("ACDEFGHIKLMNPQRSTVWY")
+_MODEL_CACHE_SIZE = max(int(os.environ.get("CATPRED_MODEL_CACHE_SIZE", "6")), 0)
 
 
 def _validate_parameter(parameter: str) -> str:
@@ -149,6 +153,162 @@ def _build_prediction_commands(
     return create_records_cmd, predict_cmd
 
 
+def _write_protein_records(input_csv: str, records_file: str) -> None:
+    df = pd.read_csv(input_csv)
+    required = {"pdbpath", "sequence"}
+    missing = required.difference(df.columns)
+    if missing:
+        raise ValueError(
+            f'Missing required column(s) in "{input_csv}": {", ".join(sorted(missing))}'
+        )
+
+    records = {}
+    conflicts = []
+    for index, row in df.iterrows():
+        row_num = index + 2
+        pdbpath = row["pdbpath"].strip() if isinstance(row["pdbpath"], str) else row["pdbpath"]
+        sequence = row["sequence"].strip() if isinstance(row["sequence"], str) else row["sequence"]
+
+        if not pdbpath:
+            raise ValueError(f'Empty "pdbpath" in row {row_num} of "{input_csv}".')
+        if not sequence:
+            raise ValueError(f'Empty "sequence" in row {row_num} of "{input_csv}".')
+
+        key = os.path.basename(pdbpath)
+        existing = records.get(key)
+        if existing is not None and existing["seq"] != sequence:
+            conflicts.append((row_num, key))
+            continue
+
+        records[key] = {"name": key, "seq": sequence}
+
+    if conflicts:
+        preview = ", ".join(
+            [f'{key} (row {row_num})' for row_num, key in conflicts[:5]]
+        )
+        raise ValueError(
+            "Found pdbpath basenames reused for different sequences. "
+            f"Each unique sequence must have a unique pdbpath. Examples: {preview}"
+        )
+
+    with gzip.open(records_file, "wt", encoding="utf-8") as handle:
+        json.dump(records, handle)
+
+
+def _build_predict_args(request: PredictionRequest, paths: PreparedInputPaths, repo_root: Path):
+    from catpred.args import PredictArgs
+
+    checkpoint_dir = Path(request.checkpoint_dir)
+    if not checkpoint_dir.is_absolute():
+        checkpoint_dir = (repo_root / checkpoint_dir).resolve()
+
+    protein_records_path = paths.records_file
+    if request.protein_records_file:
+        protein_records_path = str(
+            _resolve_existing_path(
+                request.protein_records_file,
+                repo_root=repo_root,
+                purpose="Protein records file",
+            )
+        )
+
+    args = PredictArgs()
+    args.test_path = paths.input_csv
+    args.preds_path = paths.output_csv
+    args.checkpoint_dir = str(checkpoint_dir)
+    args.uncertainty_method = "mve"
+    args.smiles_columns = ["SMILES"]
+    args.individual_ensemble_predictions = False
+    args.save_uncertainty_components = True
+    args.protein_records_path = protein_records_path
+    args.no_cuda = not request.use_gpu
+    args.process_args()
+    return args
+
+
+def _checkpoint_fingerprint(checkpoint_paths: tuple[str, ...]) -> tuple[tuple[str, int, int], ...]:
+    fingerprint = []
+    for checkpoint_path in checkpoint_paths:
+        stat = Path(checkpoint_path).stat()
+        fingerprint.append((checkpoint_path, stat.st_mtime_ns, stat.st_size))
+    return tuple(fingerprint)
+
+
+@lru_cache(maxsize=_MODEL_CACHE_SIZE)
+def _load_cached_model_objects(
+    checkpoint_paths: tuple[str, ...],
+    checkpoint_fingerprint: tuple[tuple[str, int, int], ...],
+    use_gpu: bool,
+    gpu: int | None,
+    pretrained_egnn_feats_path: str,
+):
+    del checkpoint_fingerprint  # Included in the cache key to invalidate changed checkpoints.
+
+    from catpred.args import PredictArgs
+    from catpred.train.make_predictions import load_model
+
+    args = PredictArgs()
+    args.checkpoint_paths = list(checkpoint_paths)
+    args.no_cuda = not use_gpu
+    args.gpu = gpu
+    args.pretrained_egnn_feats_path = pretrained_egnn_feats_path
+    loaded_args, train_args, models, scalers, num_tasks, task_names = load_model(
+        args=args,
+        generator=False,
+    )
+    return train_args, models, scalers, num_tasks, task_names, loaded_args.pretrained_egnn_feats_path
+
+
+def _load_model_objects_for_prediction(args):
+    from catpred.train.make_predictions import load_model
+    from catpred.utils import update_prediction_args
+
+    checkpoint_paths = tuple(args.checkpoint_paths)
+    if _MODEL_CACHE_SIZE <= 0:
+        loaded_args, train_args, models, scalers, num_tasks, task_names = load_model(
+            args=args,
+            generator=False,
+        )
+        return loaded_args, train_args, models, scalers, num_tasks, task_names
+
+    train_args, models, scalers, num_tasks, task_names, pretrained_egnn_feats_path = (
+        _load_cached_model_objects(
+            checkpoint_paths=checkpoint_paths,
+            checkpoint_fingerprint=_checkpoint_fingerprint(checkpoint_paths),
+            use_gpu=not args.no_cuda,
+            gpu=args.gpu,
+            pretrained_egnn_feats_path=args.pretrained_egnn_feats_path,
+        )
+    )
+    args.pretrained_egnn_feats_path = pretrained_egnn_feats_path
+    update_prediction_args(predict_args=args, train_args=train_args)
+    return args, train_args, models, scalers, num_tasks, task_names
+
+
+def run_inprocess_prediction(request: PredictionRequest, paths: PreparedInputPaths) -> None:
+    from catpred.train.make_predictions import make_predictions
+
+    root = _resolve_repo_root(request.repo_root)
+
+    previous_embed_cpu = os.environ.get("PROTEIN_EMBED_USE_CPU")
+    os.environ["PROTEIN_EMBED_USE_CPU"] = "0" if request.use_gpu else "1"
+    try:
+        if not request.protein_records_file:
+            _write_protein_records(paths.input_csv, paths.records_file)
+
+        args = _build_predict_args(request, paths, root)
+        model_objects = _load_model_objects_for_prediction(args)
+        make_predictions(args=args, model_objects=model_objects)
+    finally:
+        if previous_embed_cpu is None:
+            os.environ.pop("PROTEIN_EMBED_USE_CPU", None)
+        else:
+            os.environ["PROTEIN_EMBED_USE_CPU"] = previous_embed_cpu
+
+    if not os.path.exists(paths.output_csv):
+        raise FileNotFoundError(f'Prediction output file was not generated: "{paths.output_csv}"')
+
+
 def run_raw_prediction(request: PredictionRequest, paths: PreparedInputPaths) -> None:
     root = _resolve_repo_root(request.repo_root)
     create_records_cmd, predict_cmd = _build_prediction_commands(
@@ -192,37 +352,28 @@ def postprocess_predictions(parameter: str, output_csv: str) -> pd.DataFrame:
             f'Prediction output is missing required column(s): {", ".join(missing_cols)}'
         )
 
-    pred_col, pred_logcol, pred_sd_tot, pred_sd_alea, pred_sd_epi = [], [], [], [], []
+    prediction_log = df[target_col].astype(float).to_numpy()
+    unc = df[unc_col].astype(float).to_numpy()
+    alea_component_col = f"{target_col}_mve_uncal_aleatoric_var"
+    epi_component_col = f"{target_col}_mve_uncal_epistemic_var"
+    if alea_component_col in df.columns and epi_component_col in df.columns:
+        alea_unc_var = np.maximum(df[alea_component_col].astype(float).to_numpy(), 0.0)
+        epi_unc_var = np.maximum(df[epi_component_col].astype(float).to_numpy(), 0.0)
+    else:
+        model_cols = [col for col in df.columns if col.startswith(target_col) and "model_" in col]
+        if not model_cols:
+            raise ValueError(
+                "Prediction output is missing uncertainty component columns or individual "
+                f"ensemble prediction columns for {target_col}."
+            )
+        epi_unc_var = df[model_cols].astype(float).to_numpy().var(axis=1)
+        alea_unc_var = np.maximum(unc - epi_unc_var, 0.0)
 
-    for _, row in df.iterrows():
-        model_cols = [col for col in row.index if col.startswith(target_col) and "model_" in col]
-
-        unc = row[unc_col]
-        prediction_log = row[target_col]
-        prediction_linear = np.power(10, prediction_log)
-
-        if model_cols:
-            model_outs = np.array([row[col] for col in model_cols])
-            epi_unc_var = np.var(model_outs)
-        else:
-            epi_unc_var = 0.0
-
-        alea_unc_var = max(unc - epi_unc_var, 0.0)
-        epi_unc = np.sqrt(epi_unc_var)
-        alea_unc = np.sqrt(alea_unc_var)
-        total_unc = np.sqrt(max(unc, 0.0))
-
-        pred_col.append(prediction_linear)
-        pred_logcol.append(prediction_log)
-        pred_sd_tot.append(total_unc)
-        pred_sd_alea.append(alea_unc)
-        pred_sd_epi.append(epi_unc)
-
-    df[f"Prediction_({unit})"] = pred_col
-    df["Prediction_log10"] = pred_logcol
-    df["SD_total"] = pred_sd_tot
-    df["SD_aleatoric"] = pred_sd_alea
-    df["SD_epistemic"] = pred_sd_epi
+    df[f"Prediction_({unit})"] = np.power(10, prediction_log)
+    df["Prediction_log10"] = prediction_log
+    df["SD_total"] = np.sqrt(np.maximum(unc, 0.0))
+    df["SD_aleatoric"] = np.sqrt(alea_unc_var)
+    df["SD_epistemic"] = np.sqrt(epi_unc_var)
     return df
 
 
@@ -230,12 +381,30 @@ def run_prediction_pipeline(request: PredictionRequest, results_dir: str = "../r
     parameter = _validate_parameter(request.parameter)
     paths = prepare_prediction_inputs(parameter, request.input_file, request.repo_root)
     run_raw_prediction(request, paths)
+    return _write_postprocessed_predictions(parameter, paths, request.repo_root, results_dir)
 
+
+def run_inprocess_prediction_pipeline(
+    request: PredictionRequest,
+    results_dir: str = "../results",
+) -> str:
+    parameter = _validate_parameter(request.parameter)
+    paths = prepare_prediction_inputs(parameter, request.input_file, request.repo_root)
+    run_inprocess_prediction(request, paths)
+    return _write_postprocessed_predictions(parameter, paths, request.repo_root, results_dir)
+
+
+def _write_postprocessed_predictions(
+    parameter: str,
+    paths: PreparedInputPaths,
+    repo_root: str | None,
+    results_dir: str,
+) -> str:
     output_final = postprocess_predictions(parameter, paths.output_csv)
 
     results_path = Path(results_dir)
     if not results_path.is_absolute():
-        results_path = (_resolve_repo_root(request.repo_root) / results_path).resolve()
+        results_path = (_resolve_repo_root(repo_root) / results_path).resolve()
     results_path.mkdir(parents=True, exist_ok=True)
 
     out_name = Path(paths.output_csv).name

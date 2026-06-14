@@ -102,7 +102,8 @@ def cache_fn(
         out = fn(t, *args, **kwargs)
 
         log(f'saving: {t} to {str(entry_path)}')
-        torch.save(out, str(entry_path))
+        cache_out = out.detach().cpu() if isinstance(out, torch.Tensor) else out
+        torch.save(cache_out, str(entry_path))
         return out
         
     return inner

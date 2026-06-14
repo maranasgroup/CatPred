@@ -943,6 +943,8 @@ class PredictArgs(CommonArgs):
     """Deprecated. Whether to calculate the variance of ensembles as a measure of epistemic uncertainty. If True, the variance is saved as an additional column for each target in the preds_path."""
     individual_ensemble_predictions: bool = False
     """Whether to return the predictions made by each of the individual models rather than the average of the ensemble"""
+    save_uncertainty_components: bool = False
+    """Whether to save aleatoric and epistemic uncertainty variance components when available."""
     # Uncertainty arguments
     uncertainty_method: Literal[
         'mve',

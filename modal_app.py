@@ -37,6 +37,12 @@ image = (
         "ipdb==0.13.13",
         "pandas-flavor>=0.6.0",
     )
+    .env(
+        {
+            "CATPRED_CACHE_PATH": "/checkpoints/esm2_embeddings",
+            "TORCH_HOME": "/checkpoints/torch",
+        }
+    )
     .add_local_python_source("catpred")
     .add_local_dir("scripts", remote_path="/root/scripts")
     .add_local_file("predict.py", remote_path="/root/predict.py")
@@ -66,20 +72,10 @@ def _safe_checkpoint_path(raw_checkpoint_dir: str) -> Path:
     return checkpoint_dir
 
 
-@app.function(
-    timeout=60 * 15,
-    cpu=4.0,
-    memory=16384,
-    volumes={"/checkpoints": checkpoints_volume},
-)
-@modal.fastapi_endpoint(method="POST", docs=True)
-def predict(
-    payload: PredictPayload,
-    authorization: Optional[str] = Header(default=None),
-) -> dict[str, Any]:
+def _predict_impl(payload: PredictPayload, authorization: Optional[str] = None) -> dict[str, Any]:
     import pandas as pd
 
-    from catpred.inference.service import run_prediction_pipeline
+    from catpred.inference.service import run_inprocess_prediction_pipeline
     from catpred.inference.types import PredictionRequest
 
     expected_token = os.environ.get("CATPRED_MODAL_AUTH_TOKEN")
@@ -127,14 +123,26 @@ def predict(
             python_executable="python",
         )
         results_dir = str((runtime_dir / "results").resolve())
-        output_file = run_prediction_pipeline(request_obj, results_dir=results_dir)
+        output_file = run_inprocess_prediction_pipeline(request_obj, results_dir=results_dir)
         output_df = pd.read_csv(output_file)
+        gpu_info: dict[str, Any] = {}
+        if payload.use_gpu:
+            import torch
+
+            gpu_info = {
+                "cuda_available": bool(torch.cuda.is_available()),
+                "cuda_device_name": (
+                    torch.cuda.get_device_name(0) if torch.cuda.is_available() else None
+                ),
+            }
 
         return {
             "output_rows": output_df.to_dict(orient="records"),
             "output_filename": Path(output_file).name,
             "row_count": int(len(output_df)),
             "backend": "modal",
+            "use_gpu": bool(payload.use_gpu),
+            "gpu": gpu_info,
         }
     except HTTPException:
         raise
@@ -144,3 +152,69 @@ def predict(
         input_path = Path(tmp_input_path)
         if input_path.exists():
             input_path.unlink()
+
+
+@app.function(
+    timeout=60 * 15,
+    cpu=4.0,
+    memory=16384,
+    volumes={"/checkpoints": checkpoints_volume},
+)
+@modal.fastapi_endpoint(method="POST", docs=True)
+def predict(
+    payload: PredictPayload,
+    authorization: Optional[str] = Header(default=None),
+) -> dict[str, Any]:
+    return _predict_impl(payload, authorization=authorization)
+
+
+@app.function(
+    timeout=60 * 15,
+    cpu=4.0,
+    memory=16384,
+    gpu="T4",
+    volumes={"/checkpoints": checkpoints_volume},
+)
+def predict_gpu(payload: dict[str, Any]) -> dict[str, Any]:
+    gpu_payload = PredictPayload(**payload)
+    gpu_payload.use_gpu = True
+    return _predict_impl(gpu_payload)
+
+
+@app.local_entrypoint()
+def gpu_smoke(
+    parameter: str = "kcat",
+    input_file: str = "demo/batch_kcat.csv",
+    limit: int = 1,
+) -> None:
+    import json
+
+    import pandas as pd
+
+    rows = pd.read_csv(input_file).head(limit).to_dict(orient="records")
+    result = predict_gpu.remote(
+        {
+            "parameter": parameter,
+            "checkpoint_dir": parameter,
+            "use_gpu": True,
+            "input_rows": rows,
+            "input_filename": Path(input_file).name,
+        }
+    )
+    output_rows = result.get("output_rows", [])
+    preview = output_rows[0] if output_rows else {}
+    print(
+        json.dumps(
+            {
+                "backend": result.get("backend"),
+                "use_gpu": result.get("use_gpu"),
+                "parameter": parameter,
+                "row_count": result.get("row_count"),
+                "output_filename": result.get("output_filename"),
+                "gpu": result.get("gpu"),
+                "preview_keys": list(preview)[:8],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )

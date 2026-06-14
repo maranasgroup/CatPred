@@ -23,8 +23,10 @@ __all__ = [
     "PreparedInputPaths",
     "prepare_prediction_inputs",
     "run_raw_prediction",
+    "run_inprocess_prediction",
     "postprocess_predictions",
     "run_prediction_pipeline",
+    "run_inprocess_prediction_pipeline",
 ]
 
 
@@ -32,8 +34,10 @@ def __getattr__(name: str):
     if name in {
         "prepare_prediction_inputs",
         "run_raw_prediction",
+        "run_inprocess_prediction",
         "postprocess_predictions",
         "run_prediction_pipeline",
+        "run_inprocess_prediction_pipeline",
     }:
         from . import service
 

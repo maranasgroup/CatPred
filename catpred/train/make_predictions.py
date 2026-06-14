@@ -191,6 +191,14 @@ def predict_and_save(
             estimator.individual_predictions()
         )  # shape(data, tasks, ensemble) or (data, tasks, classes, ensemble)
 
+    uncertainty_components = None
+    if (
+        args.save_uncertainty_components
+        and calibrator is None
+        and args.uncertainty_method is not None
+    ):
+        uncertainty_components = estimator.uncertainty_components()
+
     if args.evaluation_methods is not None:
 
         evaluation_data = get_data(
@@ -271,17 +279,26 @@ def predict_and_save(
             if valid_index is not None:
                 d_preds = preds[valid_index]
                 d_unc = unc[valid_index]
+                if uncertainty_components is not None:
+                    d_alea_unc = uncertainty_components[0][valid_index]
+                    d_epi_unc = uncertainty_components[1][valid_index]
                 if args.individual_ensemble_predictions:
                     ind_preds = individual_preds[valid_index]
             else:
                 d_preds = ["Invalid SMILES"] * num_tasks
                 d_unc = ["Invalid SMILES"] * num_unc_tasks
+                if uncertainty_components is not None:
+                    d_alea_unc = ["Invalid SMILES"] * num_unc_tasks
+                    d_epi_unc = ["Invalid SMILES"] * num_unc_tasks
                 if args.individual_ensemble_predictions:
                     ind_preds = [["Invalid SMILES"] * len(args.checkpoint_paths)] * num_tasks
             # Reshape multiclass to merge task and class dimension, with updated num_tasks
             if args.dataset_type == "multiclass":
                 d_preds = np.array(d_preds).reshape((num_tasks))
                 d_unc = np.array(d_unc).reshape((num_unc_tasks))
+                if uncertainty_components is not None:
+                    d_alea_unc = np.array(d_alea_unc).reshape((num_unc_tasks))
+                    d_epi_unc = np.array(d_epi_unc).reshape((num_unc_tasks))
                 if args.individual_ensemble_predictions:
                     ind_preds = ind_preds.reshape(
                         (num_tasks, len(args.checkpoint_paths))
@@ -308,6 +325,15 @@ def predict_and_save(
                 datapoint.row[pred_name] = pred
                 if args.uncertainty_method is not None:
                     datapoint.row[unc_name] = un
+            if uncertainty_components is not None:
+                component_label = (
+                    estimator.label[:-4]
+                    if estimator.label.endswith("_var")
+                    else estimator.label
+                )
+                for pred_name, alea, epi in zip(task_names, d_alea_unc, d_epi_unc):
+                    datapoint.row[f"{pred_name}_{component_label}_aleatoric_var"] = alea
+                    datapoint.row[f"{pred_name}_{component_label}_epistemic_var"] = epi
             if args.individual_ensemble_predictions:
                 for pred_name, model_preds in zip(task_names, ind_preds):
                     for idx, pred in enumerate(model_preds):

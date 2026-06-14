@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from pathlib import Path
 from functools import lru_cache
 import gzip
+import hashlib
 import json
 import os
 import subprocess
+import threading
 from typing import Tuple
 
 import numpy as np
@@ -22,6 +25,9 @@ _TARGET_COLUMNS = {
 }
 _VALID_AAS = set("ACDEFGHIKLMNPQRSTVWY")
 _MODEL_CACHE_SIZE = max(int(os.environ.get("CATPRED_MODEL_CACHE_SIZE", "6")), 0)
+_PREDICTION_CACHE_SIZE = max(int(os.environ.get("CATPRED_PREDICTION_CACHE_SIZE", "128")), 0)
+_PREDICTION_CACHE: OrderedDict[tuple, str] = OrderedDict()
+_PREDICTION_CACHE_LOCK = threading.Lock()
 
 
 def _validate_parameter(parameter: str) -> str:
@@ -234,6 +240,140 @@ def _checkpoint_fingerprint(checkpoint_paths: tuple[str, ...]) -> tuple[tuple[st
     return tuple(fingerprint)
 
 
+def _deduplicate_prediction_input(paths: PreparedInputPaths) -> tuple[PreparedInputPaths, bool]:
+    input_df = pd.read_csv(paths.input_csv)
+    key_columns = ["SMILES", "sequence"]
+    if any(column not in input_df.columns for column in key_columns):
+        return paths, False
+
+    unique_df = input_df.drop_duplicates(subset=key_columns, keep="first")
+    if len(unique_df) == len(input_df):
+        return paths, False
+
+    input_path = Path(paths.input_csv)
+    unique_input_csv = input_path.with_name(f"{input_path.stem}_unique{input_path.suffix}")
+    unique_output_csv = unique_input_csv.with_name(f"{unique_input_csv.with_suffix('').name}_output.csv")
+    unique_df.to_csv(unique_input_csv, index=False)
+    return (
+        PreparedInputPaths(
+            input_csv=str(unique_input_csv),
+            records_file=paths.records_file,
+            output_csv=str(unique_output_csv),
+        ),
+        True,
+    )
+
+
+def _expand_deduplicated_prediction_output(
+    original_paths: PreparedInputPaths,
+    deduplicated_paths: PreparedInputPaths,
+) -> None:
+    full_df = pd.read_csv(original_paths.input_csv)
+    unique_input_df = pd.read_csv(deduplicated_paths.input_csv)
+    unique_output_df = pd.read_csv(deduplicated_paths.output_csv)
+    key_columns = ["SMILES", "sequence"]
+    prediction_columns = [
+        column for column in unique_output_df.columns if column not in unique_input_df.columns
+    ]
+
+    if not prediction_columns:
+        raise ValueError("Deduplicated prediction output did not contain prediction columns.")
+
+    prediction_lookup = unique_output_df[key_columns + prediction_columns].drop_duplicates(
+        subset=key_columns,
+        keep="first",
+    )
+    expanded_df = full_df.merge(prediction_lookup, on=key_columns, how="left", sort=False)
+
+    if expanded_df[prediction_columns].isnull().any().any():
+        raise ValueError("Failed to expand deduplicated predictions to all input rows.")
+
+    expanded_df.to_csv(original_paths.output_csv, index=False)
+
+
+def _file_digest(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _prediction_checkpoint_paths(checkpoint_dir: str, repo_root: Path) -> tuple[str, ...]:
+    checkpoint_path = Path(checkpoint_dir)
+    if not checkpoint_path.is_absolute():
+        checkpoint_path = (repo_root / checkpoint_path).resolve()
+    if checkpoint_path.is_file():
+        return (str(checkpoint_path),)
+    if not checkpoint_path.is_dir():
+        raise FileNotFoundError(f'Checkpoint directory not found: "{checkpoint_path}"')
+    model_paths = sorted(str(path.resolve()) for path in checkpoint_path.rglob("model.pt"))
+    if not model_paths:
+        raise FileNotFoundError(f'No model.pt checkpoints found in "{checkpoint_path}"')
+    return tuple(model_paths)
+
+
+def _prediction_cache_key(
+    parameter: str,
+    request: PredictionRequest,
+    paths: PreparedInputPaths,
+    repo_root: Path,
+) -> tuple:
+    protein_records_digest = None
+    if request.protein_records_file:
+        protein_records_path = _resolve_existing_path(
+            request.protein_records_file,
+            repo_root=repo_root,
+            purpose="Protein records file",
+        )
+        protein_records_digest = _file_digest(str(protein_records_path))
+
+    checkpoint_paths = _prediction_checkpoint_paths(request.checkpoint_dir, repo_root)
+    return (
+        parameter,
+        bool(request.use_gpu),
+        _file_digest(paths.input_csv),
+        protein_records_digest,
+        _checkpoint_fingerprint(checkpoint_paths),
+    )
+
+
+def _prediction_cache_get(cache_key: tuple) -> str | None:
+    if _PREDICTION_CACHE_SIZE <= 0:
+        return None
+    with _PREDICTION_CACHE_LOCK:
+        cached = _PREDICTION_CACHE.get(cache_key)
+        if cached is not None:
+            _PREDICTION_CACHE.move_to_end(cache_key)
+        return cached
+
+
+def _prediction_cache_put(cache_key: tuple, csv_text: str) -> None:
+    if _PREDICTION_CACHE_SIZE <= 0:
+        return
+    with _PREDICTION_CACHE_LOCK:
+        _PREDICTION_CACHE[cache_key] = csv_text
+        _PREDICTION_CACHE.move_to_end(cache_key)
+        while len(_PREDICTION_CACHE) > _PREDICTION_CACHE_SIZE:
+            _PREDICTION_CACHE.popitem(last=False)
+
+
+def _write_cached_prediction(
+    cached_csv: str,
+    paths: PreparedInputPaths,
+    repo_root: str | None,
+    results_dir: str,
+) -> str:
+    results_path = Path(results_dir)
+    if not results_path.is_absolute():
+        results_path = (_resolve_repo_root(repo_root) / results_path).resolve()
+    results_path.mkdir(parents=True, exist_ok=True)
+
+    final_output = results_path / Path(paths.output_csv).name
+    final_output.write_text(cached_csv, encoding="utf-8")
+    return str(final_output)
+
+
 @lru_cache(maxsize=_MODEL_CACHE_SIZE)
 def _load_cached_model_objects(
     checkpoint_paths: tuple[str, ...],
@@ -390,8 +530,22 @@ def run_inprocess_prediction_pipeline(
 ) -> str:
     parameter = _validate_parameter(request.parameter)
     paths = prepare_prediction_inputs(parameter, request.input_file, request.repo_root)
-    run_inprocess_prediction(request, paths)
-    return _write_postprocessed_predictions(parameter, paths, request.repo_root, results_dir)
+    root = _resolve_repo_root(request.repo_root)
+    cache_key = _prediction_cache_key(parameter, request, paths, root)
+    cached_csv = _prediction_cache_get(cache_key)
+    if cached_csv is not None:
+        return _write_cached_prediction(cached_csv, paths, request.repo_root, results_dir)
+
+    if request.protein_records_file:
+        prediction_paths, was_deduplicated = paths, False
+    else:
+        prediction_paths, was_deduplicated = _deduplicate_prediction_input(paths)
+    run_inprocess_prediction(request, prediction_paths)
+    if was_deduplicated:
+        _expand_deduplicated_prediction_output(paths, prediction_paths)
+    final_output = _write_postprocessed_predictions(parameter, paths, request.repo_root, results_dir)
+    _prediction_cache_put(cache_key, Path(final_output).read_text(encoding="utf-8"))
+    return final_output
 
 
 def _write_postprocessed_predictions(

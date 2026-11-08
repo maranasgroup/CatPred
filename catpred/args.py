@@ -696,7 +696,7 @@ class TrainArgs(CommonArgs):
 
         # Load config file
         if self.config_path is not None:
-            with open(self.config_path) as f:
+            with open(self.config_path, encoding="utf-8") as f:
                 config = json.load(f)
                 for key, value in config.items():
                     setattr(self, key, value)
